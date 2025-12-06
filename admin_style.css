@@ -1,0 +1,181 @@
+*, *::before, *::after {
+    box-sizing: border-box; 
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", "Arial", sans-serif;
+    background: #f4f4f4; /* Nền Dashboard sáng */
+    color: #222;
+}
+
+/* ==================== HEADER (Đồng bộ với Home Page) ==================== */
+.admin-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 75px; 
+    background: #333333; /* Xám Đen */
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px; /* Padding ngang để nội dung không dán sát mép */
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin-header h1 {
+    font-size: 28px; 
+    font-weight: 700;
+}
+
+.admin-header nav {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.admin-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    white-space: nowrap;
+    transition: color 0.2s;
+}
+
+.admin-link:hover {
+    color: #ffcc00; /* Hiệu ứng hover Vàng */
+}
+
+.admin-link i {
+    margin-right: 6px;
+}
+
+
+/* ==================== NỘI DUNG CHÍNH (SIDEBAR + DASHBOARD) ==================== */
+.main-admin-container {
+    display: flex;
+    min-height: 100vh;
+    padding-top: 75px; /* Khoảng trống cho Header */
+}
+
+/* ===== SIDEBAR (Menu Vàng Nâu) ===== */
+.sidebar.admin-menu {
+    width: 250px; /* Tăng chiều rộng cho menu dọc */
+    background: #c8a000; /* Vàng Nâu */
+    color: #222; 
+    font-weight: 600;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar .menu-title {
+    color: #222;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 12px 20px;
+    color: #222;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar ul li a i {
+    margin-right: 10px;
+}
+
+.sidebar ul li:hover,
+.sidebar ul li.active-admin {
+    background: rgba(0,0,0,0.1); /* Màu nền hover/active nhẹ */
+    color: #fff;
+}
+.sidebar ul li.active-admin a {
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ===== DASHBOARD NỘI DUNG ===== */
+.dashboard-content {
+    flex-grow: 1;
+    padding: 30px;
+}
+
+.dashboard-content h2 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+/* Cards Tổng quan */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+    border-top: 4px solid #0078c8; /* Màu xanh nổi bật */
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.stat-card p {
+    font-size: 30px;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Bảng dữ liệu */
+.content-block {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.data-table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+    color: #555;
+}
+
+.stock-low {
+    color: #d32f2f;
+    font-weight: 700;
+}

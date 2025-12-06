@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bảng Điều Khiển Quản Trị</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="admin_styles.css" />
+  </head>
+  <body>
+    <header class="admin-header">
+      <h1>BẢNG ĐIỀU KHIỂN QUẢN TRỊ</h1>
+      <nav>
+        <a href="#" class="admin-link">
+          <i class="fas fa-bell"></i> Thông báo
+        </a>
+        <a href="#" class="admin-link user-link">
+          <i class="fas fa-user"></i> ADMIN Thangt2005
+        </a>
+        <a href="login_page.html" class="admin-link logout-link">
+          <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </a>
+      </nav>
+    </header>
+
+    <div class="main-admin-container">
+      <div class="sidebar admin-menu">
+        <div class="menu-title">DANH MỤC QUẢN TRỊ</div>
+        <ul>
+          <li class="active-admin">
+            <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-cube"></i> Sản phẩm</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-box-open"></i> Đơn hàng</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-percent"></i> Khuyến mãi</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-chart-line"></i> Báo cáo</a>
+          </li>
+        </ul>
+      </div>
+
+      <main class="dashboard-content">
+        <h2>Dashboard</h2>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>TỔNG SẢN PHẨM</h3>
+            <p>250</p>
+          </div>
+          <div class="stat-card">
+            <h3>ĐƠN HÀNG MỚI</h3>
+            <p>12</p>
+          </div>
+          <div class="stat-card">
+            <h3>DOANH THU (THÁNG)</h3>
+            <p>150.000.000đ</p>
+          </div>
+          <div class="stat-card">
+            <h3>KHÁCH HÀNG MỚI</h3>
+            <p>35</p>
+          </div>
+        </div>
+
+        <div class="content-block product-list">
+          <h3>Sản phẩm gần hết hàng</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tên sản phẩm</th>
+                <th>Tồn kho</th>
+                <th>Giá</th>
+                <th>...</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#101</td>
+                <td>Vòi Lavabo Inox 304 LB271</td>
+                <td class="stock-low">5</td>
+                <td>400.000đ</td>
+                <td>
+                  <a href="#">Chỉnh sửa</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
