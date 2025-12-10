@@ -2,33 +2,51 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <title>Giỏ hàng</title>
+    <title>Trang Giỏ Hàng</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
     <link rel="stylesheet" href="css_ThemVaoGioHang.css" />
   </head>
   <body>
     <header>
-      <h1>Thiết Bị Vệ Sinh & Phòng tắm</h1>
+      <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
       <nav>
-        <ul>
-          <li><i class="fas fa-user"></i></li>
-          <li><a href="login_page.html">Thangt2005</a></li>
-          <li><a href="#">Giỏ hàng</a></li>
+        <form class="search-form" action="#" method="GET">
+          <input
+            type="text"
+            name="search"
+            placeholder="Tìm kiếm sản phẩm ..."
+            class="search-input"
+          />
+          <button type="submit" class="search-icon">
+            <i class="fa fa-search"></i>
+          </button>
+        </form>
+
+        <ul class="user-menu">
           <li>
-            <form class="search-form" action="#">
-              <input
-                type="text"
-                placeholder="Tìm kiếm sản phẩm ..."
-                class="search-input"
-              />
-              <div class="search-icon"><i class="fa fa-search"></i></div>
-            </form>
+            <a href="page_ThemVaoGiohang.html">
+              <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
+            </a>
+          </li>
+          <li>
+            <a href="login_page.html">
+              <i class="fas fa-user"></i> thangtt26
+            </a>
           </li>
         </ul>
       </nav>
     </header>
 
     <div class="menu-container">
-      <div class="sidebar"><i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM</div>
+      <div class="sidebar">
+        <div class="menu-title">
+          <i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM
+        </div>
+      </div>
+
       <div class="top-menu">
         <ul>
           <li><a href="home.html">Trang chủ</a></li>
@@ -119,6 +137,7 @@
         <button class="checkout-btn">Tiến hành thanh toán</button>
       </div>
     </main>
+
      <footer class="footer">
       <div class="footer-container">
         <div class="footer-column">
@@ -128,6 +147,7 @@
             thị trường.
           </p>
         </div>
+
         <div class="footer-column">
           <h3>LIÊN HỆ</h3>
           <p><i class="fa-solid fa-phone"></i> 0909 123 456</p>
@@ -144,6 +164,7 @@
             <li><a href="#">Chăm sóc khách hàng</a></li>
           </ul>
         </div>
+
         <div class="footer-column">
           <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
           <div class="social-icons">
@@ -159,11 +180,10 @@
           </div>
         </div>
       </div>
+
       <div class="footer-bottom">
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
       </div>
     </footer>
   </body>
-</html>
-</body>
 </html>
