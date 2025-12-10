@@ -21,8 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = mysqli_query($db, $sql);
 
     if (mysqli_num_rows($result) > 0) {
-        // Đăng nhập thành công -> Chuyển hướng sang trang home.html
-        header("Location: home.html");
+        // Đăng nhập thành công -> Chuyển hướng sang trang home.php
+        header("Location: home.php");
         exit(); // Kết thúc code để chuyển trang ngay lập tức
     } else {
         // Đăng nhập thất bại -> Hiện thông báo bằng JavaScript cho đẹp
