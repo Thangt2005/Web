@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $u = $_POST['username'];
     $p = $_POST['password'];    
     
-    // 2. Kết nối Database (Cổng 3307 của anh)
+    // 2. Kết nối Database 
     $db = mysqli_connect("localhost", "root", "", "login", 3307);
 
     if (!$db) {

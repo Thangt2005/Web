@@ -1,3 +1,69 @@
+<?php
+session_start(); 
+$registration_message = "";
+$conn = false; // Khởi tạo biến kết nối (dùng Procedural)
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    $e = $_POST['email'];
+    $u = $_POST['username-register'];
+    $p = $_POST['password-register'];
+    $p1 = $_POST['password-register1']; // Mật khẩu nhập lại
+
+    // 1. KIỂM TRA MẬT KHẨU NHẬP LẠI (Sửa lỗi Logic)
+    if ($p !== $p1) {
+        $registration_message = "<h2 style='color: red;'>Lỗi: Mật khẩu nhập lại không khớp.</h2>";
+    } else {
+        
+        // Cấu hình Kết nối MySQL
+        $servername = "localhost"; 
+        $db_user = "root";       
+        $db_pass = "";           
+        $dbname = "login";        
+        $port = 3307;             
+        
+        // 2. KẾT NỐI (Lưu vào biến $conn)
+        $conn = mysqli_connect($servername, $db_user, $db_pass, $dbname, $port);
+        
+        if (mysqli_connect_error()) {
+            $registration_message = "<h2 style='color: red;'>Lỗi kết nối database: " . mysqli_connect_error() . "</h2>";
+        } else {
+            
+            // Mã hóa mật khẩu sau khi biết kết nối thành công
+            $hashed_password = password_hash($p, PASSWORD_DEFAULT);
+            
+            // 3. CÂU LỆNH SQL ĐÃ SỬA: Thêm cột 'password' và dùng Prepared Statements
+            $sql = "INSERT INTO login (email, username, password) VALUES (?, ?, ?)";
+            
+            // 4. CHUẨN BỊ (Procedural)
+            $stmt = mysqli_prepare($conn, $sql);
+            
+            if ($stmt) {
+                // 'sss' là 3 tham số chuỗi: email, username, hashed_password
+                mysqli_stmt_bind_param($stmt, "sss", $e, $u, $hashed_password); 
+                
+                if (mysqli_stmt_execute($stmt)) {
+                    // Đăng ký thành công -> Chuyển hướng
+                    header("Location: login_page.php");
+                    exit();
+                } else {
+                    // Lỗi chèn (ví dụ: Username/Email đã tồn tại)
+                    if (mysqli_errno($conn) == 1062) { 
+                         $registration_message = "<h2 style='color: red;'>Tài khoản đã tồn tại (Username/Email đã được sử dụng).</h2>";
+                    } else {
+                        $registration_message = "<h2 style='color: red;'>Lỗi đăng ký: " . mysqli_error($conn) . "</h2>";
+                    }
+                }
+                mysqli_stmt_close($stmt);
+            } else {
+                $registration_message = "<h2 style='color: red;'>Lỗi chuẩn bị truy vấn.</h2>";
+            }
+            mysqli_close($conn);
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -46,7 +112,7 @@
           />
           <!-- Trường nhập tên đăng nhập -->
           <input
-            type="username-register"
+            type="text"
             id="username-register"
             name="username-register"
             placeholder="Username"
@@ -54,7 +120,7 @@
           />
           <!--trường nhập mật khẩu-->
           <input
-            type="password-register"
+            type="text"
             id="password-register"
             name="password-register"
             placeholder="Password"
@@ -62,9 +128,9 @@
           />
           <!--trường nhập lại mật khẩu-->
           <input
-            type="password-register"
+            type="password"
             id="password-register1"
-            name="password-register"
+            name="password-register1"
             placeholder="Password repeat "
             required
           />
@@ -73,7 +139,7 @@
         </form>
         <p class="links">
           <a href="#">Đã có tài khoản?</a> |
-          <a href="login_page.html">Đăng nhập ngay</a>
+          <a href="login_page.php">Đăng nhập ngay</a>
         </p>
       </div>
     </div>
