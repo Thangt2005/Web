@@ -68,8 +68,18 @@
       <h2>Sản phẩm nổi bật</h2>
     <div class="product-grid">
     <?php
-    // 1. Gọi file kết nối
-    include 'connect.php';
+      // 1. Kết nối đến CSDL
+      $servername = "localhost:3307";
+      $username = "root";
+      $password = "";
+      $dbname = "home"; 
+
+      $conn = mysqli_connect($servername, $username, $password, $dbname);
+
+      if (!$conn) {
+          die("Kết nối thất bại: " . mysqli_connect_error());
+      }
+      mysqli_set_charset($conn, "utf8"); // Để hiển thị tiếng Việt không lỗi
 
     // 2. Viết câu lệnh lấy sản phẩm
     $sql = "SELECT * FROM sanpham";
