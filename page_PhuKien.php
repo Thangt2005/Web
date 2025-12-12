@@ -1,3 +1,22 @@
+<?php
+// 1. Kết nối CSDL
+$servername = "localhost:3307";
+$username   = "root";
+$password   = "";
+$dbname     = "db_bontam";
+
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+if (!$conn) {
+    die("Kết nối thất bại: " . mysqli_connect_error());
+}
+
+mysqli_set_charset($conn, "utf8");
+
+// 2. Lấy danh sách sản phẩm (nếu muốn chỉ lấy COMBO, bạn phải thêm cột 'loai')
+$sql = "SELECT * FROM db_bontam";
+$result = mysqli_query($conn, $sql);
+?>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -63,83 +82,44 @@
         </ul>
       </div>
     </div>
-    <!--  Nội dung  -->
+    <!--  Nội dung vòi sen tắm  -->
     <main class="main-content">
-      <h2>BỒN TIỂU NAM</h2>
-
+      <h2>PHỤ KIỆN</h2>
       <div class="combo-grid">
-        <div class="product-combo">
-          <h3>Bồn tiểu nam dựng đứng - UO291</h3>
-          <img src="image_all/bồn1.jpg" alt="Bồn tiểu nam dựng đứng - UO291" />
-          <p class="price">290,000đ <span class="dis">-31%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+          <?php 
+        // 3. Hiển thị sản phẩm
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+        ?>
+            <div class="product-combo">
+                <h3><?php echo $row['ten_sp']; ?></h3>
 
-        <div class="product-combo">
-          <h3>Bồn tiểu nam treo tường - UO213</h3>
-          <img src="image_all/bồn2.jpg" alt="Bồn tiểu nam treo tường - UO213" />
-          <p class="price">431,000đ <span class="dis">-11%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <img src="image_all/<?php echo $row['hinh_anh']; ?>"
+                     alt="<?php echo $row['ten_sp']; ?>">
 
-        <div class="product-combo">
-          <h3>Bồn tiểu nam viglacera - UO162</h3>
-          <img src="image_all/bồn3.jpg" alt="Bồn tiểu nam viglacera - UO162" />
-          <p class="price">691,000đ <span class="dis">-3%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <p class="price">
+                    <?php echo number_format($row['gia']); ?>đ
+                    <span class="dis">-<?php echo $row['giam_gia']; ?>%</span>
+                </p>
 
-        <div class="product-combo">
-          <h3>Bồn tiểu nam cảm ứng - UO112</h3>
-          <img src="image_all/bồn4.png" alt="Bồn tiểu nam cảm ứng - UO112" />
-          <p class="price">423,000đ <span class="dis">-10%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
-
-        <div class="product-combo">
-          <h3>Bồn tiểu nam sang trọng- UO124</h3>
-          <img src="image_all/bồn5.jpg" alt="Bồn tiểu nam sang trọng- UO124" />
-          <p class="price">1,000,000đ <span class="dis">-5%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <div class="button-group">
+                    <button class="add-to-cart">
+                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+                    </button>
+                    <button class="buy">
+                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                    </button>
+                </div>
+            </div>
+        <?php 
+            }
+        } else {
+            echo "<p>Chưa có sản phẩm nào!</p>";
+        }
+        ?>
       </div>
 </main>
-
+      <!--  FOOTER  -->
       <footer class="footer">
         <div class="footer-container">
           <div class="footer-column">

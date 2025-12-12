@@ -1,3 +1,22 @@
+<?php
+// 1. Kết nối CSDL
+$servername = "localhost:3307";
+$username   = "root";
+$password   = "";
+$dbname     = "db_bontam";
+
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+if (!$conn) {
+    die("Kết nối thất bại: " . mysqli_connect_error());
+}
+
+mysqli_set_charset($conn, "utf8");
+
+// 2. Lấy danh sách sản phẩm (nếu muốn chỉ lấy COMBO, bạn phải thêm cột 'loai')
+$sql = "SELECT * FROM db_bontam";
+$result = mysqli_query($conn, $sql);
+?>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -63,82 +82,44 @@
         </ul>
       </div>
     </div>
-    <!--  Nội dung vòi sen tắm  -->
+    <!--  PHẦN NỘI DUNG PAGE LAVABO  -->
     <main class="main-content">
-      <h2>PHỤ KIỆN</h2>
+      <h2>Một số mẫu Bồn Tắm bán chạy</h2>
+
       <div class="combo-grid">
-        <div class="product-combo">
-          <h3>Bát sen gắn tường - TW142</h3>
-          <img src="image_all/pk1.jpg" alt="Bát sen gắn tường - TW142" />
-          <p class="price">290,000đ <span class="dis">-34%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+       <?php 
+        // 3. Hiển thị sản phẩm
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+        ?>
+            <div class="product-combo">
+                <h3><?php echo $row['ten_sp']; ?></h3>
 
-        <div class="product-combo">
-          <h3>Bình xà phòng - IW1023</h3>
-          <img src="image_all/pk2.jpg" alt="Binh xà phòng - IW1023" />
-          <p class="price">450,000đ <span class="dis">-21%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <img src="image_all/<?php echo $row['hinh_anh']; ?>"
+                     alt="<?php echo $row['ten_sp']; ?>">
 
-        <div class="product-combo">
-          <h3>Chổi cọ bồn cầu - IW2942</h3>
-          <img src="image_all/pk3.jpg" alt="Chổi cọ bồn cầu - IW2942" />
-          <p class="price">650,000đ <span class="dis">-22%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <p class="price">
+                    <?php echo number_format($row['gia']); ?>đ
+                    <span class="dis">-<?php echo $row['giam_gia']; ?>%</span>
+                </p>
 
-        <div class="product-combo">
-          <h3>Vòi xịt vệ sinh - iw0004</h3>
-          <img src="image_all/pk4.jpg" alt="Vòi xịt vệ sinh - iw0004" />
-          <p class="price">610,000đ <span class="dis">-14%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
-
-        <div class="product-combo">
-          <h3>Siphon lớp phủ - IW1342</h3>
-          <img src="image_all/pk5.png" alt="Siphon lớp phủ - IW1342" />
-          <p class="price">520,000đ <span class="dis">-12%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <div class="button-group">
+                    <button class="add-to-cart">
+                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+                    </button>
+                    <button class="buy">
+                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                    </button>
+                </div>
+            </div>
+        <?php 
+            }
+        } else {
+            echo "<p>Chưa có sản phẩm nào!</p>";
+        }
+        ?>
       </div>
 </main>
-      <!--  FOOTER  -->
       <footer class="footer">
         <div class="footer-container">
           <div class="footer-column">

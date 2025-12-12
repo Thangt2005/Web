@@ -1,3 +1,22 @@
+<?php
+// 1. Kết nối CSDL
+$servername = "localhost:3307";
+$username   = "root";
+$password   = "";
+$dbname     = "db_bontieunam";
+
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+if (!$conn) {
+    die("Kết nối thất bại: " . mysqli_connect_error());
+}
+
+mysqli_set_charset($conn, "utf8");
+
+// 2. Lấy danh sách sản phẩm (nếu muốn chỉ lấy COMBO, bạn phải thêm cột 'loai')
+$sql = "SELECT * FROM db_bontieunam";
+$result = mysqli_query($conn, $sql);
+?>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -63,98 +82,45 @@
         </ul>
       </div>
     </div>
-    <!--  PHẦN NỘI DUNG PAGE LAVABO  -->
+    <!--  Nội dung  -->
     <main class="main-content">
-      <h2>Một số mẫu Bồn Tắm bán chạy</h2>
+      <h2>BỒN TIỂU NAM</h2>
+<div class="combo-grid">
+       <?php 
+        // 3. Hiển thị sản phẩm
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+        ?>
+            <div class="product-combo">
+                <h3><?php echo $row['ten_sp']; ?></h3>
 
-      <div class="combo-grid">
-        <div class="product-combo">
-          <h3>
-            - Daros HT-1503 – Bồn tắm massage góc, chất liệu acrylic cao cấp
-          </h3>
-          <img src="image_all/bonTam1.png" alt="bon_Tam-1" />
-          <p class="price">85.000.000đ<span class="dis">-9%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <img src="image_all/<?php echo $row['hinh_anh']; ?>"
+                     alt="<?php echo $row['ten_sp']; ?>">
 
-        <div class="product-combo">
-          <h3>- Caesar AT6270 – Bồn tắm góc, phù hợp với phòng tắm nhỏ</h3>
-          <img src="image_all/bonTam2.png" alt="bon_Tam-1" />
-          <p class="price">11.500.000đ<span class="dis">-10%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <p class="price">
+                    <?php echo number_format($row['gia']); ?>đ
+                    <span class="dis">-<?php echo $row['giam_gia']; ?>%</span>
+                </p>
 
-        <div class="product-combo">
-          <h3>- Nofer NG-1701 – Bồn tắm massage nằm, kiểu dáng hiện đại</h3>
-          <img src="image_all/bonTam3.png" alt="bon_Tam-3" />
-          <p class="price">3.000.000đ<span class="dis">-22%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
-
-        <div class="product-combo">
-          <h3>- Euroca EU1-1700 – Bồn tắm nằm truyền thống, giá tốt</h3>
-          <img src="image_all/bonTam4.png" alt="bon_Tam-4" />
-          <p class="price">36.500.000đ<span class="dis">-17%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
-
-        <div class="product-combo">
-          <h3>- Euroca EU2-1400 – Bồn tắm góc mini, tiết kiệm diện tích</h3>
-          <img src="image_all/bonTam5.png" alt="bon_Tam-5" />
-          <p class="price">21.000.000 <span class="dis">-34%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
-
-        <div class="product-combo">
-          <h3>- Daros DR-1701 – Bồn tắm nằm có hệ thống sục khí và đèn LED</h3>
-          <img src="image_all/bonTam6.png" alt="bon_Tam-6" />
-          <p class="price">12.300.000đ<span class="dis">-24%</span></p>
-          <div class="button-group">
-            <button class="add-to-cart">
-              <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
-            <button class="buy">
-              <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-            </button>
-          </div>
-        </div>
+                <div class="button-group">
+                    <button class="add-to-cart">
+                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+                    </button>
+                    <button class="buy">
+                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                    </button>
+                </div>
+            </div>
+        <?php 
+            }
+        } else {
+            echo "<p>Chưa có sản phẩm nào!</p>";
+        }
+        ?>
+      
       </div>
 </main>
+
       <footer class="footer">
         <div class="footer-container">
           <div class="footer-column">
