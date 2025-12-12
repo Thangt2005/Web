@@ -3,7 +3,7 @@
 $servername = "localhost:3307";
 $username   = "root";
 $password   = "";
-$dbname     = "voirua";
+$dbname     = "db";
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 

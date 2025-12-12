@@ -3,7 +3,7 @@
 $servername = "localhost:3307";
 $username   = "root";
 $password   = "";
-$dbname     = "voisentam";
+$dbname     = "db";
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 
@@ -14,7 +14,7 @@ if (!$conn) {
 mysqli_set_charset($conn, "utf8");
 
 // 2. Lấy danh sách sản phẩm (nếu muốn chỉ lấy COMBO, bạn phải thêm cột 'loai')
-$sql = "SELECT * FROM voisen_sanpham";
+$sql = "SELECT * FROM voisentam_sanpham";
 $result = mysqli_query($conn, $sql);
 ?>
 

@@ -3,7 +3,7 @@
 $servername = "localhost:3307";
 $username   = "root";
 $password   = "";
-$dbname     = "combo_sanpham";
+$dbname     = "db";
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 
