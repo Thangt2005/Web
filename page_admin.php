@@ -3,7 +3,7 @@
 $servername = "localhost:3307"; // Anh giữ nguyên port 3307 của anh
 $username   = "root";
 $password   = "";
-$dbname     = "login"; // Kết nối vào Login để kiểm tra admin
+$dbname     = "db"; // Kết nối vào Login để kiểm tra admin
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) { die("Kết nối thất bại: " . mysqli_connect_error()); }
@@ -41,9 +41,6 @@ if (isset($_POST['btn_add_product'])) {
     }
 }
 
-// --- THỐNG KÊ TỔNG SẢN PHẨM ---
-// SỬA LỖI Ở ĐÂY: Chỉ đường sang database 'db' để đếm
-// Tạm thời bỏ 'combo_sanpham' vì anh tạo nhầm nó thành Database
 $sql_count = "SELECT 
     (SELECT COUNT(*) FROM db.db_bontam) + 
     (SELECT COUNT(*) FROM db.db_bontieunam) + 
@@ -56,8 +53,6 @@ if ($result_count) {
     $total_products = $data_count['total'];
 } else {
     $total_products = 0; // Nếu lỗi thì hiện số 0 để không chết trang web
-    // Uncomment dòng dưới để xem lỗi nếu cần
-    // echo mysqli_error($conn); 
 }
 
 ?>
