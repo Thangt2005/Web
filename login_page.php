@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       <p class="links">
         <a href="forget_pass.html">Quên mật khẩu?</a> |
-        <a href="register_page.html">Đăng ký tài khoản</a>
+        <a href="register_page.php">Đăng ký tài khoản</a>
       </p>
     </div>
     
