@@ -3,7 +3,7 @@
       $servername = "localhost:3307";
       $username = "root";
       $password = "";
-      $dbname = "home"; 
+      $dbname = "db"; 
 
       $conn = mysqli_connect($servername, $username, $password, $dbname);
 
@@ -13,7 +13,7 @@
       mysqli_set_charset($conn, "utf8"); // Để hiển thị tiếng Việt không lỗi
 
     // 2. Viết câu lệnh lấy sản phẩm
-    $sql = "SELECT * FROM sanpham";
+    $sql = "SELECT * FROM home_sanpham";
     $result = mysqli_query($conn, $sql);
 ?>
 
@@ -79,6 +79,7 @@
           <li><a href="page_voiRua.php">Vòi Rửa</a></li>
           <li><a href="page_BonTieuNam.php">Bồn Tiểu Nam</a></li>
           <li><a href="page_PhuKien.php">Phụ Kiện</a></li>
+          <li><a href="page_admin.php">Admin</a></li>
         </ul>
       </div>
     </div>
