@@ -1,7 +1,7 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box; /* 1. Đưa lên đầu file */
+  box-sizing: border-box;
 }
 body {
   margin: 0;
@@ -162,8 +162,6 @@ header nav ul li a {
 .top-menu ul li a:hover::after {
   width: 100%;
 }
-
-/* ===== Icon tìm kiếm (phía phải menu) ===== */
 /* --- 1. CHỈNH Ô NHẬP (search-input) --- */
 .search-form {
   /* Đảm bảo form vẫn hiển thị ngang hàng */
@@ -202,9 +200,10 @@ header nav ul li a {
 .search-icon:hover {
   background-color: #a00000; /* Đỏ đậm hơn khi rê chuột */
 }
-/* ==================== SẢN PHẨM NỔI BẬT ==================== */
+/* ==================== COMBO SẢN PHẨM ==================== */
 .main-content {
   margin-top: 20px;
+  padding: 0 50px;
 }
 
 .main-content h2 {
@@ -216,18 +215,18 @@ header nav ul li a {
   margin-bottom: 40px;
 }
 
-/* ====== LƯỚI SẢN PHẨM ====== */
-.product-grid {
+/* LƯỚI SẢN PHẨM: Dùng class combo-grid như trong HTML */
+.combo-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 sản phẩm mỗi hàng */
-  gap: 20px; /* khoảng cách giữa các sản phẩm */
-  max-width: 1200px; /* giới hạn chiều rộng lưới */
-  margin: 0 auto; /* căn giữa lưới → tạo khoảng trống 2 bên */
-  padding: 0 15px; /* khoảng cách nhỏ trong lưới */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
 }
 
-/* ====== THẺ SẢN PHẨM ====== */
-.product-card {
+/* THẺ SẢN PHẨM: Dùng class product-combo như trong HTML */
+.product-combo {
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -236,12 +235,12 @@ header nav ul li a {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.product-card:hover {
+.product-combo:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.product-card img {
+.product-combo img {
   width: 100%;
   height: 160px;
   object-fit: cover;
@@ -255,14 +254,14 @@ header nav ul li a {
   font-size: 14px;
 }
 
-.discount {
-  background-color: #ff4d4f; /* nền đỏ nổi bật */
+.dis {
+  background-color: #ff4d4f;
   color: #fff;
   font-size: 12px;
   font-weight: bold;
   padding: 2px 5px;
   border-radius: 4px;
-  margin-left: 8px; /* khoảng cách so với giá tiền */
+  margin-left: 8px;
 }
 
 .button-group {
@@ -302,12 +301,13 @@ button:hover {
   padding-top: 30px;
   font-family: Arial, sans-serif;
 }
-
 .footer-container {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  padding: 0 40px;
+  padding: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .footer-column {

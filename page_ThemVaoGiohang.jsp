@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -27,12 +28,12 @@
 
         <ul class="user-menu">
           <li>
-            <a href="page_ThemVaoGiohang.html">
+            <a href="page_ThemVaoGiohang.php">
               <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
             </a>
           </li>
           <li>
-            <a href="login_page.html">
+            <a href="login_page.php">
               <i class="fas fa-user"></i> thangtt26
             </a>
           </li>
@@ -49,17 +50,17 @@
 
       <div class="top-menu">
         <ul>
-          <li><a href="home.html">Trang chủ</a></li>
-          <li><a href="page_combo.html">Combo</a></li>
-          <li><a href="toilet_page.html">Bồn Cầu</a></li>
-          <li><a href="lavabo-page.html">Lavabo</a></li>
-          <li><a href="page_Tulavabo.html">Tủ Lavabo</a></li>
-          <li><a href="page_VoiSenTam.html">Vòi Sen Tắm</a></li>
-          <li><a href="page_ChauRuaChen.html">Chậu Rửa Chén</a></li>
-          <li><a href="page_bonTam.html">Bồn Tắm</a></li>
-          <li><a href="page_voiRua.html">Vòi Rửa</a></li>
-          <li><a href="page_BonTieuNam.html">Bồn Tiểu Nam</a></li>
-          <li><a href="page_PhuKien.html">Phụ Kiện</a></li>
+          <li><a href="home.php">Trang chủ</a></li>
+          <li><a href="page_combo.php">Combo</a></li>
+          <li><a href="toilet_page.php">Bồn Cầu</a></li>
+          <li><a href="lavabo-page.php">Lavabo</a></li>
+          <li><a href="page_Tulavabo.php">Tủ Lavabo</a></li>
+          <li><a href="page_VoiSenTam.php">Vòi Sen Tắm</a></li>
+          <li><a href="page_ChauRuaChen.php">Chậu Rửa Chén</a></li>
+          <li><a href="page_bonTam.php">Bồn Tắm</a></li>
+          <li><a href="page_voiRua.php">Vòi Rửa</a></li>
+          <li><a href="page_BonTieuNam.php">Bồn Tiểu Nam</a></li>
+          <li><a href="page_PhuKien.php">Phụ Kiện</a></li>
         </ul>
       </div>
     </div>
