@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<<<<<<< HEAD
 
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.sql" prefix="sql" %>
@@ -23,10 +24,25 @@
         WHERE ten_sp LIKE ?
         <sql:param value="${keyword}" />
     </c:if>
+=======
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<sql:setDataSource var="myDataSource" 
+    driver="com.mysql.cj.jdbc.Driver"
+    url="jdbc:mysql://localhost:3307/db?useUnicode=true&characterEncoding=UTF-8"
+    user="root" 
+    password=""/>
+
+<sql:query dataSource="${myDataSource}" var="result">
+    SELECT * FROM home_sanpham
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
 </sql:query>
 
 <!DOCTYPE html>
 <html lang="vi">
+<<<<<<< HEAD
 <head>
     <meta charset="UTF-8">
     <title>Bồn Tắm</title>
@@ -196,4 +212,157 @@
 </footer>
 
 </body>
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <title>Trang Combo</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="Combo_style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
+      <nav>
+        <form class="search-form" action="#" method="GET">
+          <input
+            type="text"
+            name="search"
+            placeholder="Tìm kiếm sản phẩm ..."
+            class="search-input"
+          />
+          <button type="submit" class="search-icon">
+            <i class="fa fa-search"></i>
+          </button>
+        </form>
+
+        <ul class="user-menu">
+          <li>
+            <a href="page_ThemVaoGiohang.php">
+              <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
+            </a>
+          </li>
+          <li>
+            <a href="login_page.php">
+              <i class="fas fa-user"></i> Đăng nhập
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="menu-container">
+      <div class="sidebar">
+        <div class="menu-title">
+          <i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM
+        </div>
+      </div>
+
+      <div class="top-menu">
+        <ul>
+          <li><a href="home.php">Trang chủ</a></li>
+          <li><a href="page_combo.php">Combo</a></li>
+          <li><a href="toilet_page.php">Bồn Cầu</a></li>
+          <li><a href="lavabo-page.php">Lavabo</a></li>
+          <li><a href="page_Tulavabo.php">Tủ Lavabo</a></li>
+          <li><a href="page_VoiSenTam.php">Vòi Sen Tắm</a></li>
+          <li><a href="page_ChauRuaChen.php">Chậu Rửa Chén</a></li>
+          <li><a href="page_bonTam.php">Bồn Tắm</a></li>
+          <li><a href="page_voiRua.php">Vòi Rửa</a></li>
+          <li><a href="page_BonTieuNam.php">Bồn Tiểu Nam</a></li>
+          <li><a href="page_PhuKien.php">Phụ Kiện</a></li>
+          <li><a href="page_admin.php">Admin</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <main class="main-content">
+      <h2>Combo thiết bị vệ sinh & phòng tắm</h2>
+
+      
+        <div class="combo-grid">
+
+          <c:choose>
+            <c:when test="${result.rowCount > 0}">
+                <c:forEach var="row" items="${result.rows}">
+                    <div class="product-combo">
+                        <h3>${row.ten_sp}</h3>
+
+                        <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
+
+                        <p class="price">
+                            <fmt:formatNumber value="${row.gia}" type="number" groupingUsed="true"/>đ
+                            <span class="dis">-${row.giam_gia}%</span>
+                        </p>
+
+                        <div class="button-group">
+                            <button class="add-to-cart">
+                                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+                            </button>
+                            <button class="buy">
+                                <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                            </button>
+                        </div>
+                    </div>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <p>Chưa có sản phẩm nào!</p>
+            </c:otherwise>
+       </c:choose>
+
+    </div>
+    </main>
+    
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-column">
+          <h3>VỀ CHÚNG TÔI</h3>
+          <p>
+            Chuyên cung cấp thiết bị vệ sinh, phòng tắm chính hãng, giá tốt nhất
+            thị trường.
+          </p>
+        </div>
+
+        <div class="footer-column">
+          <h3>LIÊN HỆ</h3>
+          <p><i class="fa-solid fa-phone"></i> 0909 123 456</p>
+          <p><i class="fa-solid fa-envelope"></i> contact@thietbivesinh.vn</p>
+          <p><i class="fa-solid fa-location-dot"></i> TP. Hồ Chí Minh</p>
+        </div>
+
+        <div class="footer-column">
+          <h3>HỖ TRỢ KHÁCH HÀNG</h3>
+          <ul>
+            <li><a href="#">Chính sách giao hàng</a></li>
+            <li><a href="#">Chính sách bảo hành</a></li>
+            <li><a href="#">Hướng dẫn thanh toán</a></li>
+            <li><a href="#">Chăm sóc khách hàng</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
+          <div class="social-icons">
+            <a href="https://www.facebook.com/huuthang11092005"
+              ><i class="fa-brands fa-facebook"></i
+            ></a>
+            <a href="https://www.youtube.com/@huuthangtran9024/posts"
+              ><i class="fa-brands fa-youtube"></i
+            ></a>
+            <a href="https://www.tiktok.com/@thangtt26"
+              ><i class="fa-brands fa-tiktok"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
+      </div>
+    </footer>
+  </body>
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
 </html>

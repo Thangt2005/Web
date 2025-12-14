@@ -1,7 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<<<<<<< HEAD
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.sql" prefix="sql" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+=======
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
 
 <sql:setDataSource var="myDataSource" 
     driver="com.mysql.cj.jdbc.Driver"
@@ -9,6 +15,7 @@
     user="root" 
     password=""/>
 
+<<<<<<< HEAD
 <%-- 1. Lấy giá trị tìm kiếm từ tham số "search" --%>
 <c:set var="searchTerm" value="${param.search}" />
 <c:set var="searchQuery" value="SELECT * FROM home_sanpham" />
@@ -23,6 +30,10 @@
     <c:if test="${not empty searchTerm}">
         <sql:param value="%${searchTerm}%" />
     </c:if>
+=======
+<sql:query dataSource="${myDataSource}" var="result">
+    SELECT * FROM home_sanpham
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
 </sql:query>
 
 <!DOCTYPE html>
@@ -40,15 +51,22 @@
     <header>
       <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
       <nav>
+<<<<<<< HEAD
         <%-- **THAY ĐỔI 1: Cập nhật form tìm kiếm** --%>
         <form class="search-form" action="home.jsp" method="GET">
+=======
+        <form class="search-form" action="#" method="GET">
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
           <input
             type="text"
             name="search"
             placeholder="Tìm kiếm sản phẩm ..."
             class="search-input"
+<<<<<<< HEAD
             <%-- Giữ lại từ khóa tìm kiếm cũ trên ô input --%>
             value="${searchTerm}"
+=======
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
           />
           <button type="submit" class="search-icon">
             <i class="fa fa-search"></i>
@@ -57,12 +75,20 @@
 
         <ul class="user-menu">
           <li>
+<<<<<<< HEAD
             <a href="page_ThemVaoGiohang.jsp">
+=======
+            <a href="page_ThemVaoGiohang.php">
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
               <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
             </a>
           </li>
           <li>
+<<<<<<< HEAD
             <a href="login_page.jsp">
+=======
+            <a href="login_page.php">
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
               <i class="fas fa-user"></i> Đăng nhập
             </a>
           </li>
@@ -97,6 +123,7 @@
 
 
     <main class="main-content">
+<<<<<<< HEAD
         <%-- Hiển thị tiêu đề theo kết quả tìm kiếm --%>
         <c:choose>
             <c:when test="${not empty searchTerm}">
@@ -107,11 +134,15 @@
             </c:otherwise>
         </c:choose>
 
+=======
+        <h2>Sản phẩm nổi bật</h2>
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
         <div class="product-grid">
             
             <c:choose>
                 <c:when test="${result.rowCount > 0}">
                     <c:forEach var="row" items="${result.rows}">
+<<<<<<< HEAD
                       <div class="product-card">
                           <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
 
@@ -142,6 +173,33 @@
                     <c:if test="${empty searchTerm}">
                         <p>Chưa có sản phẩm nào!</p>
                     </c:if>
+=======
+                        <div class="product-card">
+                            <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
+
+                            <h3>
+                                <a href="TrangChiTiet.jsp?id=${row.id}">
+                                    ${row.ten_sp}
+                                </a>
+                            </h3>
+
+                            <p class="price">
+                                <fmt:formatNumber value="${row.gia}" type="number" groupingUsed="true"/>đ
+                                <span class="discount">-${row.giam_gia}%</span>
+                            </p>
+
+                            <div class="button-group">
+                                <a href="page_ThemVaoGiohang.html">
+                                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
+                                </a>
+                                <button class="buy"><i class="fa-solid fa-bag-shopping"></i> Đặt mua</button>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <p>Chưa có sản phẩm nào!</p>
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
                 </c:otherwise>
             </c:choose>
 
@@ -195,5 +253,9 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
       </div>
     </footer>
+<<<<<<< HEAD
     </body>
+=======
+  </body>
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
 </html>

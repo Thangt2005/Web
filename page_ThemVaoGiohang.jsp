@@ -1,3 +1,21 @@
+<<<<<<<< HEAD:page_ThemVaoGiohang.jsp
+========
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<sql:setDataSource var="myDataSource" 
+    driver="com.mysql.cj.jdbc.Driver"
+    url="jdbc:mysql://localhost:3307/db?useUnicode=true&characterEncoding=UTF-8"
+    user="root" 
+    password=""/>
+
+<sql:query dataSource="${myDataSource}" var="result">
+    SELECT * FROM home_sanpham
+</sql:query>
+
+>>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b:page_Tulavabo.jsp
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -61,6 +79,7 @@
           <li><a href="page_voiRua.php">Vòi Rửa</a></li>
           <li><a href="page_BonTieuNam.php">Bồn Tiểu Nam</a></li>
           <li><a href="page_PhuKien.php">Phụ Kiện</a></li>
+          <li><a href="page_admin.php">Admin</a></li>
         </ul>
       </div>
     </div>
@@ -131,12 +150,45 @@
         <button class="update-btn">Cập nhật giỏ hàng</button>
       </div>
 
+<<<<<<<< HEAD:page_ThemVaoGiohang.jsp
       <div class="cart-total">
         <h3>Tổng cộng giỏ hàng</h3>
         <p><span>Tạm tính</span> <span>4.420.000đ</span></p>
         <p><span>Tổng</span> <span>4.420.000đ</span></p>
         <button class="checkout-btn">Tiến hành thanh toán</button>
       </div>
+========
+       <c:choose>
+            <c:when test="${result.rowCount > 0}">
+                <c:forEach var="row" items="${result.rows}">
+                    <div class="product-combo">
+                        <h3>${row.ten_sp}</h3>
+
+                        <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
+
+                        <p class="price">
+                            <fmt:formatNumber value="${row.gia}" type="number" groupingUsed="true"/>đ
+                            <span class="dis">-${row.giam_gia}%</span>
+                        </p>
+
+                        <div class="button-group">
+                            <button class="add-to-cart">
+                                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+                            </button>
+                            <button class="buy">
+                                <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                            </button>
+                        </div>
+                    </div>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <p>Chưa có sản phẩm nào!</p>
+            </c:otherwise>
+       </c:choose>
+
+    </div>
+>>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b:page_Tulavabo.jsp
     </main>
 
      <footer class="footer">

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.Connection" %>
 <%@ page import="java.sql.DriverManager" %>
@@ -74,11 +75,70 @@
         }
     }
 %>
+=======
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %> <%@
+taglib uri="jakarta.tags.sql" prefix="sql" %> <%-- Đặt encoding để nhận tiếng
+Việt từ form --%> <% request.setCharacterEncoding("UTF-8"); %>
+
+<c:if test="${pageContext.request.method == 'POST'}">
+  <c:choose>
+    <c:when test="${param['password-register'] != param['password-register1']}">
+      <c:set var="message" value="Lỗi: Mật khẩu nhập lại không khớp!" />
+      <c:set var="msgColor" value="red" />
+    </c:when>
+
+    <c:otherwise>
+      <sql:setDataSource
+        var="dbConnection"
+        driver="com.mysql.cj.jdbc.Driver"
+        url="jdbc:mysql://localhost:3307/login?useUnicode=true&characterEncoding=UTF-8"
+        user="root"
+        password=""
+      />
+
+      <c:catch var="dbError">
+        <sql:update dataSource="${dbConnection}" var="insertCount">
+          INSERT INTO login (email, username, password) VALUES (?, ?, ?)
+          <sql:param value="${param.email}" />
+          <sql:param value="${param['username-register']}" />
+          <sql:param value="${param['password-register']}" />
+        </sql:update>
+      </c:catch>
+
+      <c:choose>
+        <c:when test="${not empty dbError}">
+          <c:set
+            var="message"
+            value="Đăng ký thất bại: Tài khoản hoặc Email đã tồn tại!"
+          />
+          <c:set var="msgColor" value="red" />
+        </c:when>
+        <c:when test="${insertCount > 0}">
+          <c:redirect url="login_page.jsp" />
+        </c:when>
+        <c:otherwise>
+          <c:set
+            var="message"
+            value="Đăng ký không thành công. Vui lòng thử lại."
+          />
+          <c:set var="msgColor" value="red" />
+        </c:otherwise>
+      </c:choose>
+    </c:otherwise>
+  </c:choose>
+</c:if>
+
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
 <!DOCTYPE html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
+<<<<<<< HEAD
     <title>Đăng kí Tài khoản</title>
+=======
+    <title>Đăng kí</title>
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
     <link rel="stylesheet" href="style.css" />
     <link
       rel="stylesheet"
@@ -92,6 +152,7 @@
 
     <div class="register-container">
       <h2>Đăng Kí</h2>
+<<<<<<< HEAD
       
       <% 
           // Cú pháp Expression: in ra giá trị của biến Java registrationMessage
@@ -100,11 +161,23 @@
           }
       %>
       
+=======
+
+      <c:if test="${not empty message}">
+        <div
+          style="text-align: center; color: ${msgColor}; margin-bottom: 10px; font-weight: bold;"
+        >
+          ${message}
+        </div>
+      </c:if>
+
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
       <div class="social-login">
         <button class="facebook">
           <i class="fa-brands fa-facebook-f"></i>
           <span>Đăng kí bằng Facebook</span>
         </button>
+<<<<<<< HEAD
         <button class="twitter">
           <i class="fa-brands fa-twitter"></i> <span>Đăng kí bằng Twitter</span>
         </button>
@@ -115,14 +188,36 @@
         <h3>Tạo tài khoản tại đây</h3>
 
         <form class="email-register" id="register-form" method="post" action="register_page.jsp">
+=======
+
+        <button class="twitter">
+          <i class="fa-brands fa-twitter"></i> <span>Đăng kí bằng Twitter</span>
+        </button>
+
+        <button class="google">
+          <i class="fa-brands fa-google"></i> <span>Đăng kí bằng Google</span>
+        </button>
+        <h3>Tạo tài khoản tại đây</h3>
+
+        <form
+          class="email-register"
+          id="register-form"
+          method="POST"
+          action="register_page.jsp"
+        >
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
           <input
             type="email"
             id="email"
             name="email"
             placeholder="E-mail"
             required
+<<<<<<< HEAD
             <%-- Giữ lại giá trị đã nhập nếu có lỗi --%>
             value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>"
+=======
+            value="${param.email}"
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
           />
           <input
             type="text"
@@ -130,7 +225,11 @@
             name="username-register"
             placeholder="Username"
             required
+<<<<<<< HEAD
             value="<%= request.getParameter("username-register") != null ? request.getParameter("username-register") : "" %>"
+=======
+            value="${param['username-register']}"
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
           />
           <input
             type="password"
@@ -154,7 +253,11 @@
         </p>
       </div>
     </div>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-column">
@@ -164,12 +267,20 @@
             thị trường.
           </p>
         </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
         <div class="footer-column">
           <h3>LIÊN HỆ</h3>
           <p><i class="fa-solid fa-phone"></i> 0909 123 456</p>
           <p><i class="fa-solid fa-envelope"></i> contact@thietbivesinh.vn</p>
           <p><i class="fa-solid fa-location-dot"></i> TP. Hồ Chí Minh</p>
         </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
         <div class="footer-column">
           <h3>HỖ TRỢ KHÁCH HÀNG</h3>
           <ul>
@@ -179,6 +290,10 @@
             <li><a href="#">Chăm sóc khách hàng</a></li>
           </ul>
         </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
         <div class="footer-column">
           <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
           <div class="social-icons">
@@ -188,9 +303,17 @@
           </div>
         </div>
       </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
       <div class="footer-bottom">
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
       </div>
     </footer>
   </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
