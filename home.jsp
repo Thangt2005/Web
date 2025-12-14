@@ -1,33 +1,28 @@
-<?php
-// 1. Kết nối CSDL
-$servername = "localhost:3307";
-$username   = "root";
-$password   = "";
-$dbname     = "db";
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-$conn = mysqli_connect($servername, $username, $password, $dbname);
+<sql:setDataSource var="myDataSource" 
+    driver="com.mysql.cj.jdbc.Driver"
+    url="jdbc:mysql://localhost:3307/db?useUnicode=true&characterEncoding=UTF-8"
+    user="root" 
+    password=""/>
 
-if (!$conn) {
-    die("Kết nối thất bại: " . mysqli_connect_error());
-}
-
-mysqli_set_charset($conn, "utf8");
-
-// 2. Lấy danh sách sản phẩm (nếu muốn chỉ lấy COMBO, bạn phải thêm cột 'loai')
-$sql = "SELECT * FROM combo_sanpham";
-$result = mysqli_query($conn, $sql);
-?>
+<sql:query dataSource="${myDataSource}" var="result">
+    SELECT * FROM home_sanpham
+</sql:query>
 
 <!DOCTYPE html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <title>Trang Combo</title>
+    <title>Trang chủ</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="Combo_style.css" />
+    <link rel="stylesheet" href="homeStyle.css" />
   </head>
   <body>
     <header>
@@ -69,62 +64,61 @@ $result = mysqli_query($conn, $sql);
 
       <div class="top-menu">
         <ul>
-          <li><a href="home.php">Trang chủ</a></li>
-          <li><a href="page_combo.php">Combo</a></li>
-          <li><a href="toilet_page.php">Bồn Cầu</a></li>
-          <li><a href="lavabo-page.php">Lavabo</a></li>
-          <li><a href="page_Tulavabo.php">Tủ Lavabo</a></li>
-          <li><a href="page_VoiSenTam.php">Vòi Sen Tắm</a></li>
-          <li><a href="page_ChauRuaChen.php">Chậu Rửa Chén</a></li>
-          <li><a href="page_bonTam.php">Bồn Tắm</a></li>
-          <li><a href="page_voiRua.php">Vòi Rửa</a></li>
-          <li><a href="page_BonTieuNam.php">Bồn Tiểu Nam</a></li>
-          <li><a href="page_PhuKien.php">Phụ Kiện</a></li>
+          <li><a href="home.jsp">Trang chủ</a></li>
+          <li><a href="page_combo.jsp">Combo</a></li>
+          <li><a href="toilet_page.jsp">Bồn Cầu</a></li>
+          <li><a href="lavabo-page.jsp">Lavabo</a></li>
+          <li><a href="page_Tulavabo.jsp">Tủ Lavabo</a></li>
+          <li><a href="page_VoiSenTam.jsp">Vòi Sen Tắm</a></li>
+          <li><a href="page_ChauRuaChen.jsp">Chậu Rửa Chén</a></li>
+          <li><a href="page_bonTam.jsp">Bồn Tắm</a></li>
+          <li><a href="page_voiRua.jsp">Vòi Rửa</a></li>
+          <li><a href="page_BonTieuNam.jsp">Bồn Tiểu Nam</a></li>
+          <li><a href="page_PhuKien.jsp">Phụ Kiện</a></li>
+          <li><a href="page_admin.jsp">Admin</a></li>
         </ul>
       </div>
     </div>
 
+
     <main class="main-content">
-      <h2>Combo thiết bị vệ sinh & phòng tắm</h2>
+        <h2>Sản phẩm nổi bật</h2>
+        <div class="product-grid">
+            
+            <c:choose>
+                <c:when test="${result.rowCount > 0}">
+                    <c:forEach var="row" items="${result.rows}">
+                        <div class="product-card">
+                            <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
 
-      
-        <div class="combo-grid">
+                            <h3>
+                                <a href="TrangChiTiet.jsp?id=${row.id}">
+                                    ${row.ten_sp}
+                                </a>
+                            </h3>
 
-        <?php 
-        // 3. Hiển thị sản phẩm
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-        ?>
-            <div class="product-combo">
-                <h3><?php echo $row['ten_sp']; ?></h3>
+                            <p class="price">
+                                <fmt:formatNumber value="${row.gia}" type="number" groupingUsed="true"/>đ
+                                <span class="discount">-${row.giam_gia}%</span>
+                            </p>
 
-                <img src="image_all/<?php echo $row['hinh_anh']; ?>"
-                     alt="<?php echo $row['ten_sp']; ?>">
+                            <div class="button-group">
+                                <a href="page_ThemVaoGiohang.html">
+                                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
+                                </a>
+                                <button class="buy"><i class="fa-solid fa-bag-shopping"></i> Đặt mua</button>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <p>Chưa có sản phẩm nào!</p>
+                </c:otherwise>
+            </c:choose>
 
-                <p class="price">
-                    <?php echo number_format($row['gia']); ?>đ
-                    <span class="dis">-<?php echo $row['giam_gia']; ?>%</span>
-                </p>
-
-                <div class="button-group">
-                    <button class="add-to-cart">
-                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-                    </button>
-                    <button class="buy">
-                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                    </button>
-                </div>
-            </div>
-        <?php 
-            }
-        } else {
-            echo "<p>Chưa có sản phẩm nào!</p>";
-        }
-        ?>
-
-    </div>
+        </div>
     </main>
-    
+
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-column">
