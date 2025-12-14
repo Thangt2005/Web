@@ -1,22 +1,18 @@
-<?php
-// 1. Kết nối CSDL
-$servername = "localhost:3307";
-$username   = "root";
-$password   = "";
-$dbname     = "db";
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.sql" prefix="sql" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 
-$conn = mysqli_connect($servername, $username, $password, $dbname);
+<sql:setDataSource var="myDataSource" 
+    driver="com.mysql.cj.jdbc.Driver"
+    url="jdbc:mysql://localhost:3307/db?useUnicode=true&characterEncoding=UTF-8"
+    user="root" 
+    password=""/>
 
-if (!$conn) {
-    die("Kết nối thất bại: " . mysqli_connect_error());
-}
+<sql:query dataSource="${myDataSource}" var="result">
+    SELECT * FROM bontam_sanpham
+</sql:query>
 
-mysqli_set_charset($conn, "utf8");
-
-// 2. Lấy danh sách sản phẩm (nếu muốn chỉ lấy COMBO, bạn phải thêm cột 'loai')
-$sql = "SELECT * FROM bontieunam_sanpham";
-$result = mysqli_query($conn, $sql);
-?>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -68,7 +64,7 @@ $result = mysqli_query($conn, $sql);
 
       <div class="top-menu">
         <ul>
-             <li><a href="home.php">Trang chủ</a></li>
+            <li><a href="home.php">Trang chủ</a></li>
           <li><a href="page_combo.php">Combo</a></li>
           <li><a href="toilet_page.php">Bồn Cầu</a></li>
           <li><a href="lavabo-page.php">Lavabo</a></li>
@@ -79,6 +75,7 @@ $result = mysqli_query($conn, $sql);
           <li><a href="page_voiRua.php">Vòi Rửa</a></li>
           <li><a href="page_BonTieuNam.php">Bồn Tiểu Nam</a></li>
           <li><a href="page_PhuKien.php">Phụ Kiện</a></li>
+          <li><a href="page_admin.php">Admin</a></li>
         </ul>
       </div>
     </div>
@@ -86,38 +83,34 @@ $result = mysqli_query($conn, $sql);
     <main class="main-content">
       <h2>BỒN TIỂU NAM</h2>
 <div class="combo-grid">
-       <?php 
-        // 3. Hiển thị sản phẩm
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-        ?>
-            <div class="product-combo">
-                <h3><?php echo $row['ten_sp']; ?></h3>
+      <c:choose>
+            <c:when test="${result.rowCount > 0}">
+                <c:forEach var="row" items="${result.rows}">
+                    <div class="product-combo">
+                        <h3>${row.ten_sp}</h3>
 
-                <img src="image_all/<?php echo $row['hinh_anh']; ?>"
-                     alt="<?php echo $row['ten_sp']; ?>">
+                        <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
 
-                <p class="price">
-                    <?php echo number_format($row['gia']); ?>đ
-                    <span class="dis">-<?php echo $row['giam_gia']; ?>%</span>
-                </p>
+                        <p class="price">
+                            <fmt:formatNumber value="${row.gia}" type="number" groupingUsed="true"/>đ
+                            <span class="dis">-${row.giam_gia}%</span>
+                        </p>
 
-                <div class="button-group">
-                    <button class="add-to-cart">
-                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-                    </button>
-                    <button class="buy">
-                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                    </button>
-                </div>
-            </div>
-        <?php 
-            }
-        } else {
-            echo "<p>Chưa có sản phẩm nào!</p>";
-        }
-        ?>
-      
+                        <div class="button-group">
+                            <button class="add-to-cart">
+                                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+                            </button>
+                            <button class="buy">
+                                <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                            </button>
+                        </div>
+                    </div>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <p>Chưa có sản phẩm nào!</p>
+            </c:otherwise>
+       </c:choose>
       </div>
 </main>
 
