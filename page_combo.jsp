@@ -96,9 +96,7 @@
           <li><a href="home.jsp">Trang chủ</a></li>
           <li><a href="page_combo.jsp">Combo</a></li>
           <li><a href="toilet_page.jsp">Bồn Cầu</a></li>
-          
-          <li class="active"><a href="lavabo-page.jsp">Lavabo</a></li>
-          
+          <li><a href="lavabo-page.jsp">Lavabo</a></li>
           <li><a href="page_Tulavabo.jsp">Tủ Lavabo</a></li>
           <li><a href="page_VoiSenTam.jsp">Vòi Sen Tắm</a></li>
           <li><a href="page_ChauRuaChen.jsp">Chậu Rửa Chén</a></li>

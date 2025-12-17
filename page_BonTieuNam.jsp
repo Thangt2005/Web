@@ -105,7 +105,7 @@
             <li><a href="page_ChauRuaChen.jsp">Chậu Rửa Chén</a></li>
             <li><a href="page_bonTam.jsp">Bồn Tắm</a></li>
             <li><a href="page_voiRua.jsp">Vòi Rửa</a></li>
-            <li class="active"><a href="page_BonTieuNam.jsp">Bồn Tiểu Nam</a></li>
+            <li><a href="page_BonTieuNam.jsp">Bồn Tiểu Nam</a></li>
             <li><a href="page_PhuKien.jsp">Phụ Kiện</a></li>
             <li><a href="page_admin.jsp">Admin</a></li>
         </ul>
