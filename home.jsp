@@ -1,23 +1,60 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%-- Import thư viện SQL --%>
+<%@ page import="java.sql.*" %>
 
-<sql:setDataSource var="myDataSource" 
-    driver="com.mysql.cj.jdbc.Driver"
-    url="jdbc:mysql://localhost:3307/db?useUnicode=true&characterEncoding=UTF-8"
-    user="root" 
-    password=""/>
+<%
+    // --- PHẦN 1: XỬ LÝ JAVA (BACKEND) ---
+    Connection conn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
 
-<sql:query dataSource="${myDataSource}" var="result">
-    SELECT * FROM home_sanpham
-</sql:query>
+    // Biến lưu thông báo lỗi (nếu có) để in ra màn hình cho dễ sửa
+    String errorMessage = "";
+
+    try {
+        // 1. Load Driver MySQL
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        // 2.database = db
+        String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
+        String user = "root";
+        String pass = "";
+
+        // 3. Tạo kết nối
+        conn = DriverManager.getConnection(url, user, pass);
+
+        // 4. Xử lý logic Tìm kiếm
+        String searchTerm = request.getParameter("search");
+        String sql = "SELECT * FROM home_sanpham";
+        
+        // Nếu có từ khóa tìm kiếm thì thêm điều kiện WHERE
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            sql += " WHERE ten_sp LIKE ?";
+        }
+
+        // 5. Thực thi câu lệnh
+        ps = conn.prepareStatement(sql);
+
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            // Dấu % để tìm kiếm gần đúng (ví dụ: tìm "voi" ra "vòi sen")
+            ps.setString(1, "%" + searchTerm.trim() + "%");
+        }
+
+        rs = ps.executeQuery();
+
+    } catch (ClassNotFoundException e) {
+        errorMessage = "Lỗi Driver: Không tìm thấy thư viện MySQL Connector Java.";
+        e.printStackTrace();
+    } catch (SQLException e) {
+        errorMessage = "Lỗi SQL: " + e.getMessage();
+        e.printStackTrace();
+    }
+%>
 
 <!DOCTYPE html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <title>Trang chủ</title>
+    <title>Trang chủ - Thiết bị vệ sinh</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -28,12 +65,15 @@
     <header>
       <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
       <nav>
-        <form class="search-form" action="#" method="GET">
+        <%-- Form tìm kiếm: action để trống hoặc là home.jsp --%>
+        <form class="search-form" action="home.jsp" method="GET">
           <input
             type="text"
             name="search"
             placeholder="Tìm kiếm sản phẩm ..."
             class="search-input"
+            <%-- Giữ lại từ khóa tìm kiếm trên ô input sau khi reload --%>
+            value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>"
           />
           <button type="submit" class="search-icon">
             <i class="fa fa-search"></i>
@@ -42,12 +82,12 @@
 
         <ul class="user-menu">
           <li>
-            <a href="page_ThemVaoGiohang.php">
+            <a href="page_ThemVaoGiohang.jsp">
               <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
             </a>
           </li>
           <li>
-            <a href="login_page.php">
+            <a href="login_page.jsp">
               <i class="fas fa-user"></i> Đăng nhập
             </a>
           </li>
@@ -80,42 +120,64 @@
       </div>
     </div>
 
-
     <main class="main-content">
-        <h2>Sản phẩm nổi bật</h2>
+        <%-- Hiển thị tiêu đề động --%>
+        <% if (request.getParameter("search") != null && !request.getParameter("search").isEmpty()) { %>
+            <h2>Kết quả tìm kiếm cho: "<%= request.getParameter("search") %>"</h2>
+        <% } else { %>
+            <h2>Sản phẩm nổi bật</h2>
+        <% } %>
+
+        <%-- Hiển thị lỗi nếu kết nối DB hỏng --%>
+        <% if (!errorMessage.isEmpty()) { %>
+            <div style="color: red; text-align: center; padding: 20px; font-weight: bold;">
+                <%= errorMessage %>
+            </div>
+        <% } %>
+
         <div class="product-grid">
-            
-            <c:choose>
-                <c:when test="${result.rowCount > 0}">
-                    <c:forEach var="row" items="${result.rows}">
-                        <div class="product-card">
-                            <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
-
-                            <h3>
-                                <a href="TrangChiTiet.jsp?id=${row.id}">
-                                    ${row.ten_sp}
-                                </a>
-                            </h3>
-
-                            <p class="price">
-                                <fmt:formatNumber value="${row.gia}" type="number" groupingUsed="true"/>đ
-                                <span class="discount">-${row.giam_gia}%</span>
-                            </p>
-
-                            <div class="button-group">
-                                <a href="page_ThemVaoGiohang.html">
-                                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
-                                </a>
-                                <button class="buy"><i class="fa-solid fa-bag-shopping"></i> Đặt mua</button>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <p>Chưa có sản phẩm nào!</p>
-                </c:otherwise>
-            </c:choose>
-
+        <% 
+            // --- PHẦN 2: VÒNG LẶP HIỂN THỊ SẢN PHẨM ---
+            if (rs != null) {
+                boolean hasData = false;
+                while (rs.next()) { 
+                    hasData = true;
+                    // Lấy dữ liệu từ DB (Cần đúng tên cột trong bảng home_sanpham)
+                    String tenSp = rs.getString("ten_sp");
+                    String hinhAnh = rs.getString("hinh_anh");
+                    double gia = rs.getDouble("gia");
+                    int giamGia = rs.getInt("giam_gia");
+                    int id = rs.getInt("id");
+        %>
+            <div class="product-card">
+                <img src="image_all/<%= hinhAnh %>" alt="<%= tenSp %>">
+                <h3>
+                    <a href="TrangChiTiet.jsp?id=<%= id %>">
+                        <%= tenSp %>
+                    </a>
+                </h3>
+                <p class="price">
+                    <%= String.format("%,.0f", gia) %>đ
+                    <span class="discount">-<%= giamGia %>%</span>
+                </p>
+                
+                <div class="button-group">
+                    <a href="page_ThemVaoGiohang.jsp?id=<%= id %>">
+                        <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
+                    </a>
+                    <button class="buy"><i class="fa-solid fa-bag-shopping"></i> Đặt mua</button>
+                </div>
+            </div>
+            <% 
+                } // Kết thúc while
+                
+                if (!hasData) {
+        %>
+                    <p style="text-align: center; width: 100%;">Không tìm thấy sản phẩm nào!</p>
+        <%
+                }
+            } 
+        %>
         </div>
     </main>
 
@@ -168,3 +230,10 @@
     </footer>
   </body>
 </html>
+
+<%
+    // --- PHẦN 3: ĐÓNG KẾT NỐI (Quan trọng để không bị đầy RAM) ---
+    try { if(rs != null) rs.close(); } catch(SQLException e) {}
+    try { if(ps != null) ps.close(); } catch(SQLException e) {}
+    try { if(conn != null) conn.close(); } catch(SQLException e) {}
+%>

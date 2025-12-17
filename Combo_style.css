@@ -162,8 +162,6 @@ header nav ul li a {
 .top-menu ul li a:hover::after {
   width: 100%;
 }
-
-/* ===== Icon tìm kiếm (phía phải menu) ===== */
 /* --- 1. CHỈNH Ô NHẬP (search-input) --- */
 .search-form {
   /* Đảm bảo form vẫn hiển thị ngang hàng */
@@ -303,7 +301,6 @@ button:hover {
   padding-top: 30px;
   font-family: Arial, sans-serif;
 }
-
 .footer-container {
   display: flex;
   justify-content: space-between;

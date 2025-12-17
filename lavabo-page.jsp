@@ -19,9 +19,9 @@
         conn = DriverManager.getConnection(url, user, pass);
 
         String searchTerm = request.getParameter("search");
-    
-        // Lấy dữ liệu từ bảng Bồn Tắm
-        String sql = "SELECT * FROM toilet_sanpham"; 
+        // LƯU Ý: Nếu đây là trang Lavabo thì nên đổi thành "SELECT * FROM lavabo_sanpham"
+        // Hiện tại em giữ nguyên home_sanpham theo code anh gửi
+        String sql = "SELECT * FROM lavabo_sanpham"; 
         
         if (searchTerm != null && !searchTerm.trim().isEmpty()) {
             sql += " WHERE ten_sp LIKE ?";
@@ -43,81 +43,79 @@
 
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Sản Phẩm Nổi Bật</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="homeStyle.css">
-</head>
-
-<body>
-
-<header>
-    <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
-
-    <nav>
-        <form class="search-form" method="get" action="page_bonTam.jsp">
-            <input
-                type="text"
-                name="search"
-                class="search-input"
-                placeholder="Tìm kiếm bồn tắm..."
-                value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>"
-            >
-            <button class="search-icon">
-                <i class="fa fa-search"></i>
-            </button>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Trang chủ - Thiết bị vệ sinh</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="homeStyle.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
+      <nav>
+        <form class="search-form" action="home.jsp" method="GET">
+          <input
+            type="text"
+            name="search"
+            placeholder="Tìm kiếm sản phẩm ..."
+            class="search-input"
+            value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>"
+          />
+          <button type="submit" class="search-icon">
+            <i class="fa fa-search"></i>
+          </button>
         </form>
 
         <ul class="user-menu">
-            <li>
-                <a href="page_ThemVaoGiohang.jsp">
-                    <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
-                </a>
-            </li>
-            <li>
-                <a href="login_page.jsp">
-                    <i class="fa-solid fa-user"></i> Đăng nhập
-                </a>
-            </li>
+          <li>
+            <a href="page_ThemVaoGiohang.jsp">
+              <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
+            </a>
+          </li>
+          <li>
+            <a href="login_page.jsp">
+              <i class="fas fa-user"></i> Đăng nhập
+            </a>
+          </li>
         </ul>
-    </nav>
-</header>
+      </nav>
+    </header>
 
-<div class="menu-container">
-    <div class="sidebar">
+    <div class="menu-container">
+      <div class="sidebar">
         <div class="menu-title">
-            <i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM
+          <i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM
         </div>
-    </div>
+      </div>
 
-    <div class="top-menu">
+      <div class="top-menu">
         <ul>
-            <li><a href="home.jsp">Trang chủ</a></li>
-            <li><a href="page_combo.jsp">Combo</a></li>
-            <li><a href="toilet_page.jsp">Bồn Cầu</a></li>
-            <li><a href="lavabo-page.jsp">Lavabo</a></li>
-            <li><a href="page_Tulavabo.jsp">Tủ Lavabo</a></li>
-            <li><a href="page_VoiSenTam.jsp">Vòi Sen Tắm</a></li>
-            <li><a href="page_ChauRuaChen.jsp">Chậu Rửa Chén</a></li>
-            
-            <li class="active"><a href="page_bonTam.jsp">Bồn Tắm</a></li>
-            
-            <li><a href="page_voiRua.jsp">Vòi Rửa</a></li>
-            <li><a href="page_BonTieuNam.jsp">Bồn Tiểu Nam</a></li>
-            <li><a href="page_PhuKien.jsp">Phụ Kiện</a></li>
-            <li><a href="page_admin.jsp">Admin</a></li>
+          <li><a href="home.jsp">Trang chủ</a></li>
+          <li><a href="page_combo.jsp">Combo</a></li>
+          <li><a href="toilet_page.jsp">Bồn Cầu</a></li>
+          
+          <li class="active"><a href="lavabo-page.jsp">Lavabo</a></li>
+          
+          <li><a href="page_Tulavabo.jsp">Tủ Lavabo</a></li>
+          <li><a href="page_VoiSenTam.jsp">Vòi Sen Tắm</a></li>
+          <li><a href="page_ChauRuaChen.jsp">Chậu Rửa Chén</a></li>
+          <li><a href="page_bonTam.jsp">Bồn Tắm</a></li>
+          <li><a href="page_voiRua.jsp">Vòi Rửa</a></li>
+          <li><a href="page_BonTieuNam.jsp">Bồn Tiểu Nam</a></li>
+          <li><a href="page_PhuKien.jsp">Phụ Kiện</a></li>
+          <li><a href="page_admin.jsp">Admin</a></li>
         </ul>
+      </div>
     </div>
-</div>
 
-<main class="main-content">
+    <main class="main-content">
         <% if (request.getParameter("search") != null && !request.getParameter("search").isEmpty()) { %>
             <h2>Kết quả tìm kiếm cho: "<%= request.getParameter("search") %>"</h2>
         <% } else { %>
-            <h2>Sản phẩm Nổi Bật</h2>
+            <h2>Sản phẩm nổi bật</h2>
         <% } %>
 
         <% if (!errorMessage.isEmpty()) { %>
@@ -170,45 +168,52 @@
         </div>
     </main>
 
-<footer class="footer">
-    <div class="footer-container">
+    <footer class="footer">
+      <div class="footer-container">
         <div class="footer-column">
-            <h3>VỀ CHÚNG TÔI</h3>
-            <p>Chuyên cung cấp thiết bị vệ sinh, phòng tắm chính hãng.</p>
+          <h3>VỀ CHÚNG TÔI</h3>
+          <p>
+            Chuyên cung cấp thiết bị vệ sinh, phòng tắm chính hãng, giá tốt nhất
+            thị trường.
+          </p>
         </div>
-        <div class="footer-column">
-            <h3>LIÊN HỆ</h3>
-            <p><i class="fa fa-phone"></i> 0909 123 456</p>
-            <p><i class="fa fa-envelope"></i> contact@thietbivesinh.vn</p>
-            <p><i class="fa fa-location-dot"></i> TP. Hồ Chí Minh</p>
-        </div>
-        <div class="footer-column">
-            <h3>HỖ TRỢ</h3>
-            <ul>
-                <li><a href="#">Giao hàng</a></li>
-                <li><a href="#">Bảo hành</a></li>
-                <li><a href="#">Thanh toán</a></li>
-            </ul>
-        </div>
-        <div class="footer-column">
-            <h3>KẾT NỐI</h3>
-            <div class="social-icons">
-                <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-            </div>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        © 2025 Thiết Bị Vệ Sinh & Phòng Tắm
-    </div>
-</footer>
 
-</body>
+        <div class="footer-column">
+          <h3>LIÊN HỆ</h3>
+          <p><i class="fa-solid fa-phone"></i> 0909 123 456</p>
+          <p><i class="fa-solid fa-envelope"></i> contact@thietbivesinh.vn</p>
+          <p><i class="fa-solid fa-location-dot"></i> TP. Hồ Chí Minh</p>
+        </div>
+
+        <div class="footer-column">
+          <h3>HỖ TRỢ KHÁCH HÀNG</h3>
+          <ul>
+            <li><a href="#">Chính sách giao hàng</a></li>
+            <li><a href="#">Chính sách bảo hành</a></li>
+            <li><a href="#">Hướng dẫn thanh toán</a></li>
+            <li><a href="#">Chăm sóc khách hàng</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
+          <div class="social-icons">
+            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
+      </div>
+    </footer>
+  </body>
 </html>
 
 <%
-    // Đóng kết nối để giải phóng bộ nhớ
+    // Đóng kết nối
     try { if(rs != null) rs.close(); } catch(SQLException e) {}
     try { if(ps != null) ps.close(); } catch(SQLException e) {}
     try { if(conn != null) conn.close(); } catch(SQLException e) {}
