@@ -1,17 +1,20 @@
+
+/* ==================== RESET & CHUNG ==================== */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", "Arial", sans-serif;
-  background: linear-gradient(180deg, #e8f4ff, #ffffff); /* nền sáng dịu */
-  display: block;
-  height: auto;
-  overflow-x: hidden;
+  background: linear-gradient(180deg, #e8f4ff, #ffffff);
   color: #222;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ==================== HEADER ==================== */
@@ -20,55 +23,80 @@ header {
   top: 0;
   left: 0;
   width: 100%;
-  height: 75px; /* chiều cao header theo ảnh */
-  background: #333333; /* xanh dương */
+  height: 75px;
+  background: #333333;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 40px;
-  box-sizing: border-box;
+  padding: 0 40px;
   z-index: 1000;
 }
 
-/* Tiêu đề lớn bên trái */
 header h1 {
   margin: 0;
-  font-size: 36px; /* chữ to như ảnh */
+  font-size: 28px; /* Chỉnh lại chút cho đỡ bị vỡ nếu màn nhỏ */
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.5px;
 }
 
 header nav {
   display: flex;
   align-items: center;
 }
+
 header nav ul {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  gap: 26px;
+  gap: 20px;
 }
+
 header nav ul li a {
   color: #fff;
   text-decoration: none;
   font-size: 15px;
 }
 
-/* ================== MENU SẢN PHẨM (bên dưới header) ================== */
+/* --- SEARCH FORM --- */
+.search-form {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.search-input {
+  width: 300px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+}
+
+.search-icon {
+  background: #444;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.search-icon:hover {
+  background-color: #d70018; /* Màu đỏ nổi bật */
+}
+
+/* ================== MENU & SIDEBAR ================== */
 .menu-container {
   display: flex;
   width: 100%;
-  box-sizing: border-box;
-  margin-top: 75px; /* tạo khoảng trống bằng chiều cao header */
-  position: static; /* menu cuộn theo trang */
+  margin-top: 75px; /* Tránh header che khuất */
 }
 
-/* ===== Sidebar ===== */
+/* Sidebar */
 .sidebar {
-  position: relative;
   width: 200px;
   background: #c8a000;
   color: white;
@@ -80,74 +108,33 @@ header nav ul li a {
   cursor: pointer;
 }
 
-.sidebar-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 200px;
-  background: white;
-  color: black;
-  z-index: 1000;
-}
-
-.sidebar:hover .sidebar-menu {
-  display: block;
-}
-
-.sidebar-menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.sidebar-menu li {
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-}
-
-.sidebar-menu a {
-  color: black;
-  text-decoration: none;
-}
-
-/* ===== Thanh menu ngang (top menu) ===== */
+/* Top Menu */
 .top-menu {
   flex: 1;
   background: #222;
+  min-height: 45px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 18px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  box-sizing: border-box;
-  min-height: 45px;
 }
 
-/* Các mục trong menu ngang */
 .top-menu ul {
   display: flex;
   list-style: none;
-  margin-left: 20px;
   padding: 0;
-  gap: 18px;
-  align-items: center;
-}
-
-.top-menu ul li {
-  position: relative;
+  margin: 0 20px;
+  gap: 15px;
+  flex-wrap: wrap; /* Cho phép xuống dòng nếu menu dài */
 }
 
 .top-menu ul li a {
   color: #fff;
   text-decoration: none;
-  display: block;
-  padding: 10px 8px;
+  padding: 10px 5px;
   font-size: 14px;
+  display: block;
   position: relative;
 }
 
-/* Hiệu ứng gạch đỏ khi hover */
 .top-menu ul li a::after {
   content: "";
   position: absolute;
@@ -156,54 +143,18 @@ header nav ul li a {
   height: 2px;
   width: 0;
   background: #d30000;
-  transition: width 0.22s;
+  transition: 0.3s;
 }
 
+.top-menu ul li.active a::after,
 .top-menu ul li a:hover::after {
   width: 100%;
 }
-/* --- 1. CHỈNH Ô NHẬP (search-input) --- */
-.search-form {
-  /* Đảm bảo form vẫn hiển thị ngang hàng */
-  display: flex;
-  align-items: center;
-  margin-right: 20px; /* Tạo khoảng cách với các mục Giỏ hàng/Đăng nhập */
-}
 
-.search-input {
-  /* Thiết lập lại kích thước và kiểu dáng */
-  width: 300px; /* Chiều rộng thanh tìm kiếm */
-  padding: 8px 12px;
-  border: none; /* Bỏ viền mặc định */
-  border-radius: 4px 0 0 4px; /* Góc bo tròn chỉ ở bên trái */
-  font-size: 14px;
-  background-color: #f7f7f7; /* Nền trắng ngà cho nổi bật */
-  color: #333;
-  outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Thêm bóng mờ nhẹ */
-}
-
-/* --- 2. CHỈNH ICON (search-icon) --- */
-.search-icon {
-  /* Nối liền với ô input */
-  background: #444; /* Dùng màu đỏ nổi bật (màu anh đã dùng cho gạch chân menu) */
-  color: white;
-  padding: 8px 12px;
-  border-radius: 0 4px 4px 0; /* Góc bo tròn chỉ ở bên phải */
-  font-size: 14px;
-  cursor: pointer;
-  display: flex; /* Đảm bảo icon được căn giữa */
-  align-items: center;
-  transition: background-color 0.2s;
-}
-
-.search-icon:hover {
-  background-color: #a00000; /* Đỏ đậm hơn khi rê chuột */
-}
-/* ==================== COMBO SẢN PHẨM ==================== */
+/* ==================== MAIN CONTENT & SẢN PHẨM ==================== */
 .main-content {
-  margin-top: 20px;
-  padding: 0 50px;
+  padding: 20px 50px;
+  flex: 1; /* Đẩy footer xuống dưới cùng */
 }
 
 .main-content h2 {
@@ -212,121 +163,162 @@ header nav ul li a {
   font-weight: 800;
   text-transform: uppercase;
   color: #111;
-  margin-bottom: 40px;
+  margin: 30px 0;
 }
 
-/* LƯỚI SẢN PHẨM: Dùng class combo-grid như trong HTML */
-.combo-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 15px;
+/* --- LƯỚI SẢN PHẨM (Grid) --- */
+.product-grid {
+    display: grid;
+    /* Chia 4 cột, tự động co giãn */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* THẺ SẢN PHẨM: Dùng class product-combo như trong HTML */
-.product-combo {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  padding: 10px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* --- THẺ SẢN PHẨM (Card) --- */
+.product-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    
+    /* Canh đều chiều cao */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
-.product-combo:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    border-color: #d70018;
 }
 
-.product-combo img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 6px;
+/* Ảnh sản phẩm */
+.product-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    margin-bottom: 15px;
 }
 
+/* Tên sản phẩm */
+.product-card h3 {
+    font-size: 16px;
+    margin: 0 0 10px;
+    line-height: 1.4;
+    height: 44px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-card h3 a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+}
+
+.product-card h3 a:hover {
+    color: #d70018;
+}
+
+/* Giá tiền */
 .price {
-  color: #d32f2f;
-  font-weight: bold;
-  margin: 8px 0;
-  font-size: 14px;
+    color: #d70018;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: block;
 }
 
-.dis {
-  background-color: #ff4d4f;
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 2px 5px;
-  border-radius: 4px;
-  margin-left: 8px;
+.discount {
+    background-color: #d70018;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 5px;
+    vertical-align: middle;
 }
 
+/* Nút bấm */
 .button-group {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 8px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: auto;
 }
 
-button {
-  border: none;
-  padding: 6px 8px;
-  font-size: 13px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s;
+.button-group button,
+.add-to-cart, 
+.buy {
+    border: none;
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .add-to-cart {
-  background-color: #1976d2;
-  color: white;
+    background-color: #1976d2;
+}
+.add-to-cart:hover {
+    background-color: #115293;
 }
 
 .buy {
-  background-color: #43a047;
-  color: white;
+    background-color: #43a047;
+}
+.buy:hover {
+    background-color: #2e7d32;
 }
 
-button:hover {
-  opacity: 0.9;
-}
-
-/* ========== FOOTER ========== */
+/* ==================== FOOTER ==================== */
 .footer {
   background: #222;
   color: #fff;
-  margin-top: 40px;
-  padding-top: 30px;
-  font-family: Arial, sans-serif;
+  margin-top: 50px;
+  padding-top: 40px;
 }
+
 .footer-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   flex-wrap: wrap;
-  padding: 0;
-  padding-left: 0;
-  padding-right: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .footer-column {
-  width: 23%;
-  min-width: 220px;
-  margin-bottom: 25px;
+  width: 220px;
+  margin-bottom: 30px;
 }
 
 .footer-column h3 {
-  font-size: 18px;
-  margin-bottom: 12px;
   color: #ffcc00;
+  font-size: 18px;
+  margin-bottom: 15px;
 }
 
-.footer-column p,
+.footer-column p, 
 .footer-column ul li a {
-  color: #eee;
+  color: #ccc;
   font-size: 14px;
   line-height: 1.6;
+  text-decoration: none;
 }
 
 .footer-column ul {
@@ -335,19 +327,24 @@ button:hover {
 }
 
 .footer-column ul li {
-  margin: 6px 0;
+  margin-bottom: 8px;
 }
 
 .social-icons a {
-  color: white;
-  font-size: 22px;
-  margin-right: 12px;
+  color: #fff;
+  font-size: 20px;
+  margin-right: 15px;
+  transition: 0.3s;
+}
+
+.social-icons a:hover {
+  color: #ffcc00;
 }
 
 .footer-bottom {
   text-align: center;
-  padding: 12px;
+  padding: 15px;
   background: #111;
-  margin-top: 15px;
-  font-size: 14px;
+  font-size: 13px;
+  color: #888;
 }

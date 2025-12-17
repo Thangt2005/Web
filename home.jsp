@@ -1,72 +1,72 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<<<<<<< HEAD
-<%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<%@ taglib uri="jakarta.tags.sql" prefix="sql" %>
-<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
-=======
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
+<%@ page import="java.sql.*" %>
+<%@ page import="java.text.DecimalFormat" %>
 
-<sql:setDataSource var="myDataSource" 
-    driver="com.mysql.cj.jdbc.Driver"
-    url="jdbc:mysql://localhost:3307/db?useUnicode=true&characterEncoding=UTF-8"
-    user="root" 
-    password=""/>
+<%
+    // --- PHẦN 1: XỬ LÝ BACKEND (JAVA) ---
+    Connection conn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
 
-<<<<<<< HEAD
-<%-- 1. Lấy giá trị tìm kiếm từ tham số "search" --%>
-<c:set var="searchTerm" value="${param.search}" />
-<c:set var="searchQuery" value="SELECT * FROM home_sanpham" />
+    String errorMessage = "";
+    DecimalFormat formatter = new DecimalFormat("###,###"); // Định dạng tiền tệ: 1.500.000
 
-<%-- 2. Thêm điều kiện WHERE nếu có từ khóa tìm kiếm --%>
-<c:if test="${not empty searchTerm}">
-    <c:set var="searchQuery" value="${searchQuery} WHERE ten_sp LIKE ?" />
-</c:if>
+    try {
+        // 1. Load Driver & Kết nối
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        // Lưu ý: Anh kiểm tra lại port 3306 hoặc 3307 tùy máy anh nhé
+        String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
+        String user = "root";
+        String pass = "";
+        conn = DriverManager.getConnection(url, user, pass);
 
-<sql:query dataSource="${myDataSource}" var="result">
-    ${searchQuery}
-    <c:if test="${not empty searchTerm}">
-        <sql:param value="%${searchTerm}%" />
-    </c:if>
-=======
-<sql:query dataSource="${myDataSource}" var="result">
-    SELECT * FROM home_sanpham
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
-</sql:query>
+        // 2. Xử lý logic Tìm kiếm
+        String searchTerm = request.getParameter("search");
+        String sql = "SELECT * FROM home_sanpham";
+        
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            sql += " WHERE ten_sp LIKE ?";
+        }
+
+        ps = conn.prepareStatement(sql);
+
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            ps.setString(1, "%" + searchTerm.trim() + "%");
+        }
+
+        rs = ps.executeQuery();
+
+    } catch (Exception e) {
+        errorMessage = "Lỗi kết nối CSDL: " + e.getMessage();
+        e.printStackTrace();
+    }
+%>
 
 <!DOCTYPE html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <title>Trang chủ</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - Thiết bị vệ sinh</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="homeStyle.css" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/main.js"></script>
   </head>
   <body>
+  
     <header>
       <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
       <nav>
-<<<<<<< HEAD
-        <%-- **THAY ĐỔI 1: Cập nhật form tìm kiếm** --%>
         <form class="search-form" action="home.jsp" method="GET">
-=======
-        <form class="search-form" action="#" method="GET">
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
           <input
             type="text"
             name="search"
             placeholder="Tìm kiếm sản phẩm ..."
             class="search-input"
-<<<<<<< HEAD
-            <%-- Giữ lại từ khóa tìm kiếm cũ trên ô input --%>
-            value="${searchTerm}"
-=======
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
+            value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>"
           />
           <button type="submit" class="search-icon">
             <i class="fa fa-search"></i>
@@ -75,20 +75,12 @@
 
         <ul class="user-menu">
           <li>
-<<<<<<< HEAD
             <a href="page_ThemVaoGiohang.jsp">
-=======
-            <a href="page_ThemVaoGiohang.php">
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
               <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
             </a>
           </li>
           <li>
-<<<<<<< HEAD
             <a href="login_page.jsp">
-=======
-            <a href="login_page.php">
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
               <i class="fas fa-user"></i> Đăng nhập
             </a>
           </li>
@@ -105,7 +97,7 @@
 
       <div class="top-menu">
         <ul>
-          <li><a href="home.jsp">Trang chủ</a></li>
+          <li><a href="home.jsp" class="active">Trang chủ</a></li>
           <li><a href="page_combo.jsp">Combo</a></li>
           <li><a href="toilet_page.jsp">Bồn Cầu</a></li>
           <li><a href="lavabo-page.jsp">Lavabo</a></li>
@@ -121,88 +113,76 @@
       </div>
     </div>
 
-
     <main class="main-content">
-<<<<<<< HEAD
-        <%-- Hiển thị tiêu đề theo kết quả tìm kiếm --%>
-        <c:choose>
-            <c:when test="${not empty searchTerm}">
-                <h2>Kết quả tìm kiếm cho: "${searchTerm}"</h2>
-            </c:when>
-            <c:otherwise>
-                <h2>Sản phẩm nổi bật</h2>
-            </c:otherwise>
-        </c:choose>
+        <%-- Tiêu đề động --%>
+        <% if (request.getParameter("search") != null && !request.getParameter("search").isEmpty()) { %>
+            <h2>Kết quả tìm kiếm cho: "<%= request.getParameter("search") %>"</h2>
+        <% } else { %>
+            <h2>Sản phẩm nổi bật</h2>
+        <% } %>
 
-=======
-        <h2>Sản phẩm nổi bật</h2>
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
+        <%-- Hiển thị lỗi DB nếu có --%>
+        <% if (!errorMessage.isEmpty()) { %>
+            <div style="color: red; text-align: center; padding: 20px; font-weight: bold; background: #ffe6e6; border: 1px solid red; margin: 10px;">
+                <%= errorMessage %>
+            </div>
+        <% } %>
+
         <div class="product-grid">
-            
-            <c:choose>
-                <c:when test="${result.rowCount > 0}">
-                    <c:forEach var="row" items="${result.rows}">
-<<<<<<< HEAD
-                      <div class="product-card">
-                          <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
-
-                          <h3>
-                              <a href="TrangChiTiet.jsp?id=${row.id}">
-                                  ${row.ten_sp}
-                              </a>
-                          </h3>
-
-                          <p class="price">
-                              <fmt:formatNumber value="${row.gia}" type="number" groupingUsed="true"/>đ
-                              <span class="discount">-${row.giam_gia}%</span>
-                          </p>
-
-                          <div class="button-group">
-                              <a href="page_ThemVaoGiohang.jsp?id=${row.id}">
-                                  <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
-                              </a>
-                              <button class="buy"><i class="fa-solid fa-bag-shopping"></i> Đặt mua</button>
-                          </div>
-                      </div>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <c:if test="${not empty searchTerm}">
-                        <p>Không tìm thấy sản phẩm nào phù hợp với từ khóa: **${searchTerm}**</p>
-                    </c:if>
-                    <c:if test="${empty searchTerm}">
-                        <p>Chưa có sản phẩm nào!</p>
-                    </c:if>
-=======
-                        <div class="product-card">
-                            <img src="image_all/${row.hinh_anh}" alt="${row.ten_sp}">
-
-                            <h3>
-                                <a href="TrangChiTiet.jsp?id=${row.id}">
-                                    ${row.ten_sp}
-                                </a>
-                            </h3>
-
-                            <p class="price">
-                                <fmt:formatNumber value="${row.gia}" type="number" groupingUsed="true"/>đ
-                                <span class="discount">-${row.giam_gia}%</span>
-                            </p>
-
-                            <div class="button-group">
-                                <a href="page_ThemVaoGiohang.html">
-                                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
-                                </a>
-                                <button class="buy"><i class="fa-solid fa-bag-shopping"></i> Đặt mua</button>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <p>Chưa có sản phẩm nào!</p>
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
-                </c:otherwise>
-            </c:choose>
-
+        <% 
+            // --- PHẦN 2: VÒNG LẶP HIỂN THỊ SẢN PHẨM ---
+            if (rs != null) {
+                boolean hasData = false;
+                while (rs.next()) { 
+                    hasData = true;
+                    int id = rs.getInt("id");
+                    String tenSp = rs.getString("ten_sp");
+                    String hinhAnh = rs.getString("hinh_anh");
+                    double gia = rs.getDouble("gia");
+                    int giamGia = rs.getInt("giam_gia");
+        %>
+            <div class="product-card">
+                <img src="image_all/<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+                
+                <h3>
+                    <a href="TrangChiTiet.jsp?id=<%= id %>">
+                        <%= tenSp %>
+                    </a>
+                </h3>
+                
+                <p class="price">
+                    <%= formatter.format(gia) %>đ
+                    <% if(giamGia > 0) { %>
+                        <span class="discount">-<%= giamGia %>%</span>
+                    <% } %>
+                </p>
+                
+                <div class="button-group">
+                    <%-- NÚT 1: GỌI HÀM JS THÊM GIỎ HÀNG --%>
+                    <button class="add-to-cart" type="button" onclick="themVaoGioHang(<%= id %>)">
+                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                    </button>
+                    
+                    <%-- NÚT 2: GỌI HÀM JS MUA NGAY --%>
+                    <button class="buy" type="button" onclick="muaNgay(<%= id %>)">
+                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                    </button>
+                </div>
+            </div>
+            <% 
+                } // Kết thúc while
+                
+                if (!hasData) {
+            %>
+                    <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
+                        <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>Không tìm thấy sản phẩm nào phù hợp!</p>
+                        <a href="home.jsp" style="color: #007bff; text-decoration: underline;">Quay lại trang chủ</a>
+                    </div>
+        <%
+                }
+            } 
+        %>
         </div>
     </main>
 
@@ -236,15 +216,9 @@
         <div class="footer-column">
           <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
           <div class="social-icons">
-            <a href="https://www.facebook.com/huuthang11092005"
-              ><i class="fa-brands fa-facebook"></i
-            ></a>
-            <a href="https://www.youtube.com/@huuthangtran9024/posts"
-              ><i class="fa-brands fa-youtube"></i
-            ></a>
-            <a href="https://www.tiktok.com/@thangtt26"
-              ><i class="fa-brands fa-tiktok"></i
-            ></a>
+            <a href="https://www.facebook.com/huuthang11092005" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.youtube.com/@huuthangtran9024/posts" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+            <a href="https://www.tiktok.com/@thangtt26" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
           </div>
         </div>
       </div>
@@ -253,9 +227,12 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
       </div>
     </footer>
-<<<<<<< HEAD
-    </body>
-=======
   </body>
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
 </html>
+
+<%
+    // --- PHẦN 3: ĐÓNG KẾT NỐI (Bắt buộc) ---
+    try { if(rs != null) rs.close(); } catch(Exception e) {}
+    try { if(ps != null) ps.close(); } catch(Exception e) {}
+    try { if(conn != null) conn.close(); } catch(Exception e) {}
+%>

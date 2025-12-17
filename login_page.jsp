@@ -1,116 +1,86 @@
-<<<<<<< HEAD
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<%@ taglib uri="jakarta.tags.sql" prefix="sql" %>
-
-<%! 
-    // Khai báo biến Java để lưu thông báo lỗi
-    String errorMessage = null; 
-%>
+<%-- Import thư viện SQL --%>
+<%@ page import="java.sql.*" %>
 
 <%
-    // 1. Kiểm tra nếu có POST request (Người dùng bấm ĐĂNG NHẬP)
-    if ("POST".equals(request.getMethod())) {
-        // Lấy dữ liệu từ form
-        String u = request.getParameter("username");
-        String p = request.getParameter("password");
+    // --- PHẦN 1: XỬ LÝ JAVA (BACKEND) - LOGIC ĐĂNG NHẬP ---
+    
+    // 1. Khai báo biến
+    Connection conn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    // Biến lưu thông báo kết quả đăng nhập (thành công/thất bại)
+    String message = ""; 
+
+    // 2. Lấy dữ liệu từ FORM POST
+    String inputUsername = request.getParameter("username");
+    String inputPassword = request.getParameter("password");
+    
+    // Chỉ xử lý logic đăng nhập khi người dùng bấm nút (method là POST)
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
         
-        // Cố gắng kết nối và xác thực
-        try {
-            // 2. Thiết lập kết nối CSDL (Lưu ý: Không dùng thẻ sql:setDataSource ở đây 
-            // vì nó thiết lập biến JSTL, không phải đối tượng kết nối Java)
-            java.sql.Connection conn = null;
-            java.sql.PreparedStatement pstmt = null;
-            java.sql.ResultSet rs = null;
+        // Kiểm tra xem người dùng đã nhập đủ thông tin chưa
+        if (inputUsername != null && !inputUsername.trim().isEmpty() && 
+            inputPassword != null && !inputPassword.trim().isEmpty()) {
             
-            // Đây là cách kết nối CSDL truyền thống bằng Java trong Scriptlet (cần thư viện JDBC driver trong classpath)
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3307/login?useUnicode=true&characterEncoding=UTF-8", "root", "");
-            
-            // 3. Sử dụng Prepared Statement để chống SQL Injection (Mặc dù đây là Scriptlet, vẫn nên làm)
-            String sql = "SELECT * FROM login WHERE username=? AND password=?";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, u);
-            pstmt.setString(2, p);
-            
-            rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                // Đăng nhập thành công
-                // Thiết lập Session (trong Java EE, Session được quản lý qua request.getSession())
-                session.setAttribute("user", u);
+            try {
+                // Load Driver MySQL
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 
-                // Chuyển hướng sang trang home.jsp
-                response.sendRedirect("home.jsp");
-                return; // Kết thúc code
-            } else {
-                // Đăng nhập thất bại
-                errorMessage = "Sai tài khoản hoặc mật khẩu! Vui lòng thử lại.";
+                // Cấu hình kết nối database = db
+                String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
+                String user = "root";
+                String pass = "";
+
+                // Tạo kết nối
+                conn = DriverManager.getConnection(url, user, pass);
+
+                // Câu lệnh SQL: Kiểm tra tài khoản trong bảng `login`
+                // SỬ DỤNG ? (Placeholder) ĐỂ CHỐNG SQL INJECTION
+                String sql = "SELECT username FROM login WHERE username = ? AND password = ?";
+                
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, inputUsername);
+                ps.setString(2, inputPassword); 
+
+                rs = ps.executeQuery();
+
+                // Xử lý kết quả truy vấn
+                if (rs.next()) {
+                    // *** ĐĂNG NHẬP THÀNH CÔNG ***
+                    
+                    // Thiết lập Session
+                    session.setAttribute("isLoggedIn", true);
+                    session.setAttribute("user", inputUsername);
+                    
+                    // Chuyển hướng sang trang chủ hoặc trang dashboard
+                    response.sendRedirect("index.jsp"); 
+                    return; // Dừng việc render trang login này
+                    
+                } else {
+                    // *** ĐĂNG NHẬP THẤT BẠI ***
+                    message = "Tên đăng nhập hoặc Mật khẩu không đúng!";
+                }
+
+            } catch (ClassNotFoundException e) {
+                message = "Lỗi Driver: Không tìm thấy thư viện MySQL Connector Java.";
+                e.printStackTrace();
+            } catch (SQLException e) {
+                message = "Lỗi SQL: " + e.getMessage();
+                e.printStackTrace();
+            } finally {
+                // 5. Đóng kết nối
+                try { if (rs != null) rs.close(); } catch (SQLException e) { /* log */ }
+                try { if (ps != null) ps.close(); } catch (SQLException e) { /* log */ }
+                try { if (conn != null) conn.close(); } catch (SQLException e) { /* log */ }
             }
-            
-            // Đóng kết nối
-            if (rs != null) rs.close();
-            if (pstmt != null) pstmt.close();
-            if (conn != null) conn.close();
-            
-        } catch (Exception e) {
-            errorMessage = "Lỗi hệ thống: " + e.getMessage();
+        } else {
+            message = "Vui lòng nhập đầy đủ Tên đăng nhập và Mật khẩu.";
         }
     }
 %>
-=======
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %> <%@
-taglib uri="jakarta.tags.sql" prefix="sql" %> <%-- Đặt encoding để nhận tiếng
-Việt từ form --%> <% request.setCharacterEncoding("UTF-8"); %>
 
-<c:if test="${pageContext.request.method == 'POST'}">
-  <%-- 1. Thiết lập kết nối Database --%>
-  <sql:setDataSource
-    var="dbConnection"
-    driver="com.mysql.cj.jdbc.Driver"
-    url="jdbc:mysql://localhost:3307/login?useUnicode=true&characterEncoding=UTF-8"
-    user="root"
-    password=""
-  />
-
-  <c:catch var="dbError">
-    <%-- 2. Thực hiện truy vấn kiểm tra tài khoản --%>
-    <sql:query dataSource="${dbConnection}" var="userResult">
-      SELECT * FROM login WHERE username = ? AND password = ?
-      <sql:param value="${param.username}" />
-      <sql:param value="${param.password}" />
-    </sql:query>
-  </c:catch>
-
-  <c:choose>
-    <c:when test="${not empty dbError}">
-      <%-- Lỗi kết nối hoặc truy vấn --%>
-      <c:set
-        var="message"
-        value="Lỗi hệ thống: Không thể kết nối hoặc truy vấn dữ liệu."
-      />
-      <c:set var="msgColor" value="red" />
-    </c:when>
-    <c:when test="${userResult.rowCount > 0}">
-      <%-- 3. Đăng nhập thành công --%> <%-- Lưu thông tin user vào session (có
-      thể lấy thêm email nếu cần) --%>
-      <c:set var="loggedInUser" value="${param.username}" scope="session" />
-
-      <%-- Chuyển hướng sang trang home.jsp (hoặc home.php như code cũ) --%>
-      <c:redirect url="home.jsp" />
-    </c:when>
-    <c:otherwise>
-      <%-- Đăng nhập thất bại --%>
-      <c:set
-        var="message"
-        value="Sai tài khoản hoặc mật khẩu! Vui lòng thử lại."
-      />
-      <c:set var="msgColor" value="red" />
-    </c:otherwise>
-  </c:choose>
-</c:if>
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -127,15 +97,13 @@ Việt từ form --%> <% request.setCharacterEncoding("UTF-8"); %>
     <header>
       <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     </header>
-<<<<<<< HEAD
-    
     <div class="login-container">
       <h2>Đăng nhập</h2>
 
-      <%-- Hiển thị thông báo lỗi nếu có --%>
-      <% if (errorMessage != null) { %>
+      <%-- Hiển thị thông báo kết quả đăng nhập --%>
+      <% if (message != null && !message.trim().isEmpty()) { %>
           <div style="color: red; text-align: center; margin-bottom: 10px;">
-              <%= errorMessage %>
+              <%= message %>
           </div>
       <% } %>
 
@@ -143,37 +111,11 @@ Việt từ form --%> <% request.setCharacterEncoding("UTF-8"); %>
         <button class="facebook"><i class="fa-brands fa-facebook-f"></i><span> Facebook</span></button>
         <button class="twitter"><i class="fa-brands fa-twitter"></i><span> Twitter</span></button>
         <button class="google"><i class="fa-brands fa-google"></i> <span> Google</span></button>
-=======
 
-    <div class="login-container">
-      <h2>Đăng nhập</h2>
-
-      <%-- Hiển thị thông báo (Lỗi hoặc Thành công) --%>
-      <c:if test="${not empty message}">
-        <div
-          style="text-align: center; color: ${msgColor}; margin-bottom: 15px; font-weight: bold;"
-        >
-          ${message}
-        </div>
-      </c:if>
-
-      <div class="social-login">
-        <button class="facebook">
-          <i class="fa-brands fa-facebook-f"></i><span> Facebook</span>
-        </button>
-        <button class="twitter">
-          <i class="fa-brands fa-twitter"></i><span> Twitter</span>
-        </button>
-        <button class="google">
-          <i class="fa-brands fa-google"></i> <span> Google</span>
-        </button>
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
       </div>
 
       <h3>Đăng nhập bằng email</h3>
-
-<<<<<<< HEAD
-      <%-- action="" gửi lại chính trang này, method="POST" --%>
+      <%-- action="login_page.jsp" để gửi dữ liệu trở lại chính trang này --%>
       <form class="email-login" id="login-form" action="login_page.jsp" method="POST"> 
         <input
           type="text"
@@ -181,17 +123,8 @@ Việt từ form --%> <% request.setCharacterEncoding("UTF-8"); %>
           name="username" 
           placeholder="Username hoặc E-mail"
           required
-=======
-      <form class="email-login" id="login-form" action="" method="POST">
-        <input
-          type="text"
-          id="email"
-          name="username"
-          placeholder="Username hoặc E-mail"
-          required
-          value="${param.username}"
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
         />
+
 
         <div class="password-wrapper">
           <input
@@ -208,22 +141,12 @@ Việt từ form --%> <% request.setCharacterEncoding("UTF-8"); %>
       </form>
 
       <p class="links">
-<<<<<<< HEAD
-        <a href="forget_pass.jsp">Quên mật khẩu?</a> | <%-- Cập nhật đuôi file --%>
-        <a href="register_page.jsp">Đăng ký tài khoản</a> <%-- Cập nhật đuôi file --%>
+        <a href="forget_pass.jsp">Quên mật khẩu?</a> | 
+        <a href="register_page.jsp">Đăng ký tài khoản</a> 
       </p>
     </div>
     
     <footer class="footer">
-=======
-        <a href="forget_pass.html">Quên mật khẩu?</a> |
-        <a href="register_page.jsp">Đăng ký tài khoản</a>
-      </p>
-    </div>
-
-    <footer class="footer">
-      <%-- Phần footer giữ nguyên --%>
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
       <div class="footer-container">
         <div class="footer-column">
           <h3>VỀ CHÚNG TÔI</h3>
@@ -271,8 +194,4 @@ Việt từ form --%> <% request.setCharacterEncoding("UTF-8"); %>
       </div>
     </footer>
   </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> 6482930432cecd30e7524b4d1cbecb07c628100b
