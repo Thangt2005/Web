@@ -32,6 +32,6 @@ public class CartController extends HttpServlet {
 
         request.setAttribute("cartItems", cartItems);
         request.setAttribute("totalPrice", total);
-        request.getRequestDispatcher("view/page_ThemVaoGiohang.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/page_ThemVaoGiohang.jsp").forward(request, response);
     }
 }

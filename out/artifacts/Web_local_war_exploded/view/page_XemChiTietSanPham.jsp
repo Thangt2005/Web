@@ -6,7 +6,6 @@
 <html lang="vi">
 <head>
     <%
-        // Thiết lập đường dẫn gốc để không bị lỗi CSS/Ảnh khi dùng Controller
         String path = request.getContextPath();
         String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
     %>
@@ -16,29 +15,52 @@
         Product p = (Product) request.getAttribute("product");
         String ten = (p != null) ? p.getTenSp() : "Chi tiết sản phẩm";
     %>
-    <title>Chi Tiết: <%= ten %></title>
+    <title><%= ten %></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="css_TrangChiTiet.css" />
 </head>
 <body>
+
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" action="Home" method="GET">
-            <input type="text" name="search" placeholder="Tìm kiếm sản phẩm ..." class="search-input" />
-            <button type="submit" class="search-icon"><i class="fa fa-search"></i></button>
+        <form class="search-form" action="home.jsp" method="GET">
+            <input
+                    type="text"
+                    name="search"
+                    placeholder="Tìm kiếm sản phẩm ..."
+                    class="search-input"
+                    value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>"
+            />
+            <button type="submit" class="search-icon">
+                <i class="fa fa-search"></i>
+            </button>
         </form>
+
         <ul class="user-menu">
-            <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
-            <li><a href="#"><i class="fas fa-user"></i> thangtt26</a></li>
+            <li>
+                <a href="page_ThemVaoGiohang.jsp">
+                    <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
+                </a>
+            </li>
+            <li>
+                <a href="login_page.jsp">
+                    <i class="fas fa-user"></i> Đăng nhập
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
 
 <div class="menu-container">
+    <div class="sidebar">
+        <div class="menu-title">
+            <i class="fa fa-bars" style="margin-right:10px"></i> DANH MỤC SẢN PHẨM
+        </div>
+    </div>
     <div class="top-menu">
         <ul>
-            <li><a href="Home">Trang chủ</a></li>
+            <li><a href="Home" class="active">Trang chủ</a></li>
             <li><a href="Combo">Combo</a></li>
             <li><a href="Toilet">Bồn Cầu</a></li>
             <li><a href="Lavabo">Lavabo</a></li>
@@ -49,53 +71,113 @@
             <li><a href="VoiRua">Vòi Rửa</a></li>
             <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
             <li><a href="PhuKien">Phụ Kiện</a></li>
+            <li><a href="Admin">Admin</a></li>
         </ul>
     </div>
 </div>
 
 <main>
     <% if (p != null) { %>
-    <div class="product-container">
+    <div class="card-section product-briefing">
         <div class="product-gallery">
             <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" />
         </div>
 
-        <div class="product-info">
-            <h1><%= p.getTenSp() %></h1>
-            <p class="price">
+        <div class="product-main-info">
+            <h1 class="product-title"><%= p.getTenSp() %></h1>
+
+            <div class="product-stats">
+                <span class="rating-score">5.0</span>
+                <div class="stars">
+                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                </div>
+                <span class="divider">|</span>
+                <span class="stat-count">128 Đánh giá</span>
+                <span class="divider">|</span>
+                <span class="stat-count">456 Đã bán</span>
+            </div>
+
+            <div class="price-box">
                 <span class="current-price"><fmt:formatNumber value="<%= p.getGia() %>" type="number" />đ</span>
                 <% if(p.getGiamGia() > 0) { %>
                 <span class="old-price">
-                            <fmt:formatNumber value="<%= p.getGia() / (1 - (double)p.getGiamGia()/100) %>" type="number" />đ
-                        </span>
-                <span class="discount">-<%= p.getGiamGia() %>%</span>
+                        <fmt:formatNumber value="<%= p.getGia() / (1 - (double)p.getGiamGia()/100) %>" type="number" />đ
+                    </span>
+                <span class="discount-tag">GIẢM <%= p.getGiamGia() %>%</span>
                 <% } %>
-            </p>
-            <p>Mã sản phẩm: <%= p.getId() %></p>
-            <p>Thương hiệu: TTCERA</p>
-            <p>Bảo hành: 5 năm</p>
+            </div>
 
-            <div class="actions">
-                <a href="Cart?id=<%= p.getId() %>">
-                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
+            <div class="shipping-info">
+                <p><i class="fa-solid fa-truck-fast"></i> Vận chuyển: Miễn phí vận chuyển cho đơn hàng trên 5 triệu</p>
+            </div>
+
+            <div class="btn-actions">
+                <a href="AddToCart?id=<%= p.getId() %>" style="text-decoration: none;">
+                    <button class="btn-add-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng</button>
                 </a>
-                <a href="Checkout?id=<%= p.getId() %>">
-                    <button class="buy"><i class="fa-solid fa-bag-shopping"></i> Đặt mua ngay</button>
+                <a href="Checkout?id=<%= p.getId() %>" style="text-decoration: none;">
+                    <button class="btn-buy-now"> <i class="fa-solid fa-bag-shopping"></i>Mua ngay</button>
                 </a>
             </div>
         </div>
     </div>
-    <% } else { %>
-    <h2 style="text-align:center; padding: 50px;">Không tìm thấy thông tin sản phẩm!</h2>
-    <% } %>
 
-    <div class="product-detail">
-        <h2>Chi tiết sản phẩm</h2>
-        <p>Chất liệu: Inox 304 / Sứ cao cấp (Tùy loại)</p>
-        <p>Ứng dụng: Lắp đặt trong phòng tắm, nhà vệ sinh hiện đại.</p>
-        <p>- Thiết kế sang trọng, bền bỉ với thời gian.</p>
-        <p>- Bề mặt chống bám bẩn, dễ dàng vệ sinh làm sạch.</p>
+    <div class="details-grid">
+        <div class="card-section info-col">
+            <div class="section-title">Chi tiết sản phẩm</div>
+            <div class="detail-row"><span class="label">Danh mục</span> Thiết bị vệ sinh cao cấp</div>
+            <div class="detail-row"><span class="label">Thương hiệu</span> TTCERA</div>
+            <div class="detail-row"><span class="label">Bảo hành</span> 5 năm</div>
+            <div class="detail-row"><span class="label">Kho hàng</span> 250 sản phẩm</div>
+
+            <div class="section-title" style="margin-top: 30px;">Mô tả sản phẩm</div>
+            <div class="description-text">
+                <%= p.getTenSp() %> mang đến vẻ đẹp hiện đại cho căn phòng tắm của anh.
+                Sản phẩm được làm từ chất liệu cao cấp, chống bám bẩn và dễ vệ sinh.
+                Sự lựa chọn hoàn hảo cho nhà phố và chung cư sang trọng.
+            </div>
+        </div>
+
+        <div class="card-section contact-col">
+            <div class="contact-box">
+                <h3>Tư vấn sản phẩm</h3>
+                <p>Liên hệ hotline để nhận báo giá tốt nhất!</p>
+                <a href="tel:0909123456" class="btn-contact phone"><i class="fa fa-phone"></i> 0909.123.456</a>
+            </div>
+        </div>
     </div>
+
+    <div class="card-section rating-section">
+        <div class="section-title">ĐÁNH GIÁ SẢN PHẨM</div>
+        <div class="rating-header">
+            <div class="rating-summary">
+                <div class="big-score">5.0 <span style="font-size: 16px;">trên 5</span></div>
+                <div class="stars" style="font-size: 20px;"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+            </div>
+            <div class="filter-btns">
+                <button class="active">Tất cả</button>
+                <button>5 Sao (120)</button>
+                <button>Có Bình luận (85)</button>
+                <button>Có Hình ảnh (40)</button>
+            </div>
+        </div>
+
+        <div class="comment-item">
+            <div class="user-avt"></div>
+            <div class="comment-body">
+                <p class="username">Khách hàng ẩn danh</p>
+                <div class="stars small"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+                <p class="text">Sản phẩm rất tốt, đóng gói cẩn thận. Shop phục vụ chuyên nghiệp.</p>
+            </div>
+        </div>
+    </div>
+
+    <% } else { %>
+    <div class="card-section" style="text-align: center; padding: 100px;">
+        <h2>Không tìm thấy sản phẩm này!</h2>
+        <a href="Home" style="color: #ee4d2d;">Quay lại trang chủ</a>
+    </div>
+    <% } %>
 </main>
 
 <footer class="footer">

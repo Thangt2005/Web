@@ -71,7 +71,7 @@
         %>
         <div class="product-card">
             <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
-            <h3><a href="TrangChiTiet.jsp?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
+            <h3><a href="ProductDetail?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
                 <span class="discount">-<%= p.getGiamGia() %>%</span>

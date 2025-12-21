@@ -78,9 +78,9 @@
             </p>
             <div class="button-group">
                 <a href="page_ThemVaoGiohang.jsp?id=<%= p.getId() %>">
-                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm</button>
+                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng</button>
                 </a>
-                <button class="buy">Mua</button>
+                <button class="buy">Mua ngay</button>
             </div>
         </div>
         <%

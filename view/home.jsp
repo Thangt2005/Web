@@ -1,7 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.text.DecimalFormat" %>
-
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+%>
 <%
     // --- PHẦN 1: XỬ LÝ BACKEND (JAVA) ---
     Connection conn = null;
@@ -54,6 +57,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/main.js"></script>
+      <base href="<%=basePath%>">
   </head>
   <body>
 
@@ -75,12 +79,12 @@
 
         <ul class="user-menu">
           <li>
-            <a href="page_ThemVaoGiohang.jsp">
+            <a href="view/page_ThemVaoGiohang.jsp">
               <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
             </a>
           </li>
           <li>
-            <a href="login_page.jsp">
+            <a href="view/login_page.jsp">
               <i class="fas fa-user"></i> Đăng nhập
             </a>
           </li>
@@ -145,7 +149,7 @@
                 <img src="image_all/<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
 
                 <h3>
-                    <a href="TrangChiTiet.jsp?id=<%= id %>">
+                    <a href="ProductDetail?id=<%= id %>">
                         <%= tenSp %>
                     </a>
                 </h3>

@@ -87,9 +87,10 @@ public class ProductService {
     public List<Product> getPhuKienProducts(String s) { return getProductsFromTable("phukien_sanpham", s); }
 
     // --- HÀM LẤY CHI TIẾT SẢN PHẨM ---
-    public Product getProductById(int id) {
+    public Product getProductById(String table, int id) {
         Product p = null;
-        String sql = "SELECT * FROM home_sanpham WHERE id = ?";
+        // Sử dụng biến 'table' để câu lệnh SQL tìm đúng bảng
+        String sql = "SELECT * FROM " + table + " WHERE id = ?";
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);

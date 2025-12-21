@@ -4,26 +4,29 @@ import model.Product;
 import services.ProductService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import java.io.IOException;
 
-@WebServlet(name = "ProductDetailController", value = "/ProductDetail")
+@WebServlet(name = "ProductdetailsController", value = "/ProductDetail")
 public class ProductdetailsController extends HttpServlet {
-    @Override
+    // PHẢI CÓ DÒNG NÀY ĐỂ HẾT LỖI ĐỎ Ở DÒNG 22
+    private ProductService service = new ProductService();
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String idStr = request.getParameter("id");
+        String id = request.getParameter("id");
+        String category = request.getParameter("category"); // Lấy tên bảng từ URL
 
-        if (idStr != null) {
-            ProductService service = new ProductService();
-            Product p = service.getProductById(Integer.parseInt(idStr));
+        // Nếu không có category, mặc định lấy từ bảng home_sanpham
+        if (category == null || category.isEmpty()) {
+            category = "home_sanpham";
+        }
 
-            // Đẩy đối tượng sản phẩm sang trang JSP
+        if (id != null) {
+            Product p = service.getProductById(category, Integer.parseInt(id));
             request.setAttribute("product", p);
         }
 
-        // Chuyển hướng về file JSP trong thư mục view
-        request.getRequestDispatcher("view/TrangChiTiet.jsp").forward(request, response);
+        // Forward đến đúng file JSP trong thư mục view
+        request.getRequestDispatcher("view/page_XemChiTietSanPham.jsp").forward(request, response);
     }
 }

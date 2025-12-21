@@ -28,8 +28,8 @@
     <% } %>
 
     <div class="social-login">
-        <button class="facebook"><i class="fa-brands fa-facebook-f"></i><span> Đăng kí Facebook</span></button>
-        <button class="google"><i class="fa-brands fa-google"></i><span> Đăng kí Google</span></button>
+        <button class="facebook"><i class="fa-brands fa-facebook-f"></i><span> Đăng kí bằng Facebook</span></button>
+        <button class="google"><i class="fa-brands fa-google"></i><span> Đăng kí bằng Google</span></button>
 
         <h3>Tạo tài khoản tại đây</h3>
 

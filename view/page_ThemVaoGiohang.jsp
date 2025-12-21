@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
-<%-- Sửa URI JSTL cho Tomcat 10+ --%>
-<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -62,11 +61,11 @@
                 <img src="image_all/<%= item.get("hinh_anh") %>" alt="Product" />
                 <span><%= item.get("ten_sp") %></span>
             </td>
-            <td><fmt:formatNumber value="<%= item.get("gia") %>" type="number" />đ</td>
+            <td><fmt:formatNumber value='<%= item.get("gia") %>' type="number" />đ</td>
             <td class="qty">
                 <input type="number" value="<%= item.get("so_luong") %>" readonly />
             </td>
-            <td><fmt:formatNumber value="<%= item.get("tam_tinh") %>" type="number" />đ</td>
+            <td><fmt:formatNumber value='<%= item.get("tam_tinh") %>' type="number" />đ</td>
         </tr>
         <%
             }
