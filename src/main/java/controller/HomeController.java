@@ -15,18 +15,18 @@ public class HomeController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Lấy từ khóa tìm kiếm
+        // 1. Lấy từ khóa tìm kiếm từ thanh Search trên Header
         String search = request.getParameter("search");
 
-        // 2. Gọi Service để lấy dữ liệu
+        // 2. Gọi Service để lấy dữ liệu (Sửa tên hàm thành searchAllProducts)
         ProductService service = new ProductService();
-        List<Product> list = service.getAllProducts(search);
+        List<Product> list = service.searchAllProducts(search);
 
         // 3. Đẩy dữ liệu sang trang JSP
         request.setAttribute("productList", list);
-        request.setAttribute("txtSearch", search); // Để giữ lại chữ trong ô tìm kiếm
+        request.setAttribute("txtSearch", search); // Giữ lại từ khóa trong ô Input sau khi load trang
 
-        // 4. Chuyển hướng về giao diện
+        // 4. Chuyển hướng về giao diện home.jsp (bỏ dấu / ở đầu nếu dùng thẻ <base>)
         request.getRequestDispatcher("view/home.jsp").forward(request, response);
     }
 }
