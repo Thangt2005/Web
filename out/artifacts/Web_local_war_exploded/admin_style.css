@@ -419,12 +419,4 @@ header nav ul li a {
   margin-top: 15px;
   font-size: 14px;
 }
-/* CSS FIX FOOTER & LAYOUT */
-html, body { height: 100%; margin: 0; }
-.wrapper { min-height: 100%; display: flex; flex-direction: column; }
-.main-admin-container { flex: 1; display: flex; margin-top: 75px; }
-header { position: fixed; top: 0; left: 0; width: 100%; height: 75px; z-index: 1000; }
-footer { background: #222; color: white; padding: 20px 0; text-align: center; }
-.dashboard-content { flex: 1; padding: 30px; background: #f4f6f9; }
-.data-table img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
 

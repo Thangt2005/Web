@@ -21,8 +21,6 @@
             <div class="menu-title">MENU HỆ THỐNG</div>
             <ul>
                 <li class="active-admin"><a href="Admin"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="AdminOrder"><i class="fas fa-shopping-cart"></i> Đơn hàng</a></li>
-                <li><a href="Admin?viewTable=home_sanpham"><i class="fas fa-box"></i> Sản phẩm</a></li>
                 <li><a href="AdminCustomer"><i class="fas fa-users"></i> Khách hàng</a></li>
             </ul>
         </div>

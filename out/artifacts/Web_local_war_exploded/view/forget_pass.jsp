@@ -42,7 +42,7 @@
         </form>
 
         <div class="back-to-login">
-            <a href="login_page.jsp">&#8592; Quay lại Đăng nhập</a>
+            <a href="view/login_page.jsp">&#8592; Quay lại Đăng nhập</a>
         </div>
     </div>
 </div>

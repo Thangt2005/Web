@@ -1,18 +1,17 @@
 package controller;
 
-import services.UserServices;
+import services.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import services.UserServices;
 
 import java.io.IOException;
 
 @WebServlet(name = "ForgetPassController", value = "/ForgetPassword")
 public class ForgetpassController extends HttpServlet {
-    private UserServices userService = new UserServices();
+    private UserService userService = new UserService();
 
     // Hiển thị trang khi người dùng nhấn vào link Quên mật khẩu
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

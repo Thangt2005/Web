@@ -1,18 +1,17 @@
 package controller;
 
-import services.UserServices;
+import services.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import services.UserServices;
 
 import java.io.IOException;
 
 @WebServlet(name = "RegisterController", value = "/Register")
 public class RegisterController extends HttpServlet {
-    private UserServices userService = new UserServices();
+    private UserService userService = new UserService();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("view/register_page.jsp").forward(request, response);

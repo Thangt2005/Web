@@ -1,16 +1,15 @@
 package controller;
 
-import services.UserServices;
+import services.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import services.UserServices;
 
 import java.io.IOException;
 
 @WebServlet(name = "LoginController", value = "/Login")
 public class LoginController extends HttpServlet {
-    private UserServices userService = new UserServices();
+    private UserService userService = new UserService();
 
     // Hiển thị trang đăng nhập
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

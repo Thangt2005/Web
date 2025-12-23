@@ -29,13 +29,6 @@
 
 <div class="menu-container">
     <div class="top-menu">
-        <ul>
-            <li><a href="Home">Trang chủ</a></li>
-            <li><a href="Combo">Combo</a></li>
-            <li><a href="BonTam">Bồn Tắm</a></li>
-            <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
-            <li><a href="TuLavabo">Tủ Lavabo</a></li>
-        </ul>
     </div>
 </div>
 
