@@ -149,11 +149,56 @@ header nav ul li a {
 .top-menu ul li a:hover::after {
   width: 100%;
 }
+<<<<<<< HEAD
 
 /* ==================== MAIN CONTENT & SẢN PHẨM ==================== */
 .main-content {
   padding: 20px 50px;
   flex: 1; /* Đẩy footer xuống dưới cùng */
+=======
+/* --- 1. CHỈNH Ô NHẬP (search-input) --- */
+.search-form {
+  /* Đảm bảo form vẫn hiển thị ngang hàng */
+  display: flex;
+  align-items: center;
+  margin-right: 20px; /* Tạo khoảng cách với các mục Giỏ hàng/Đăng nhập */
+}
+
+.search-input {
+  /* Thiết lập lại kích thước và kiểu dáng */
+  width: 300px; /* Chiều rộng thanh tìm kiếm */
+  padding: 8px 12px;
+  border: none; /* Bỏ viền mặc định */
+  border-radius: 4px 0 0 4px; /* Góc bo tròn chỉ ở bên trái */
+  font-size: 14px;
+  background-color: #f7f7f7; /* Nền trắng ngà cho nổi bật */
+  color: #333;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Thêm bóng mờ nhẹ */
+}
+
+/* --- 2. CHỈNH ICON (search-icon) --- */
+.search-icon {
+  /* Nối liền với ô input */
+  background: #444; /* Dùng màu đỏ nổi bật (màu anh đã dùng cho gạch chân menu) */
+  color: white;
+  padding: 8px 12px;
+  border-radius: 0 4px 4px 0; /* Góc bo tròn chỉ ở bên phải */
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; /* Đảm bảo icon được căn giữa */
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.search-icon:hover {
+  background-color: #a00000; /* Đỏ đậm hơn khi rê chuột */
+}
+/* ==================== COMBO SẢN PHẨM ==================== */
+.main-content {
+  margin-top: 20px;
+  padding: 0 50px;
+>>>>>>> nhanh-9
 }
 
 .main-content h2 {
@@ -165,6 +210,7 @@ header nav ul li a {
   margin: 30px 0;
 }
 
+<<<<<<< HEAD
 /* --- LƯỚI SẢN PHẨM (Grid) --- */
 .product-grid {
     display: grid;
@@ -204,6 +250,38 @@ header nav ul li a {
     height: 180px;
     object-fit: contain;
     margin-bottom: 15px;
+=======
+/* LƯỚI SẢN PHẨM: Dùng class combo-grid như trong HTML */
+.combo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* THẺ SẢN PHẨM: Dùng class product-combo như trong HTML */
+.product-combo {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  padding: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-combo:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.product-combo img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 6px;
+>>>>>>> nhanh-9
 }
 
 /* Tên sản phẩm */
@@ -237,6 +315,7 @@ header nav ul li a {
     display: block;
 }
 
+<<<<<<< HEAD
 .discount {
     background-color: #d70018;
     color: #fff;
@@ -245,6 +324,16 @@ header nav ul li a {
     border-radius: 4px;
     margin-left: 5px;
     vertical-align: middle;
+=======
+.dis {
+  background-color: #ff4d4f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-left: 8px;
+>>>>>>> nhanh-9
 }
 
 /* Nút bấm */
@@ -291,14 +380,19 @@ header nav ul li a {
   margin-top: 50px;
   padding-top: 40px;
 }
-
 .footer-container {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
+<<<<<<< HEAD
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+=======
+  padding: 0;
+  padding-left: 0;
+  padding-right: 0;
+>>>>>>> nhanh-9
 }
 
 .footer-column {
@@ -344,6 +438,7 @@ header nav ul li a {
   text-align: center;
   padding: 15px;
   background: #111;
+<<<<<<< HEAD
   font-size: 13px;
   color: #888;
 }
@@ -361,3 +456,8 @@ header nav ul li a {
 .suggestion-item img { width: 40px; height: 40px; margin-right: 12px; border-radius: 4px; }
 .suggestion-item .info { display: flex; flex-direction: column; }
 .suggestion-item .name { font-weight: bold; font-size: 14px; }
+=======
+  margin-top: 15px;
+  font-size: 14px;
+}
+>>>>>>> nhanh-9
