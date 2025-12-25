@@ -1,3 +1,4 @@
+
 /* ==================== RESET & CHUNG ==================== */
 *,
 *::before,
@@ -150,11 +151,15 @@ header nav ul li a {
   width: 100%;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> nhanh-11
 
 /* ==================== MAIN CONTENT & SẢN PHẨM ==================== */
 .main-content {
   padding: 20px 50px;
   flex: 1; /* Đẩy footer xuống dưới cùng */
+<<<<<<< HEAD
 =======
 /* --- 1. CHỈNH Ô NHẬP (search-input) --- */
 .search-form {
@@ -199,6 +204,8 @@ header nav ul li a {
   margin-top: 20px;
   padding: 0 50px;
 >>>>>>> nhanh-9
+=======
+>>>>>>> nhanh-11
 }
 
 .main-content h2 {
@@ -211,6 +218,9 @@ header nav ul li a {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> nhanh-11
 /* --- LƯỚI SẢN PHẨM (Grid) --- */
 .product-grid {
     display: grid;
@@ -250,6 +260,7 @@ header nav ul li a {
     height: 180px;
     object-fit: contain;
     margin-bottom: 15px;
+<<<<<<< HEAD
 =======
 /* LƯỚI SẢN PHẨM: Dùng class combo-grid như trong HTML */
 .combo-grid {
@@ -282,6 +293,8 @@ header nav ul li a {
   object-fit: cover;
   border-radius: 6px;
 >>>>>>> nhanh-9
+=======
+>>>>>>> nhanh-11
 }
 
 /* Tên sản phẩm */
@@ -316,6 +329,9 @@ header nav ul li a {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> nhanh-11
 .discount {
     background-color: #d70018;
     color: #fff;
@@ -324,6 +340,7 @@ header nav ul li a {
     border-radius: 4px;
     margin-left: 5px;
     vertical-align: middle;
+<<<<<<< HEAD
 =======
 .dis {
   background-color: #ff4d4f;
@@ -334,6 +351,8 @@ header nav ul li a {
   border-radius: 4px;
   margin-left: 8px;
 >>>>>>> nhanh-9
+=======
+>>>>>>> nhanh-11
 }
 
 /* Nút bấm */
@@ -380,10 +399,12 @@ header nav ul li a {
   margin-top: 50px;
   padding-top: 40px;
 }
+
 .footer-container {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
+<<<<<<< HEAD
 <<<<<<< HEAD
   max-width: 1200px;
   margin: 0 auto;
@@ -393,6 +414,11 @@ header nav ul li a {
   padding-left: 0;
   padding-right: 0;
 >>>>>>> nhanh-9
+=======
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+>>>>>>> nhanh-11
 }
 
 .footer-column {
@@ -439,6 +465,7 @@ header nav ul li a {
   padding: 15px;
   background: #111;
 <<<<<<< HEAD
+<<<<<<< HEAD
   font-size: 13px;
   color: #888;
 }
@@ -461,3 +488,8 @@ header nav ul li a {
   font-size: 14px;
 }
 >>>>>>> nhanh-9
+=======
+  font-size: 13px;
+  color: #888;
+}
+>>>>>>> nhanh-11
