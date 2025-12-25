@@ -17,7 +17,7 @@ public class BontieunamController extends HttpServlet {
         String search = request.getParameter("search");
 
         ProductService service = new ProductService();
-        List<Product> list = service.getBonTieuNamProducts(search);
+        List<Product> list = service.getProductsByTable("bontieunam_sanpham", search);
 
         request.setAttribute("productList", list);
         request.setAttribute("txtSearch", search);

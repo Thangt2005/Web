@@ -17,7 +17,7 @@ public class VoiruaController extends HttpServlet {
         String search = request.getParameter("search");
 
         ProductService service = new ProductService();
-        List<Product> list = service.getVoiRuaProducts(search);
+        List<Product> list = service.getProductsByTable("voirua_sanpham", search);
 
         // Đẩy dữ liệu sang JSP
         request.setAttribute("productList", list);

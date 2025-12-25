@@ -6,86 +6,76 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductService {
+    // Database configuration
     private String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
     private String user = "root";
     private String pass = "";
 
-    // --- HÀM TRỢ GIÚP DÙNG NỘI BỘ ---
-    private List<Product> getDataByTable(String tableName, String search) {
+    // 1. HÀM PHỤ: Chuyển dữ liệu từ Database thành đối tượng Java (Dùng chung để tránh dư thừa)
+    private Product mapProduct(ResultSet rs, String tableName) throws SQLException {
+        Product p = new Product(
+                rs.getInt("id"),
+                rs.getString("ten_sp"),
+                rs.getString("hinh_anh"),
+                rs.getDouble("gia"),
+                rs.getInt("giam_gia")
+        );
+        p.setCategory(tableName); // Lưu lại tên bảng để làm link chi tiết
+        return p;
+    }
+
+    // 2. HÀM LẤY SẢN PHẨM THEO BẢNG: Thay thế cho 12 hàm riêng lẻ trước đây
+    public List<Product> getProductsByTable(String tableName, String search) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM " + tableName;
         if (search != null && !search.trim().isEmpty()) {
             sql += " WHERE ten_sp LIKE ?";
         }
+
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             if (search != null && !search.trim().isEmpty()) {
                 ps.setString(1, "%" + search.trim() + "%");
             }
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Product p = new Product(rs.getInt("id"), rs.getString("ten_sp"),
-                            rs.getString("hinh_anh"), rs.getDouble("gia"),
-                            rs.getInt("giam_gia"));
-                    p.setCategory(tableName);
-                    list.add(p);
+                    list.add(mapProduct(rs, tableName));
                 }
             }
         } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
 
-    // --- CÁC HÀM RIÊNG BIỆT CHO TỪNG CONTROLLER (Fix lỗi image_056272.jpg) ---
-    // Anh gọi hàm nào ở Controller thì em đã tạo đúng tên hàm đó ở đây ạ
+    // 3. HÀM TÌM KIẾM TOÀN TRANG: Quét qua 12 bảng không dùng UNION ALL
+    public List<Product> searchEverywhere(String keyword) {
+        List<Product> allResults = new ArrayList<>();
+        String[] tables = {
+                "home_sanpham", "combo_sanpham", "toilet_sanpham", "lavabo_sanpham",
+                "voirua_sanpham", "bontam_sanpham", "phukien_sanpham", "chauruachen_sanpham",
+                "voisentam_sanpham", "voisen_sanpham", "bontieunam_sanpham", "tulavabo_sanpham"
+        };
 
-    public List<Product> getAllProducts(String s) { return getDataByTable("home_sanpham", s); }
-    public List<Product> getComboProducts(String s) { return getDataByTable("combo_sanpham", s); }
-    public List<Product> getToiletProducts(String s) { return getDataByTable("toilet_sanpham", s); }
-    public List<Product> getLavaboProducts(String s) { return getDataByTable("lavabo_sanpham", s); }
-    public List<Product> getVoiRuaProducts(String s) { return getDataByTable("voirua_sanpham", s); }
-    public List<Product> getBonTamProducts(String s) { return getDataByTable("bontam_sanpham", s); }
-    public List<Product> getTuLavaboProducts(String s) { return getDataByTable("tulavabo_sanpham", s); }
-    public List<Product> getVoiSenTamProducts(String s) { return getDataByTable("voisentam_sanpham", s); }
-    public List<Product> getVoiSenProducts(String s) { return getDataByTable("voisen_sanpham", s); }
-    public List<Product> getChauRuaChenProducts(String s) { return getDataByTable("chauruachen_sanpham", s); }
-    public List<Product> getBonTieuNamProducts(String s) { return getDataByTable("bontieunam_sanpham", s); }
-    public List<Product> getPhuKienProducts(String s) { return getDataByTable("phukien_sanpham", s); }
+        try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+            String p = "%" + (keyword == null ? "" : keyword.trim()) + "%";
 
-    // --- HÀM CHO ADMIN (Fix lỗi image_055df0.jpg - chỉ cần 1 tham số) ---
-    public List<Product> getProductsByTable(String tableName) {
-        return getDataByTable(tableName, null);
-    }
-
-    // --- HÀM TÌM KIẾM TOÀN HỆ THỐNG (Fix lỗi image_056d8e.jpg) ---
-    public List<Product> searchAllProducts(String search) {
-        List<Product> list = new ArrayList<>();
-        String[] tables = {"bontam_sanpham", "bontieunam_sanpham", "chauruachen_sanpham", "combo_sanpham", "home_sanpham", "lavabo_sanpham", "phukien_sanpham", "toilet_sanpham", "tulavabo_sanpham", "voirua_sanpham", "voisentam_sanpham", "voisen_sanpham"};
-        StringBuilder sql = new StringBuilder();
-
-        for (int i = 0; i < tables.length; i++) {
-            sql.append("SELECT id, ten_sp, hinh_anh, gia, giam_gia, '").append(tables[i]).append("' as table_source FROM ").append(tables[i]);
-            if (search != null && !search.trim().isEmpty()) sql.append(" WHERE ten_sp LIKE ?");
-            if (i < tables.length - 1) sql.append(" UNION ALL ");
-        }
-
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            if (search != null && !search.trim().isEmpty()) {
-                for (int j = 1; j <= tables.length; j++) ps.setString(j, "%" + search.trim() + "%");
-            }
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Product p = new Product(rs.getInt("id"), rs.getString("ten_sp"), rs.getString("hinh_anh"), rs.getDouble("gia"), rs.getInt("giam_gia"));
-                    p.setCategory(rs.getString("table_source"));
-                    list.add(p);
+            for (String tableName : tables) {
+                String sql = "SELECT * FROM " + tableName + " WHERE ten_sp LIKE ?";
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, p);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            allResults.add(mapProduct(rs, tableName));
+                        }
+                    }
                 }
             }
         } catch (Exception e) { e.printStackTrace(); }
-        return list;
+        return allResults;
     }
 
-    // --- CÁC HÀM THỐNG KÊ & CRUD KHÁC ---
-
+    // 4. CÁC HÀM THỐNG KÊ (Cho trang Admin Dashboard)
     public int getTotalProducts() {
         int total = 0;
         String sql = "SELECT (SELECT COUNT(*) FROM bontam_sanpham) + (SELECT COUNT(*) FROM bontieunam_sanpham) + " +
@@ -113,44 +103,78 @@ public class ProductService {
         return total;
     }
 
-    public boolean addProduct(String t, String n, String a, String g, String gg) {
-        String sql = "INSERT INTO " + t + " (ten_sp, hinh_anh, gia, giam_gia) VALUES (?, ?, ?, ?)";
+    // 5. CÁC HÀM QUẢN LÝ (CRUD)
+    public boolean addProduct(String tableName, String name, String img, String price, String discount) {
+        String sql = "INSERT INTO " + tableName + " (ten_sp, hinh_anh, gia, giam_gia) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, n); ps.setString(2, a);
-            ps.setDouble(3, Double.parseDouble(g)); ps.setInt(4, Integer.parseInt(gg));
+            ps.setString(1, name);
+            ps.setString(2, img);
+            ps.setDouble(3, Double.parseDouble(price));
+            ps.setInt(4, Integer.parseInt(discount));
             return ps.executeUpdate() > 0;
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
-    public boolean deleteProduct(String t, int id) {
-        String sql = "DELETE FROM " + t + " WHERE id = ?";
+    public boolean deleteProduct(String tableName, int id) {
+        String sql = "DELETE FROM " + tableName + " WHERE id = ?";
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id); return ps.executeUpdate() > 0;
-        } catch (Exception e) { e.printStackTrace(); return false; }
-    }
-
-    public boolean updateProduct(String t, int id, String n, String a, double g, int gg) {
-        String sql = "UPDATE " + t + " SET ten_sp = ?, hinh_anh = ?, gia = ?, giam_gia = ? WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, n); ps.setString(2, a); ps.setDouble(3, g); ps.setInt(4, gg); ps.setInt(5, id);
+            ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
-    public Product getProductById(String t, int id) {
-        String sql = "SELECT * FROM " + t + " WHERE id = ?";
+    public boolean updateProduct(String tableName, int id, String name, String img, double price, int discount) {
+        String sql = "UPDATE " + tableName + " SET ten_sp = ?, hinh_anh = ?, gia = ?, giam_gia = ? WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(url, user, pass);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, img);
+            ps.setDouble(3, price);
+            ps.setInt(4, discount);
+            ps.setInt(5, id);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) { e.printStackTrace(); return false; }
+    }
+
+    public Product getProductById(String tableName, int id) {
+        String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return new Product(rs.getInt("id"), rs.getString("ten_sp"),
-                        rs.getString("hinh_anh"), rs.getDouble("gia"),
-                        rs.getInt("giam_gia"));
+                if (rs.next()) return mapProduct(rs, tableName);
             }
         } catch (Exception e) { e.printStackTrace(); }
         return null;
+    }
+    //hàm lấy gợi ý cho thanh tìm kiếm
+    public List<Product> getSearchSuggestions(String keyword) {
+        List<Product> suggestions = new ArrayList<>();
+        String[] tables = {
+                "home_sanpham", "combo_sanpham", "toilet_sanpham", "lavabo_sanpham",
+                "voirua_sanpham", "bontam_sanpham", "phukien_sanpham", "chauruachen_sanpham",
+                "voisentam_sanpham", "voisen_sanpham", "bontieunam_sanpham", "tulavabo_sanpham"
+        };
+
+        try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+            String p = "%" + (keyword == null ? "" : keyword.trim()) + "%";
+            for (String tableName : tables) {
+                // Chỉ lấy 3 sản phẩm mỗi bảng để gợi ý cho nhanh, tránh lag
+                String sql = "SELECT * FROM " + tableName + " WHERE ten_sp LIKE ? LIMIT 3";
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, p);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            suggestions.add(mapProduct(rs, tableName));
+                        }
+                    }
+                }
+                // Nếu đã đủ 10 gợi ý thì dừng lại cho nhanh
+                if (suggestions.size() >= 10) break;
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return suggestions;
     }
 }

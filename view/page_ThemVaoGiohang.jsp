@@ -1,39 +1,37 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.*" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-
+<%@ page import="java.util.*, java.text.DecimalFormat" %>
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+    DecimalFormat formatter = new DecimalFormat("###,###");
+%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%
-        String path = request.getContextPath();
-        String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
-    %>
     <base href="<%=basePath%>">
     <meta charset="UTF-8" />
-    <title>Giỏ Hàng - MVC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng - Thiết Bị Vệ Sinh</title>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <%-- Đảm bảo file CSS đã nằm ngoài thư mục WEB-INF --%>
+    <link rel="stylesheet" href="homeStyle.css" /> <%-- Dùng chung style header/footer --%>
     <link rel="stylesheet" href="css_ThemVaoGioHang.css" />
 </head>
 <body>
+
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
         <ul class="user-menu">
-            <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
-            <li><a href="#"><i class="fas fa-user"></i> thangtt26</a></li>
+            <li><a href="Home"><i class="fa-solid fa-house"></i> Tiếp tục mua hàng</a></li>
+            <li><a href="#"><i class="fas fa-user"></i> Anh Thắng</a></li>
         </ul>
     </nav>
 </header>
 
-<div class="menu-container">
-    <div class="top-menu">
-    </div>
-</div>
-
 <main class="cart-container">
-    <h2 style="text-align:center; margin: 20px 0;">CHI TIẾT GIỎ HÀNG</h2>
+    <h2 style="text-align:center; margin: 30px 0; color: #333;">CHI TIẾT GIỎ HÀNG CỦA ANH</h2>
+
     <table class="cart-table">
         <thead>
         <tr>
@@ -41,40 +39,69 @@
             <th>Giá</th>
             <th>Số lượng</th>
             <th>Tạm tính</th>
+            <th>Thao tác</th>
         </tr>
         </thead>
         <tbody>
         <%
+            // Lấy danh sách sản phẩm chi tiết từ CartController (Servlet) truyền sang
             List<Map<String, Object>> items = (List<Map<String, Object>>) request.getAttribute("cartItems");
+            double totalPrice = 0;
+
             if (items != null && !items.isEmpty()) {
                 for (Map<String, Object> item : items) {
+                    double gia = (double) item.get("gia");
+                    int soLuong = (int) item.get("so_luong");
+                    double tamTinh = gia * soLuong;
+                    totalPrice += tamTinh;
         %>
         <tr>
             <td class="product-info">
-                <img src="image_all/<%= item.get("hinh_anh") %>" alt="Product" />
-                <span><%= item.get("ten_sp") %></span>
+                <img src="image_all/<%= item.get("hinh_anh") %>" alt="Product" onerror="this.src='https://via.placeholder.com/80'"/>
+                <span class="product-name"><%= item.get("ten_sp") %></span>
             </td>
-            <td><fmt:formatNumber value='<%= item.get("gia") %>' type="number" />đ</td>
+            <td class="price"><%= formatter.format(gia) %>đ</td>
             <td class="qty">
-                <input type="number" value="<%= item.get("so_luong") %>" readonly />
+                <div class="qty-control">
+                    <input type="number" value="<%= soLuong %>" min="1" readonly />
+                </div>
             </td>
-            <td><fmt:formatNumber value='<%= item.get("tam_tinh") %>' type="number" />đ</td>
+            <td class="subtotal"><%= formatter.format(tamTinh) %>đ</td>
+            <td>
+                <a href="Cart?action=delete&id=<%= item.get("id") %>" class="remove-btn" onclick="return confirm('bạn chắc chắn muốn xóa sản phẩm này?')">
+                    <i class="fa-solid fa-trash"></i> Xóa
+                </a>
+            </td>
         </tr>
         <%
             }
         } else {
         %>
-        <tr><td colspan='4' style='text-align:center;'>Giỏ hàng trống!</td></tr>
+        <tr>
+            <td colspan="5" style="text-align:center; padding: 50px;">
+                <i class="fa-solid fa-cart-shopping" style="font-size: 50px; color: #ccc;"></i>
+                <p style="margin-top: 15px; color: #666;">Giỏ hàng của anh Thắng đang trống ạ!</p>
+                <a href="Home" class="checkout-btn" style="display:inline-block; width: auto; padding: 10px 30px; margin-top: 10px;">
+                    Quay lại mua sắm ngay
+                </a>
+            </td>
+        </tr>
         <% } %>
         </tbody>
     </table>
 
+    <% if (items != null && !items.isEmpty()) { %>
     <div class="cart-total">
-        <h3>Tổng cộng giỏ hàng</h3>
-        <p><span>Tổng tiền:</span> <strong><fmt:formatNumber value="${totalPrice}" type="number" />đ</strong></p>
-        <button class="checkout-btn">Tiến hành thanh toán</button>
-        <a href="Home" style="display:block; text-align:center; margin-top:10px; color:#c49a00;">Tiếp tục mua hàng</a>
+        <div class="total-row">
+            <span>Tổng cộng giỏ hàng:</span>
+            <strong class="total-amount"><%= formatter.format(totalPrice) %>đ</strong>
+        </div>
+        <div class="action-buttons">
+            <a href="Home" class="continue-shopping">Tiếp tục mua hàng</a>
+            <button class="checkout-btn" onclick="window.location.href='view/page_thanhToan.jsp'">Tiến hành thanh toán</button>
+        </div>
     </div>
+    <% } %>
 </main>
 
 <footer class="footer">

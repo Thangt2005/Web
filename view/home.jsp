@@ -6,24 +6,20 @@
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
 %>
 <%
-    // --- PHẦN 1: XỬ LÝ BACKEND (JAVA) ---
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
 
     String errorMessage = "";
-    DecimalFormat formatter = new DecimalFormat("###,###"); // Định dạng tiền tệ: 1.500.000
+    DecimalFormat formatter = new DecimalFormat("###,###");
 
     try {
-        // 1. Load Driver & Kết nối
         Class.forName("com.mysql.cj.jdbc.Driver");
-        // Lưu ý: Anh kiểm tra lại port 3306 hoặc 3307 tùy máy anh nhé
         String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
         String user = "root";
         String pass = "";
         conn = DriverManager.getConnection(url, user, pass);
 
-        // 2. Xử lý logic Tìm kiếm
         String searchTerm = request.getParameter("search");
         String sql = "SELECT * FROM home_sanpham";
 
@@ -47,7 +43,7 @@
 
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ - Thiết bị vệ sinh</title>
@@ -57,84 +53,79 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/main.js"></script>
-      <base href="<%=basePath%>">
-  </head>
-  <body>
+    <base href="<%=basePath%>">
+</head>
+<body>
 
-    <header>
-      <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
-      <nav>
-        <form class="search-form" action="home.jsp" method="GET">
-          <input
-            type="text"
-            name="search"
-            placeholder="Tìm kiếm sản phẩm ..."
-            class="search-input"
-            value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>"
-          />
-          <button type="submit" class="search-icon">
-            <i class="fa fa-search"></i>
-          </button>
-        </form>
+<header>
+    <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
+    <nav>
+        <div class="search-container" style="position: relative;">
+            <form class="search-form" action="Home" method="GET" id="searchForm">
+                <input
+                        type="text"
+                        id="searchInput"
+                        name="search"
+                        placeholder="Tìm kiếm sản phẩm ..."
+                        class="search-input"
+                        autocomplete="off"
+                        value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>"
+                />
+                <button type="submit" class="search-icon">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
+            <div id="suggestionBox" class="suggestion-box"></div>
+        </div>
 
         <ul class="user-menu">
-          <li>
-            <a href="view/page_ThemVaoGiohang.jsp">
-              <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
-            </a>
-          </li>
-          <li>
-            <a href="view/login_page.jsp">
-              <i class="fas fa-user"></i> Đăng nhập
-            </a>
-          </li>
+            <%-- ĐÃ SỬA: Trỏ về Servlet Cart để nạp dữ liệu --%>
+            <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
+            <li><a href="view/login_page.jsp"><i class="fas fa-user"></i> Đăng nhập</a></li>
         </ul>
-      </nav>
-    </header>
+    </nav>
+</header>
 
-    <div class="menu-container">
-      <div class="sidebar">
+<div class="menu-container">
+    <div class="sidebar">
         <div class="menu-title">
-          <i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM
-        </div>
-      </div>
-
-        <div class="top-menu">
-            <ul>
-                <li><a href="Home" class="active">Trang chủ</a></li>
-                <li><a href="Combo">Combo</a></li>
-                <li><a href="Toilet">Bồn Cầu</a></li>
-                <li><a href="Lavabo">Lavabo</a></li>
-                <li><a href="TuLavabo">Tủ Lavabo</a></li>
-                <li><a href="VoiSenTam">Vòi Sen Tắm</a></li>
-                <li><a href="ChauRuaChen">Chậu Rửa Chén</a></li>
-                <li><a href="BonTam">Bồn Tắm</a></li>
-                <li><a href="VoiRua">Vòi Rửa</a></li>
-                <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
-                <li><a href="PhuKien">Phụ Kiện</a></li>
-                <li><a href="Admin">Admin</a></li>
-            </ul>
+            <i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM
         </div>
     </div>
 
-    <main class="main-content">
-        <%-- Tiêu đề động --%>
-        <% if (request.getParameter("search") != null && !request.getParameter("search").isEmpty()) { %>
-            <h2>Kết quả tìm kiếm cho: "<%= request.getParameter("search") %>"</h2>
-        <% } else { %>
-            <h2>Sản phẩm nổi bật</h2>
-        <% } %>
+    <div class="top-menu">
+        <ul>
+            <li><a href="Home" class="active">Trang chủ</a></li>
+            <li><a href="Combo">Combo</a></li>
+            <li><a href="Toilet">Bồn Cầu</a></li>
+            <li><a href="Lavabo">Lavabo</a></li>
+            <li><a href="TuLavabo">Tủ Lavabo</a></li>
+            <li><a href="VoiSenTam">Vòi Sen Tắm</a></li>
+            <li><a href="ChauRuaChen">Chậu Rửa Chén</a></li>
+            <li><a href="BonTam">Bồn Tắm</a></li>
+            <li><a href="VoiRua">Vòi Rửa</a></li>
+            <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
+            <li><a href="PhuKien">Phụ Kiện</a></li>
+            <li><a href="Admin">Admin</a></li>
+        </ul>
+    </div>
+</div>
 
-        <%-- Hiển thị lỗi DB nếu có --%>
-        <% if (!errorMessage.isEmpty()) { %>
-            <div style="color: red; text-align: center; padding: 20px; font-weight: bold; background: #ffe6e6; border: 1px solid red; margin: 10px;">
-                <%= errorMessage %>
-            </div>
-        <% } %>
+<main class="main-content">
+    <% if (request.getParameter("search") != null && !request.getParameter("search").isEmpty()) { %>
+    <h2>Kết quả tìm kiếm cho: "<%= request.getParameter("search") %>"</h2>
+    <% } else { %>
+    <h2>Sản phẩm nổi bật</h2>
+    <% } %>
 
-        <div class="product-grid">
+    <% if (!errorMessage.isEmpty()) { %>
+    <div style="color: red; text-align: center; padding: 20px; font-weight: bold; background: #ffe6e6; border: 1px solid red; margin: 10px;">
+        <%= errorMessage %>
+    </div>
+    <% } %>
+
+    <div class="product-grid">
         <%
-            // --- PHẦN 2: VÒNG LẶP HIỂN THỊ SẢN PHẨM ---
             if (rs != null) {
                 boolean hasData = false;
                 while (rs.next()) {
@@ -145,97 +136,94 @@
                     double gia = rs.getDouble("gia");
                     int giamGia = rs.getInt("giam_gia");
         %>
-            <div class="product-card">
-                <img src="image_all/<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+        <div class="product-card">
+            <img src="image_all/<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
 
-                <h3>
-                    <a href="ProductDetail?id=<%= id %>">
-                        <%= tenSp %>
-                    </a>
-                </h3>
+            <h3>
+                <a href="ProductDetail?id=<%= id %>">
+                    <%= tenSp %>
+                </a>
+            </h3>
 
-                <p class="price">
-                    <%= formatter.format(gia) %>đ
-                    <% if(giamGia > 0) { %>
-                        <span class="discount">-<%= giamGia %>%</span>
-                    <% } %>
-                </p>
+            <p class="price">
+                <%= formatter.format(gia) %>đ
+                <% if(giamGia > 0) { %>
+                <span class="discount">-<%= giamGia %>%</span>
+                <% } %>
+            </p>
 
-                <div class="button-group">
-                    <%-- NÚT 1: GỌI HÀM JS THÊM GIỎ HÀNG --%>
-                    <button class="add-to-cart" type="button" onclick="themVaoGioHang(<%= id %>)">
-                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                    </button>
-
-                    <%-- NÚT 2: GỌI HÀM JS MUA NGAY --%>
-                    <button class="buy" type="button" onclick="muaNgay(<%= id %>)">
-                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                    </button>
-                </div>
+            <div class="button-group">
+                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= id %>'">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                </button>
+                <button class="buy" type="button" onclick="muaNgay(<%= id %>)">
+                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                </button>
             </div>
-            <%
-                } // Kết thúc while
+        </div>
+        <%
+            }
 
-                if (!hasData) {
-            %>
-                    <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
-                        <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
-                        <p>Không tìm thấy sản phẩm nào phù hợp!</p>
-                        <a href="ho me.jsp" style="color: #007bff; text-decoration: underline;">Quay lại trang chủ</a>
-                    </div>
+            if (!hasData) {
+        %>
+        <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
+            <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
+            <p>Không tìm thấy sản phẩm nào phù hợp!</p>
+            <a href="Home" style="color: #007bff; text-decoration: underline;">Quay lại trang chủ</a>
+        </div>
         <%
                 }
             }
         %>
-        </div>
-    </main>
+    </div>
+</main>
 
-    <footer class="footer">
-      <div class="footer-container">
+<%-- PHẦN FOOTER FULL CỦA ANH THẮNG --%>
+<footer class="footer">
+    <div class="footer-container">
         <div class="footer-column">
-          <h3>VỀ CHÚNG TÔI</h3>
-          <p>
-            Chuyên cung cấp thiết bị vệ sinh, phòng tắm chính hãng, giá tốt nhất
-            thị trường.
-          </p>
-        </div>
-
-        <div class="footer-column">
-          <h3>LIÊN HỆ</h3>
-          <p><i class="fa-solid fa-phone"></i> 0909 123 456</p>
-          <p><i class="fa-solid fa-envelope"></i> contact@thietbivesinh.vn</p>
-          <p><i class="fa-solid fa-location-dot"></i> TP. Hồ Chí Minh</p>
+            <h3>VỀ CHÚNG TÔI</h3>
+            <p>
+                Chuyên cung cấp thiết bị vệ sinh, phòng tắm chính hãng, giá tốt nhất
+                thị trường.
+            </p>
         </div>
 
         <div class="footer-column">
-          <h3>HỖ TRỢ KHÁCH HÀNG</h3>
-          <ul>
-            <li><a href="#">Chính sách giao hàng</a></li>
-            <li><a href="#">Chính sách bảo hành</a></li>
-            <li><a href="#">Hướng dẫn thanh toán</a></li>
-            <li><a href="#">Chăm sóc khách hàng</a></li>
-          </ul>
+            <h3>LIÊN HỆ</h3>
+            <p><i class="fa-solid fa-phone"></i> 0909 123 456</p>
+            <p><i class="fa-solid fa-envelope"></i> contact@thietbivesinh.vn</p>
+            <p><i class="fa-solid fa-location-dot"></i> TP. Hồ Chí Minh</p>
         </div>
 
         <div class="footer-column">
-          <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
-          <div class="social-icons">
-            <a href="https://www.facebook.com/huuthang11092005" target="_blank"><i class="fa-brands fa-facebook"></i></a>
-            <a href="https://www.youtube.com/@huuthangtran9024/posts" target="_blank"><i class="fa-brands fa-youtube"></i></a>
-            <a href="https://www.tiktok.com/@thangtt26" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
-          </div>
+            <h3>HỖ TRỢ KHÁCH HÀNG</h3>
+            <ul>
+                <li><a href="#">Chính sách giao hàng</a></li>
+                <li><a href="#">Chính sách bảo hành</a></li>
+                <li><a href="#">Hướng dẫn thanh toán</a></li>
+                <li><a href="#">Chăm sóc khách hàng</a></li>
+            </ul>
         </div>
-      </div>
 
-      <div class="footer-bottom">
+        <div class="footer-column">
+            <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/huuthang11092005" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.youtube.com/@huuthangtran9024/posts" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://www.tiktok.com/@thangtt26" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
-      </div>
-    </footer>
-  </body>
+    </div>
+</footer>
+</body>
 </html>
 
 <%
-    // --- PHẦN 3: ĐÓNG KẾT NỐI (Bắt buộc) ---
     try { if(rs != null) rs.close(); } catch(Exception e) {}
     try { if(ps != null) ps.close(); } catch(Exception e) {}
     try { if(conn != null) conn.close(); } catch(Exception e) {}

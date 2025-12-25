@@ -347,3 +347,17 @@ header nav ul li a {
   font-size: 13px;
   color: #888;
 }
+.suggestion-box {
+    position: absolute; top: 100%; left: 0; width: 100%;
+    background: white; border: 1px solid #ddd; border-top: none;
+    z-index: 9999; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 0 0 8px 8px; max-height: 350px; overflow-y: auto;
+}
+.suggestion-item {
+    padding: 10px; cursor: pointer; display: flex; align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+.suggestion-item:hover { background: #f8f9fa; }
+.suggestion-item img { width: 40px; height: 40px; margin-right: 12px; border-radius: 4px; }
+.suggestion-item .info { display: flex; flex-direction: column; }
+.suggestion-item .name { font-weight: bold; font-size: 14px; }

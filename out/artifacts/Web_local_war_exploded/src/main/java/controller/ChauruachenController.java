@@ -17,7 +17,7 @@ public class ChauruachenController extends HttpServlet {
         String search = request.getParameter("search");
 
         ProductService service = new ProductService();
-        List<Product> list = service.getChauRuaChenProducts(search);
+        List<Product> list = service.getProductsByTable("chauruachen_sanpham", search);
 
         // Đẩy dữ liệu sang trang JSP
         request.setAttribute("productList", list);

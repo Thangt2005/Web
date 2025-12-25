@@ -41,7 +41,7 @@ public class AdminController extends HttpServlet {
         List<Product> list = List.of();
         if (viewTable != null && !viewTable.equals("all")) {
             // Xem sản phẩm theo 1 bảng cụ thể (Lavabo, Bồn cầu...)
-            list = services.getProductsByTable(viewTable);
+            list = services.getProductsByTable(viewTable,null);
         }
 
         // Gửi dữ liệu thống kê và danh sách sang JSP

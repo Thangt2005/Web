@@ -17,7 +17,7 @@ public class PhukienController extends HttpServlet {
         String search = request.getParameter("search");
 
         ProductService service = new ProductService();
-        List<Product> list = service.getPhuKienProducts(search);
+        List<Product> list = service.getProductsByTable("phukien_sanpham", search);
 
         // Đẩy dữ liệu và từ khóa sang JSP
         request.setAttribute("productList", list);
