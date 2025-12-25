@@ -19,7 +19,7 @@ public class LavaboController extends HttpServlet {
 
         // 2. Gọi Service để lấy dữ liệu Lavabo
         ProductService service = new ProductService();
-        List<Product> list = service.getLavaboProducts(search);
+        List<Product> list = service.getProductsByTable("lavabo_sanpham", search);
 
         // 3. Đẩy dữ liệu và từ khóa sang JSP
         request.setAttribute("productList", list);

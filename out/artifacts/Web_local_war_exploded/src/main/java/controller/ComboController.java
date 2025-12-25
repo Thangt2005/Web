@@ -20,7 +20,7 @@ public class ComboController extends HttpServlet {
         // 2. Gọi Service để lấy dữ liệu
         ProductService service = new ProductService();
 
-        List<Product> list = service.getComboProducts(search);
+        List<Product> list = service.getProductsByTable("combo_sanpham", search);
 
         // 3. Đẩy dữ liệu sang JSP
         request.setAttribute("productList", list);

@@ -17,7 +17,7 @@ public class TulavaboController extends HttpServlet {
         String search = request.getParameter("search");
 
         ProductService service = new ProductService();
-        List<Product> list = service.getTuLavaboProducts(search);
+        List<Product> list = service.getProductsByTable("tulavabo_sanpham", search);
 
         // Đẩy dữ liệu sang JSP
         request.setAttribute("productList", list);

@@ -20,7 +20,7 @@ public class HomeController extends HttpServlet {
 
         // 2. Gọi Service để lấy dữ liệu (Sửa tên hàm thành searchAllProducts)
         ProductService service = new ProductService();
-        List<Product> list = service.searchAllProducts(search);
+        List<Product> list = service.searchEverywhere(search);
 
         // 3. Đẩy dữ liệu sang trang JSP
         request.setAttribute("productList", list);
