@@ -19,10 +19,13 @@
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="Combo">
-            <input type="text" name="search" class="search-input" placeholder="Tìm kiếm combo..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>">
-            <button class="search-icon"><i class="fa fa-search"></i></button>
+        <form class="search-form" method="get" action="Combo" autocomplete="off">
+            <input type="text" id="search-input" name="search" class="search-input"
+                   placeholder="Tìm kiếm combo..."
+                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
+                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
+
+            <ul id="suggestion-box" class="suggestion-box"></ul>
         </form>
         <ul class="user-menu">
             <li><a href="page_ThemVaoGiohang.jsp"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
@@ -133,5 +136,53 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script>
+    // Hàm gọi Ajax tìm kiếm
+    function searchProducts(input) {
+        let keyword = input.value.trim();
+        let suggestionBox = document.getElementById("suggestion-box");
+
+        // Nếu từ khóa quá ngắn thì ẩn đi
+        if (keyword.length < 2) {
+            suggestionBox.style.display = "none";
+            suggestionBox.innerHTML = "";
+            return;
+        }
+
+        $.ajax({
+            url: "SearchSuggest", // Gọi đến Servlet
+            type: "GET",
+            data: { keyword: keyword },
+            success: function (response) {
+                if (response.trim() !== "") {
+                    suggestionBox.innerHTML = response;
+                    suggestionBox.style.display = "block";
+                } else {
+                    suggestionBox.style.display = "none";
+                }
+            },
+            error: function () {
+                console.log("Lỗi tìm kiếm gợi ý");
+            }
+        });
+    }
+
+    // Hàm khi click vào một gợi ý -> Chuyển hướng đến trang chi tiết
+    function selectProduct(id, tableName) {
+        // Chuyển hướng đến trang chi tiết sản phẩm (Cập nhật đường dẫn cho đúng logic của bạn)
+        window.location.href = "ProductDetail?id=" + id + "&table=" + tableName;
+    }
+
+    // Ẩn gợi ý khi click ra ngoài
+    document.addEventListener('click', function(e) {
+        let searchForm = document.querySelector('.search-form');
+        let suggestionBox = document.getElementById("suggestion-box");
+        if (!searchForm.contains(e.target)) {
+            suggestionBox.style.display = 'none';
+        }
+    });
+</script>
+</body>
 </body>
 </html>

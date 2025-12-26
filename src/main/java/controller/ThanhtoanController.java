@@ -1,34 +1,42 @@
 package controller;
 
-import model.Product;
-import services.ProductService;
+import services.CartServices;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "CheckoutController", value = "/Checkout")
 public class ThanhtoanController extends HttpServlet {
-    private ProductService service = new ProductService(); // Đưa ra ngoài làm biến dùng chung
+
+    // Sử dụng CartServices để lấy dữ liệu giỏ hàng
+    private CartServices cartService = new CartServices();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String idStr = request.getParameter("id");
-        String category = request.getParameter("category"); // 1. Lấy thêm category từ URL
 
-        // 2. Mặc định nếu không có category thì lấy bảng home
-        if (category == null || category.isEmpty()) {
-            category = "home_sanpham";
+        // 1. Lấy Session ID hiện tại
+        String sessionId = request.getSession().getId();
+
+        // 2. Lấy danh sách sản phẩm trong giỏ hàng từ Database
+        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId);
+
+        // 3. Tính tổng tiền lại (để hiển thị con số cuối cùng)
+        double tongTien = 0;
+        if (cartItems != null) {
+            for (Map<String, Object> item : cartItems) {
+                double tamTinh = (double) item.get("tam_tinh"); // Lấy từ query SQL đã tính sẵn hoặc tự tính
+                tongTien += tamTinh;
+            }
         }
 
-        if (idStr != null) {
-            // 3. Truyền đủ 2 tham số: category và id
-            Product p = service.getProductById(category, Integer.parseInt(idStr));
+        // 4. Đẩy dữ liệu sang trang JSP
+        request.setAttribute("cartItems", cartItems);
+        request.setAttribute("tongTien", tongTien);
 
-            request.setAttribute("product", p);
-        }
-
-        // 4. Chuyển hướng về file JSP trong thư mục view
+        // 5. Chuyển hướng
         request.getRequestDispatcher("view/page_thanhToan.jsp").forward(request, response);
     }
 }

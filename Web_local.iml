@@ -23,5 +23,6 @@
     <orderEntry type="library" exported="" scope="PROVIDED" name="Tomcat 10.1.50" level="application_server_libraries" />
     <orderEntry type="library" name="jakarta.servlet.jsp.jstl-3.0.1" level="project" />
     <orderEntry type="library" name="lib (2)" level="project" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>
