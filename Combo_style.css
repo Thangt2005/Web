@@ -351,3 +351,72 @@ button:hover {
   margin-top: 15px;
   font-size: 14px;
 }
+/* Container để định vị tương đối */
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Khung gợi ý */
+.suggestion-box {
+  position: absolute;
+  top: 100%; /* Nằm ngay dưới ô input */
+  left: 0;
+  width: 300px; /* Bằng chiều rộng input */
+  background: #fff;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-top: none;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: none; /* Ẩn mặc định */
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Từng dòng sản phẩm */
+.suggest-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+.suggest-item:hover {
+  background-color: #f9f9f9;
+}
+
+.suggest-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.suggest-item .info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.suggest-item .name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  /* Cắt bớt tên nếu quá dài */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.suggest-item .price {
+  font-size: 12px;
+  color: #d32f2f;
+}
