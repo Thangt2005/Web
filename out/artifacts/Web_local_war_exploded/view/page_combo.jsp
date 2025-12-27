@@ -13,6 +13,10 @@
     <title>Sản Phẩm Combo Tiết Kiệm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
+    <%-- Thêm SweetAlert2 nếu cần dùng cho popup thông báo --%>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <%-- Quan trọng: Phải có file js/main.js để chạy hàm muaNgay() --%>
+    <script src="js/main.js"></script>
 </head>
 <body>
 
@@ -23,12 +27,14 @@
             <input type="text" id="search-input" name="search" class="search-input"
                    placeholder="Tìm kiếm combo..."
                    value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
-                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
+                   onkeyup="searchProducts(this)">
+            <button class="search-icon"><i class="fa fa-search"></i></button>
 
             <ul id="suggestion-box" class="suggestion-box"></ul>
         </form>
         <ul class="user-menu">
-            <li><a href="page_ThemVaoGiohang.jsp"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
+            <%-- Đã sửa: Link giỏ hàng trỏ về Servlet Cart giống trang Home --%>
+            <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
             <li><a href="login_page.jsp"><i class="fa-solid fa-user"></i> Đăng nhập</a></li>
         </ul>
     </nav>
@@ -73,24 +79,36 @@
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
+            <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+
             <h3><a href="ProductDetail?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
+
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
+
+            <%-- PHẦN ĐÃ SỬA: Giống hệt trang Home --%>
             <div class="button-group">
-                <a href="page_ThemVaoGiohang.jsp?id=<%= p.getId() %>">
-                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm</button>
-                </a>
-                <button class="buy">Mua</button>
+                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= p.getId() %>'">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                </button>
+
+                <button class="buy" type="button" onclick="muaNgay(<%= p.getId() %>)">
+                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                </button>
             </div>
+            <%-- KẾT THÚC PHẦN SỬA --%>
+
         </div>
         <%
             }
         } else {
         %>
-        <p style="text-align: center; width: 100%;">Không tìm thấy sản phẩm nào!</p>
+        <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
+            <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
+            <p>Không tìm thấy sản phẩm nào!</p>
+        </div>
         <% } %>
     </div>
 </main>
@@ -137,8 +155,9 @@
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script>
-    // Hàm gọi Ajax tìm kiếm
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Hàm gọi tìm kiếm gợi ý
     function searchProducts(input) {
         let keyword = input.value.trim();
         let suggestionBox = document.getElementById("suggestion-box");
@@ -170,7 +189,6 @@
 
     // Hàm khi click vào một gợi ý -> Chuyển hướng đến trang chi tiết
     function selectProduct(id, tableName) {
-        // Chuyển hướng đến trang chi tiết sản phẩm (Cập nhật đường dẫn cho đúng logic của bạn)
         window.location.href = "ProductDetail?id=" + id + "&table=" + tableName;
     }
 
@@ -183,6 +201,5 @@
         }
     });
 </script>
-</body>
 </body>
 </html>

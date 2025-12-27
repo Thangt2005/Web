@@ -13,16 +13,20 @@
     <title>Sản Phẩm Phụ Kiện</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
+    <script src="js/main.js"></script>
 </head>
 <body>
 
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="PhuKien">
-            <input type="text" name="search" class="search-input" placeholder="Tìm kiếm phụ kiện..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>">
-            <button class="search-icon"><i class="fa fa-search"></i></button>
+        <form class="search-form" method="get" action="PhuKien" autocomplete="off">
+            <input type="text" id="search-input" name="search" class="search-input"
+                   placeholder="Tìm kiếm phụ kiện..."
+                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
+                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
+
+            <ul id="suggestion-box" class="suggestion-box"></ul>
         </form>
         <ul class="user-menu">
             <li><a href="page_ThemVaoGiohang.jsp"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
@@ -77,12 +81,14 @@
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
             <div class="button-group">
-                <a href="page_ThemVaoGiohang.jsp?id=<%= p.getId() %>">
-                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm</button>
-                </a>
-                <button class="buy">Mua</button>
+                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= p.getId() %>'">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                </button>
+
+                <button class="buy" type="button" onclick="muaNgay(<%= p.getId() %>)">
+                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                </button>
             </div>
-        </div>
         <%
             }
         } else {
