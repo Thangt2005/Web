@@ -2,6 +2,15 @@
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+
+    // Tạo đường dẫn link đăng nhập Google dựa trên thông tin anh đã cung cấp
+    String googleClientId = "379073277304-to5o2hb23ku2cpmbcgh64fn247kb035d.apps.googleusercontent.com";
+    String googleRedirectUri = basePath + "LoginGoogle";
+    String googleLoginUrl = "https://accounts.google.com/o/oauth2/auth?scope=email%20profile"
+            + "&redirect_uri=" + googleRedirectUri
+            + "&response_type=code"
+            + "&client_id=" + googleClientId
+            + "&approval_prompt=force";
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -30,7 +39,11 @@
 
     <div class="social-login">
         <button class="facebook"><i class="fa-brands fa-facebook-f"></i><span> Đăng nhập bằng Facebook</span></button>
-        <button class="google"><i class="fa-brands fa-google"></i> <span>Đăng nhập bằng Google</span></button>
+
+        <%-- Nút bấm Google đã được sửa để có thể click được --%>
+        <button class="google" onclick="window.location.href='<%= googleLoginUrl %>'">
+            <i class="fa-brands fa-google"></i> <span>Đăng nhập bằng Google</span>
+        </button>
     </div>
 
     <h3>Đăng nhập bằng tài khoản</h3>
