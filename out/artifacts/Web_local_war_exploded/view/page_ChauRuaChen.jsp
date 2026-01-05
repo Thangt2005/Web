@@ -24,9 +24,36 @@
                    value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>">
             <button class="search-icon"><i class="fa fa-search"></i></button>
         </form>
+
         <ul class="user-menu">
-            <li><a href="page_ThemVaoGiohang.jsp"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
-            <li><a href="login_page.jsp"><i class="fa-solid fa-user"></i> Đăng nhập</a></li>
+            <li><a href="cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
+
+            <%
+                // CODE MỚI: Kiểm tra session user
+                String username = (String) session.getAttribute("user");
+                if (username != null && !username.isEmpty()) {
+            %>
+            <li>
+                <a href="#" style="font-weight: bold; color: yellow;">
+                    <i class="fas fa-user"></i> Xin chào, <%= username %>
+                </a>
+            </li>
+            <li>
+                <a href="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </li>
+            <%
+            } else {
+            %>
+            <li>
+                <a href="view/login_page.jsp">
+                    <i class="fa-solid fa-user"></i> Đăng nhập
+                </a>
+            </li>
+            <%
+                }
+            %>
         </ul>
     </nav>
 </header>
@@ -70,7 +97,9 @@
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
+            <%-- Đã cập nhật: Lấy link trực tiếp từ database --%>
+            <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
+
             <h3><a href="TrangChiTiet.jsp?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ

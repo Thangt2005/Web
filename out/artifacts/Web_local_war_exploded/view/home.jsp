@@ -165,7 +165,8 @@
                     int giamGia = rs.getInt("giam_gia");
         %>
         <div class="product-card">
-            <img src="image_all/<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+            <%-- Đã cập nhật: Bỏ tiền tố "image_all/" để lấy link trực tiếp từ database --%>
+            <img src="<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
 
             <h3>
                 <a href="ProductDetail?id=<%= id %>">
@@ -206,7 +207,6 @@
     </div>
 </main>
 
-<%-- PHẦN FOOTER FULL CỦA ANH THẮNG --%>
 <footer class="footer">
     <div class="footer-container">
         <div class="footer-column">

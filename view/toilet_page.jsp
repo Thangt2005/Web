@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Product" %>
-<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -17,6 +15,7 @@
     <link rel="stylesheet" href="homeStyle.css">
 </head>
 <body>
+
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
@@ -25,25 +24,49 @@
                    value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>">
             <button class="search-icon"><i class="fa fa-search"></i></button>
         </form>
+
         <ul class="user-menu">
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
-            <li><a href="Login"><i class="fa-solid fa-user"></i> Đăng nhập</a></li>
+
+            <%
+                // CODE MỚI: Kiểm tra session user
+                String username = (String) session.getAttribute("user");
+                if (username != null && !username.isEmpty()) {
+            %>
+            <li>
+                <a href="#" style="font-weight: bold; color: yellow;">
+                    <i class="fas fa-user"></i> Xin chào, <%= username %>
+                </a>
+            </li>
+            <li>
+                <a href="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </li>
+            <%
+            } else {
+            %>
+            <li>
+                <a href="view/login_page.jsp">
+                    <i class="fa-solid fa-user"></i> Đăng nhập
+                </a>
+            </li>
+            <%
+                }
+            %>
         </ul>
     </nav>
 </header>
 
 <div class="menu-container">
     <div class="sidebar">
-        <div class="menu-title">
-            <i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM
-        </div>
+        <div class="menu-title"><i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM</div>
     </div>
-
     <div class="top-menu">
         <ul>
-            <li><a href="Home">Trang chủ</a></li>
+            <li><a href="Home" class="active">Trang chủ</a></li>
             <li><a href="Combo">Combo</a></li>
-            <li class="active"><a href="Toilet">Bồn Cầu</a></li>
+            <li><a href="Toilet">Bồn Cầu</a></li>
             <li><a href="Lavabo">Lavabo</a></li>
             <li><a href="TuLavabo">Tủ Lavabo</a></li>
             <li><a href="VoiSenTam">Vòi Sen Tắm</a></li>
@@ -74,19 +97,19 @@
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
-            <h3><a href="ProductDetail?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
+            <%-- Đã cập nhật: Lấy link trực tiếp từ database --%>
+            <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
+
+            <h3><a href="TrangChiTiet.jsp?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
             <p class="price">
-                <fmt:formatNumber value="<%= p.getGia() %>" type="number" />đ
+                <%= String.format("%,.0f", p.getGia()) %>đ
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
             <div class="button-group">
-                <a href="AddToCart?id=<%= p.getId() %>">
+                <a href="page_ThemVaoGiohang.jsp?id=<%= p.getId() %>">
                     <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm</button>
                 </a>
-                <a href="Checkout?id=<%= p.getId() %>">
-                    <button class="buy">Mua</button>
-                </a>
+                <button class="buy">Mua</button>
             </div>
         </div>
         <%
