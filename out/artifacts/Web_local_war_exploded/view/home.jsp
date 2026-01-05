@@ -79,9 +79,37 @@
         </div>
 
         <ul class="user-menu">
-            <%-- ĐÃ SỬA: Trỏ về Servlet Cart để nạp dữ liệu --%>
+            <%-- Link Giỏ hàng --%>
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
-            <li><a href="view/login_page.jsp"><i class="fas fa-user"></i> Đăng nhập</a></li>
+
+            <%
+                // Kiểm tra xem trong Session có biến "user" không
+                String username = (String) session.getAttribute("user");
+                if (username != null && !username.isEmpty()) {
+                    // NẾU ĐÃ ĐĂNG NHẬP -> Hiện tên và nút Đăng xuất
+            %>
+            <li>
+                <a href="#" style="font-weight: bold; color: yellow;">
+                    <i class="fas fa-user"></i> Xin chào, <%= username %>
+                </a>
+            </li>
+            <li>
+                <a href="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </li>
+            <%
+            } else {
+                // NẾU CHƯA ĐĂNG NHẬP -> Hiện nút Đăng nhập cũ
+            %>
+            <li>
+                <a href="view/login_page.jsp">
+                    <i class="fas fa-user"></i> Đăng nhập
+                </a>
+            </li>
+            <%
+                }
+            %>
         </ul>
     </nav>
 </header>

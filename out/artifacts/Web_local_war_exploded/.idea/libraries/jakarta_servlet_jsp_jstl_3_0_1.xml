@@ -3,6 +3,11 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/Desktop/jakarta.servlet.jsp.jstl-3.0.1.jar!/" />
       <root url="jar://$USER_HOME$/Desktop/jakarta.servlet.jsp.jstl-api-3.0.0.jar!/" />
+      <root url="jar://E:/Downloads All Browser/gson-2.8.9.jar!/" />
+      <root url="jar://E:/Downloads All Browser/commons-logging-1.2-api.jar!/" />
+      <root url="jar://E:/Downloads All Browser/httpcore-4.4.13.jar!/" />
+      <root url="jar://E:/Downloads All Browser/httpclient-4.5.13.jar!/" />
+      <root url="jar://E:/Downloads All Browser/fluent-hc-4.5.13.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
