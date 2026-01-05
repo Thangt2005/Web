@@ -21,7 +21,7 @@ header {
   left: 0;
   width: 100%;
   height: 75px; /* chiều cao header theo ảnh */
-  background: #333333; /* xanh dương */
+  background: #00b7ff; 
   color: #fff;
   display: flex;
   align-items: center;
@@ -419,3 +419,4 @@ header nav ul li a {
   margin-top: 15px;
   font-size: 14px;
 }
+
