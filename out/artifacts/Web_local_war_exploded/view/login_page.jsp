@@ -3,7 +3,7 @@
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
 
-    // Tạo đường dẫn link đăng nhập Google dựa trên thông tin anh đã cung cấp
+    // Thông tin đăng nhập Google
     String googleClientId = "379073277304-to5o2hb23ku2cpmbcgh64fn247kb035d.apps.googleusercontent.com";
     String googleRedirectUri = basePath + "LoginGoogle";
     String googleLoginUrl = "https://accounts.google.com/o/oauth2/auth?scope=email%20profile"
@@ -11,6 +11,14 @@
             + "&response_type=code"
             + "&client_id=" + googleClientId
             + "&approval_prompt=force";
+    //thông tin đăng nhập facebook
+    String facebookAppId = "2028528684599680";
+    String facebookRedirectUri = basePath + "LoginFacebook";
+
+    String facebookLoginUrl = "https://www.facebook.com/dialog/oauth"
+            + "?client_id=" + facebookAppId
+            + "&redirect_uri=" + facebookRedirectUri
+            + "&scope=public_profile";
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -20,7 +28,6 @@
     <title>Đăng nhập - MVC</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <base href="<%=basePath%>">
 </head>
 <body>
 <header>
@@ -38,9 +45,13 @@
     <% } %>
 
     <div class="social-login">
-        <button class="facebook"><i class="fa-brands fa-facebook-f"></i><span> Đăng nhập bằng Facebook</span></button>
+            <a href="<%= facebookLoginUrl.trim() %>" style="text-decoration: none;">
+                <button class="facebook" type="button" style="pointer-events: none;">
+                    <i class="fa-brands fa-facebook-f"></i><span> Đăng nhập bằng Facebook</span>
+                </button>
+            </a>
 
-        <%-- Nút bấm Google đã được sửa để có thể click được --%>
+        <%-- Nút bấm Google --%>
         <button class="google" onclick="window.location.href='<%= googleLoginUrl %>'">
             <i class="fa-brands fa-google"></i> <span>Đăng nhập bằng Google</span>
         </button>
