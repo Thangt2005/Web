@@ -13,29 +13,47 @@
     <title>Sản Phẩm Combo Tiết Kiệm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
-    <%-- Thêm SweetAlert2 nếu cần dùng cho popup thông báo --%>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <%-- Quan trọng: Phải có file js/main.js để chạy hàm muaNgay() --%>
-    <script src="js/main.js"></script>
 </head>
 <body>
 
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="Combo" autocomplete="off">
-            <input type="text" id="search-input" name="search" class="search-input"
-                   placeholder="Tìm kiếm combo..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
-                   onkeyup="searchProducts(this)">
+        <form class="search-form" method="get" action="Combo">
+            <input type="text" name="search" class="search-input" placeholder="Tìm kiếm combo..."
+                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>">
             <button class="search-icon"><i class="fa fa-search"></i></button>
-
-            <ul id="suggestion-box" class="suggestion-box"></ul>
         </form>
+
         <ul class="user-menu">
-            <%-- Đã sửa: Link giỏ hàng trỏ về Servlet Cart giống trang Home --%>
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
-            <li><a href="login_page.jsp"><i class="fa-solid fa-user"></i> Đăng nhập</a></li>
+
+            <%
+                // CODE MỚI: Kiểm tra session user
+                String username = (String) session.getAttribute("user");
+                if (username != null && !username.isEmpty()) {
+            %>
+            <li>
+                <a href="#" style="font-weight: bold; color: yellow;">
+                    <i class="fas fa-user"></i> Xin chào, <%= username %>
+                </a>
+            </li>
+            <li>
+                <a href="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </li>
+            <%
+            } else {
+            %>
+            <li>
+                <a href="view/login_page.jsp">
+                    <i class="fa-solid fa-user"></i> Đăng nhập
+                </a>
+            </li>
+            <%
+                }
+            %>
         </ul>
     </nav>
 </header>
@@ -79,36 +97,26 @@
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+            <%-- Đã cập nhật: Lấy link trực tiếp từ database --%>
+            <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
 
             <h3><a href="ProductDetail?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
-
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
-
-            <%-- PHẦN ĐÃ SỬA: Giống hệt trang Home --%>
             <div class="button-group">
-                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= p.getId() %>'">
-                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                </button>
-
-                <button class="buy" type="button" onclick="muaNgay(<%= p.getId() %>)">
-                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                </button>
+                <a href="page_ThemVaoGiohang.jsp?id=<%= p.getId() %>">
+                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm</button>
+                </a>
+                <button class="buy">Mua</button>
             </div>
-            <%-- KẾT THÚC PHẦN SỬA --%>
-
         </div>
         <%
             }
         } else {
         %>
-        <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
-            <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
-            <p>Không tìm thấy sản phẩm nào!</p>
-        </div>
+        <p style="text-align: center; width: 100%;">Không tìm thấy sản phẩm nào!</p>
         <% } %>
     </div>
 </main>
@@ -154,52 +162,5 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    // Hàm gọi tìm kiếm gợi ý
-    function searchProducts(input) {
-        let keyword = input.value.trim();
-        let suggestionBox = document.getElementById("suggestion-box");
-
-        // Nếu từ khóa quá ngắn thì ẩn đi
-        if (keyword.length < 2) {
-            suggestionBox.style.display = "none";
-            suggestionBox.innerHTML = "";
-            return;
-        }
-
-        $.ajax({
-            url: "SearchSuggest", // Gọi đến Servlet
-            type: "GET",
-            data: { keyword: keyword },
-            success: function (response) {
-                if (response.trim() !== "") {
-                    suggestionBox.innerHTML = response;
-                    suggestionBox.style.display = "block";
-                } else {
-                    suggestionBox.style.display = "none";
-                }
-            },
-            error: function () {
-                console.log("Lỗi tìm kiếm gợi ý");
-            }
-        });
-    }
-
-    // Hàm khi click vào một gợi ý -> Chuyển hướng đến trang chi tiết
-    function selectProduct(id, tableName) {
-        window.location.href = "ProductDetail?id=" + id + "&table=" + tableName;
-    }
-
-    // Ẩn gợi ý khi click ra ngoài
-    document.addEventListener('click', function(e) {
-        let searchForm = document.querySelector('.search-form');
-        let suggestionBox = document.getElementById("suggestion-box");
-        if (!searchForm.contains(e.target)) {
-            suggestionBox.style.display = 'none';
-        }
-    });
-</script>
 </body>
 </html>
