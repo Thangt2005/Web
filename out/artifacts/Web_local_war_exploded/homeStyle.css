@@ -154,6 +154,7 @@ header nav ul li a {
 
 .top-menu ul li.active a::after,
 .top-menu ul li a:hover::after {
+<<<<<<< HEAD
     width: 100%;
 }
 
@@ -162,6 +163,15 @@ header nav ul li a {
     padding: 20px 50px;
     flex: 1; /* Đẩy footer xuống dưới cùng */
     margin-top: 20px;
+=======
+  width: 100%;
+}
+
+/* ==================== MAIN CONTENT & SẢN PHẨM ==================== */
+.main-content {
+  padding: 20px 50px;
+  flex: 1; /* Đẩy footer xuống dưới cùng */
+>>>>>>> 1a171a12066a4dd3501f2532db6e181961fce088
 }
 
 .main-content h2 {
@@ -342,12 +352,21 @@ header nav ul li a {
 }
 
 .footer-container {
+<<<<<<< HEAD
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+=======
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+>>>>>>> 1a171a12066a4dd3501f2532db6e181961fce088
 }
 
 .footer-column {
@@ -390,11 +409,19 @@ header nav ul li a {
 }
 
 .footer-bottom {
+<<<<<<< HEAD
     text-align: center;
     padding: 15px;
     background: #111;
     font-size: 13px;
     color: #888;
+=======
+  text-align: center;
+  padding: 15px;
+  background: #111;
+  font-size: 13px;
+  color: #888;
+>>>>>>> 1a171a12066a4dd3501f2532db6e181961fce088
 }
 
 /* ==================== GỢI Ý TÌM KIẾM (Suggestion Box) ==================== */
@@ -421,6 +448,7 @@ header nav ul li a {
     align-items: center;
     border-bottom: 1px solid #f0f0f0;
 }
+<<<<<<< HEAD
 
 .suggestion-item:hover {
     background: #f8f9fa;
@@ -506,3 +534,9 @@ header nav ul li a {
     color: #d70018; /* Màu đỏ giá */
     font-weight: bold;
 }
+=======
+.suggestion-item:hover { background: #f8f9fa; }
+.suggestion-item img { width: 40px; height: 40px; margin-right: 12px; border-radius: 4px; }
+.suggestion-item .info { display: flex; flex-direction: column; }
+.suggestion-item .name { font-weight: bold; font-size: 14px; }
+>>>>>>> 1a171a12066a4dd3501f2532db6e181961fce088

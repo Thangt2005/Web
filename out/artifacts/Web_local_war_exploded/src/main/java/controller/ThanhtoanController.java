@@ -10,33 +10,44 @@ import java.util.Map;
 
 @WebServlet(name = "CheckoutController", value = "/Checkout")
 public class ThanhtoanController extends HttpServlet {
-
-    // Sử dụng CartServices để lấy dữ liệu giỏ hàng
     private CartServices cartService = new CartServices();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 1. Lấy Token từ Cookie thay vì Session
+        String cartToken = getCartToken(request);
 
-        // 1. Lấy Session ID hiện tại
-        String sessionId = request.getSession().getId();
-
-        // 2. Lấy danh sách sản phẩm trong giỏ hàng từ Database
-        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId);
-
-        // 3. Tính tổng tiền lại (để hiển thị con số cuối cùng)
-        double tongTien = 0;
-        if (cartItems != null) {
-            for (Map<String, Object> item : cartItems) {
-                double tamTinh = (double) item.get("tam_tinh"); // Lấy từ query SQL đã tính sẵn hoặc tự tính
-                tongTien += tamTinh;
-            }
+        if (cartToken == null) {
+            response.sendRedirect("Cart"); // Quay lại giỏ hàng nếu chưa có token
+            return;
         }
 
-        // 4. Đẩy dữ liệu sang trang JSP
+        // 2. Lấy dữ liệu từ Service bằng cartToken
+        List<Map<String, Object>> cartItems = cartService.getCartDetails(cartToken);
+
+        // --- RÀNG BUỘC: PHẢI CÓ SẢN PHẨM MỚI CHO THANH TOÁN ---
+        if (cartItems == null || cartItems.isEmpty()) {
+            response.sendRedirect("Cart?error=empty");
+            return;
+        }
+
+        double tongTien = 0;
+        for (Map<String, Object> item : cartItems) {
+            tongTien += (double) item.get("tam_tinh");
+        }
+
         request.setAttribute("cartItems", cartItems);
         request.setAttribute("tongTien", tongTien);
-
-        // 5. Chuyển hướng
         request.getRequestDispatcher("view/page_thanhToan.jsp").forward(request, response);
+    }
+
+    private String getCartToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("USER_CART_TOKEN".equals(c.getName())) return c.getValue();
+            }
+        }
+        return null;
     }
 }
