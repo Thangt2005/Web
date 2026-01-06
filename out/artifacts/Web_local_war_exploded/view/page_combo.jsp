@@ -32,10 +32,42 @@
 
             <ul id="suggestion-box" class="suggestion-box"></ul>
         </form>
+
         <ul class="user-menu">
+<<<<<<< HEAD
             <%-- Đã sửa: Link giỏ hàng trỏ về Servlet Cart giống trang Home --%>
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
             <li><a href="login_page.jsp"><i class="fa-solid fa-user"></i> Đăng nhập</a></li>
+=======
+            <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
+
+            <%
+                // CODE MỚI: Kiểm tra session user
+                String username = (String) session.getAttribute("user");
+                if (username != null && !username.isEmpty()) {
+            %>
+            <li>
+                <a href="#" style="font-weight: bold; color: yellow;">
+                    <i class="fas fa-user"></i> Xin chào, <%= username %>
+                </a>
+            </li>
+            <li>
+                <a href="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </li>
+            <%
+            } else {
+            %>
+            <li>
+                <a href="view/login_page.jsp">
+                    <i class="fa-solid fa-user"></i> Đăng nhập
+                </a>
+            </li>
+            <%
+                }
+            %>
+>>>>>>> 1a171a12066a4dd3501f2532db6e181961fce088
         </ul>
     </nav>
 </header>
@@ -79,7 +111,12 @@
                 for (Product p : list) {
         %>
         <div class="product-card">
+<<<<<<< HEAD
             <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+=======
+            <%-- Đã cập nhật: Lấy link trực tiếp từ database --%>
+            <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
+>>>>>>> 1a171a12066a4dd3501f2532db6e181961fce088
 
             <h3><a href="ProductDetail?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
 
