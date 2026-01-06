@@ -10,33 +10,42 @@ import java.util.Map;
 
 @WebServlet(name = "CheckoutController", value = "/Checkout")
 public class ThanhtoanController extends HttpServlet {
-
-    // Sử dụng CartServices để lấy dữ liệu giỏ hàng
     private CartServices cartService = new CartServices();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        // 1. Lấy Session ID hiện tại
-        String sessionId = request.getSession().getId();
-
-        // 2. Lấy danh sách sản phẩm trong giỏ hàng từ Database
-        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId);
-
-        // 3. Tính tổng tiền lại (để hiển thị con số cuối cùng)
-        double tongTien = 0;
-        if (cartItems != null) {
-            for (Map<String, Object> item : cartItems) {
-                double tamTinh = (double) item.get("tam_tinh"); // Lấy từ query SQL đã tính sẵn hoặc tự tính
-                tongTien += tamTinh;
+        // 1. LẤY TOKEN TỪ COOKIE (Giống CartController)
+        String cartToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("USER_CART_TOKEN".equals(c.getName())) {
+                    cartToken = c.getValue();
+                    break;
+                }
             }
         }
 
-        // 4. Đẩy dữ liệu sang trang JSP
-        request.setAttribute("cartItems", cartItems);
-        request.setAttribute("tongTien", tongTien);
+        // 2. Nếu không có Token hoặc giỏ trống thì không cho thanh toán
+        if (cartToken == null) {
+            response.sendRedirect("Cart");
+            return;
+        }
 
-        // 5. Chuyển hướng
+        List<Map<String, Object>> cartItems = cartService.getCartDetails(cartToken);
+
+        if (cartItems == null || cartItems.isEmpty()) {
+            request.setAttribute("cartItems", null);
+            request.setAttribute("tongTien", 0.0);
+        } else {
+            double tongTien = 0;
+            for (Map<String, Object> item : cartItems) {
+                tongTien += (double) item.get("tam_tinh");
+            }
+            request.setAttribute("cartItems", cartItems);
+            request.setAttribute("tongTien", tongTien);
+        }
+
         request.getRequestDispatcher("view/page_thanhToan.jsp").forward(request, response);
     }
 }

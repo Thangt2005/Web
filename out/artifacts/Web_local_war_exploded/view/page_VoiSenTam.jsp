@@ -13,20 +13,16 @@
     <title>Sản Phẩm Vòi Sen Tắm - MVC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
-    <script src="js/main.js"></script>
 </head>
 <body>
 
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="VoiSenTam" autocomplete="off">
-            <input type="text" id="search-input" name="search" class="search-input"
-                   placeholder="Tìm kiếm vòi sen tắm..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
-                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
-
-            <ul id="suggestion-box" class="suggestion-box"></ul>
+        <form class="search-form" method="get" action="VoiSenTam">
+            <input type="text" name="search" class="search-input" placeholder="Tìm kiếm vòi sen tắm..."
+                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>">
+            <button class="search-icon"><i class="fa fa-search"></i></button>
         </form>
 
         <ul class="user-menu">
@@ -110,13 +106,10 @@
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
             <div class="button-group">
-                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= p.getId() %>'">
-                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                </button>
-
-                <button class="buy" type="button" onclick="muaNgay(<%= p.getId() %>)">
-                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                </button>
+                <a href="page_ThemVaoGiohang.jsp?id=<%= p.getId() %>">
+                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm</button>
+                </a>
+                <button class="buy">Mua</button>
             </div>
         </div>
         <%
@@ -168,52 +161,5 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script>
-    // Hàm gọi tìm kiếm
-    function searchProducts(input) {
-        let keyword = input.value.trim();
-        let suggestionBox = document.getElementById("suggestion-box");
-
-        // Nếu từ khóa quá ngắn thì ẩn đi
-        if (keyword.length < 2) {
-            suggestionBox.style.display = "none";
-            suggestionBox.innerHTML = "";
-            return;
-        }
-
-        $.ajax({
-            url: "SearchSuggest", // Gọi đến Servlet
-            type: "GET",
-            data: { keyword: keyword },
-            success: function (response) {
-                if (response.trim() !== "") {
-                    suggestionBox.innerHTML = response;
-                    suggestionBox.style.display = "block";
-                } else {
-                    suggestionBox.style.display = "none";
-                }
-            },
-            error: function () {
-                console.log("Lỗi tìm kiếm gợi ý");
-            }
-        });
-    }
-
-    // Hàm khi click vào một gợi ý -> Chuyển hướng đến trang chi tiết
-    function selectProduct(id, tableName) {
-        // Chuyển hướng đến trang chi tiết sản phẩm (Cập nhật đường dẫn cho đúng logic của bạn)
-        window.location.href = "ProductDetail?id=" + id + "&table=" + tableName;
-    }
-
-    // Ẩn gợi ý khi click ra ngoài
-    document.addEventListener('click', function(e) {
-        let searchForm = document.querySelector('.search-form');
-        let suggestionBox = document.getElementById("suggestion-box");
-        if (!searchForm.contains(e.target)) {
-            suggestionBox.style.display = 'none';
-        }
-    });
-</script>
 </body>
 </html>
