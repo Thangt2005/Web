@@ -112,11 +112,11 @@
             </div>
 
             <div class="btn-actions">
-                <a href="AddToCart?id=<%= p.getId() %>" style="text-decoration: none;">
+                <a href="Cart?id=<%= p.getId() %>&category=<%= request.getParameter("category") %>" style="text-decoration: none;">
                     <button class="btn-add-cart"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng</button>
                 </a>
-                <a href="Checkout?id=<%= p.getId() %>" style="text-decoration: none;">
-                    <button class="btn-buy-now"> <i class="fa-solid fa-bag-shopping"></i>Mua ngay</button>
+                <a href="Cart?id=<%= p.getId() %>&category=<%= request.getParameter("category") %>" style="text-decoration: none;">
+                    <button class="btn-buy-now"> <i class="fa-solid fa-bag-shopping"></i> Mua ngay</button>
                 </a>
             </div>
         </div>

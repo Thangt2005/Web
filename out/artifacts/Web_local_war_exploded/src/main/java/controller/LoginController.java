@@ -1,6 +1,7 @@
 package controller;
 
 import services.UserService;
+import model.User; // 1. Nhớ import model User
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -18,14 +19,24 @@ public class LoginController extends HttpServlet {
 
     // Xử lý logic khi người dùng nhấn ĐĂNG NHẬP
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String user = request.getParameter("username");
+        String username = request.getParameter("username");
         String pass = request.getParameter("password");
 
-        if (userService.checkLogin(user, pass)) {
+        // --- SỬA ĐỔI QUAN TRỌNG TẠI ĐÂY ---
+
+        // Anh lưu ý: Hàm checkLogin bên UserService nên trả về đối tượng User (hoặc null)
+        // thay vì trả về true/false.
+        User userObject = userService.checkLogin(username, pass);
+
+        if (userObject != null) {
             // *** ĐĂNG NHẬP THÀNH CÔNG ***
             HttpSession session = request.getSession();
+
+            // 2. Lưu NGUYÊN ĐỐI TƯỢNG User vào session (để JSP lấy được role)
+            session.setAttribute("user", userObject);
+
+            // Có thể lưu thêm cái này nếu muốn check đơn giản
             session.setAttribute("isLoggedIn", true);
-            session.setAttribute("user", user);
 
             // Chuyển hướng sang Servlet Home
             response.sendRedirect("Home");

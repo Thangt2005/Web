@@ -10,23 +10,27 @@
     %>
     <base href="<%=basePath%>">
     <meta charset="UTF-8">
-    <title>Sản Phẩm Chậu Rửa Chén</title>
+    <title>Sản Phẩm Tủ Bồn Tiểu Nam </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
+    <script src="js/main.js"></script>
 </head>
 <body>
 
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="ChauRuaChen">
-            <input type="text" name="search" class="search-input" placeholder="Tìm kiếm chậu rửa chén..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>">
-            <button class="search-icon"><i class="fa fa-search"></i></button>
+        <form class="search-form" method="get" action="ChauRuaChen" autocomplete="off">
+            <input type="text" id="search-input" name="search" class="search-input"
+                   placeholder="Tìm kiếm chậu rửa chén..."
+                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
+                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
+
+            <ul id="suggestion-box" class="suggestion-box"></ul>
         </form>
 
         <ul class="user-menu">
-            <li><a href="cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
+            <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
             <%
                 // CODE MỚI: Kiểm tra session user
@@ -87,7 +91,7 @@
     %>
     <h2>Kết quả tìm kiếm cho: "<%= search %>"</h2>
     <% } else { %>
-    <h2>Sản phẩm Chậu Rửa Chén Nổi Bật</h2>
+    <h2>Sản phẩm Chậu Rửa Chén</h2>
     <% } %>
 
     <div class="product-grid">
@@ -100,16 +104,23 @@
             <%-- Đã cập nhật: Lấy link trực tiếp từ database --%>
             <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
 
-            <h3><a href="TrangChiTiet.jsp?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
+            <h3><a href="ProductDetail?id=<%= p.getId() %>&category=bontieunam_sanpham">
+                <%= p.getTenSp() %>
+            </a>
+            </h3>
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
             <div class="button-group">
-                <a href="page_ThemVaoGiohang.jsp?id=<%= p.getId() %>">
-                    <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i> Thêm</button>
-                </a>
-                <button class="buy">Mua</button>
+                <button class="add-to-cart" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=bontieunam_sanpham'">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                </button>
+                <button class="buy" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=ontieunam_sanpham'">
+                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                </button>
             </div>
         </div>
         <%
@@ -162,5 +173,52 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script>
+    // Hàm gọi tìm kiếm
+    function searchProducts(input) {
+        let keyword = input.value.trim();
+        let suggestionBox = document.getElementById("suggestion-box");
+
+        // Nếu từ khóa quá ngắn thì ẩn đi
+        if (keyword.length < 2) {
+            suggestionBox.style.display = "none";
+            suggestionBox.innerHTML = "";
+            return;
+        }
+
+        $.ajax({
+            url: "SearchSuggest", // Gọi đến Servlet
+            type: "GET",
+            data: { keyword: keyword },
+            success: function (response) {
+                if (response.trim() !== "") {
+                    suggestionBox.innerHTML = response;
+                    suggestionBox.style.display = "block";
+                } else {
+                    suggestionBox.style.display = "none";
+                }
+            },
+            error: function () {
+                console.log("Lỗi tìm kiếm gợi ý");
+            }
+        });
+    }
+
+    // Hàm khi click vào một gợi ý -> Chuyển hướng đến trang chi tiết
+    function selectProduct(id, tableName) {
+        // Chuyển hướng đến trang chi tiết sản phẩm (Cập nhật đường dẫn cho đúng logic của bạn)
+        window.location.href = "ProductDetail?id=" + id + "&table=" + tableName;
+    }
+
+    // Ẩn gợi ý khi click ra ngoài
+    document.addEventListener('click', function(e) {
+        let searchForm = document.querySelector('.search-form');
+        let suggestionBox = document.getElementById("suggestion-box");
+        if (!searchForm.contains(e.target)) {
+            suggestionBox.style.display = 'none';
+        }
+    });
+</script>
 </body>
 </html>
