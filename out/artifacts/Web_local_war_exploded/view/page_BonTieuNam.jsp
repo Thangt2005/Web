@@ -10,7 +10,7 @@
     %>
     <base href="<%=basePath%>">
     <meta charset="UTF-8">
-    <title>Sản phẩm Bồn Tiểu Nam</title>
+    <title>Sản Phẩm Tủ Bồn Tiểu Nam </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
     <script src="js/main.js"></script>
@@ -22,7 +22,7 @@
     <nav>
         <form class="search-form" method="get" action="BonTieuNam" autocomplete="off">
             <input type="text" id="search-input" name="search" class="search-input"
-                   placeholder="Tìm kiếm bồn tiểu nam..."
+                   placeholder="Tìm kiếm tủ bồn tiểu nam..."
                    value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
                    onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
 
@@ -30,10 +30,10 @@
         </form>
 
         <ul class="user-menu">
-            <li><a href="cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
+            <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
             <%
-                // CODE MỚI: Kiểm tra session user để hiện tên hoặc nút đăng nhập
+                // CODE MỚI: Kiểm tra session user
                 String username = (String) session.getAttribute("user");
                 if (username != null && !username.isEmpty()) {
             %>
@@ -91,7 +91,7 @@
     %>
     <h2>Kết quả tìm kiếm cho: "<%= search %>"</h2>
     <% } else { %>
-    <h2>Sản phẩm Bồn Tiểu Nam Nổi Bật</h2>
+    <h2>Sản phẩm  bồn tiểu nam</h2>
     <% } %>
 
     <div class="product-grid">
@@ -104,20 +104,24 @@
             <%-- Đã cập nhật: Lấy link trực tiếp từ database --%>
             <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
 
-            <h3><a href="TrangChiTiet.jsp?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
+            <h3><a href="ProductDetail?id=<%= p.getId() %>&category=bontieunam_sanpham">
+                <%= p.getTenSp() %>
+            </a>
+            </h3>
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
-            <div class="button-group">
-                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= p.getId() %>'">
-                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                </button>
-
-                <button class="buy" type="button" onclick="muaNgay(<%= p.getId() %>)">
-                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                </button>
-            </div>
+                <div class="button-group">
+                    <button class="add-to-cart" type="button"
+                            onclick="window.location.href='Cart?id=<%= p.getId() %>&category=bontieunam_sanpham'">
+                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                    </button>
+                    <button class="buy" type="button"
+                            onclick="window.location.href='Cart?id=<%= p.getId() %>&category=ontieunam_sanpham'">
+                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                    </button>
+                </div>
         </div>
         <%
             }

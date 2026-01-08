@@ -91,7 +91,7 @@
     %>
     <h2>Kết quả tìm kiếm cho: "<%= search %>"</h2>
     <% } else { %>
-    <h2>Sản phẩm nổi bật</h2>
+    <h2>Sản phẩm Lavabo</h2>
     <% } %>
 
     <div class="product-grid">
@@ -104,7 +104,7 @@
         <div class="product-card">
             <img src="../image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
             <h3>
-                <a href="TrangChiTiet.jsp?id=<%= p.getId() %>">
+                <a href="ProductDetail?id=<%= p.getId() %>&category=lavabo_sanpham">
                     <%= p.getTenSp() %>
                 </a>
             </h3>
@@ -113,11 +113,12 @@
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
             <div class="button-group">
-                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= p.getId() %>'">
+                <button class="add-to-cart" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=lavabo_sanpham'">
                     <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
                 </button>
-
-                <button class="buy" type="button" onclick="muaNgay(<%= p.getId() %>)">
+                <button class="buy" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=lavabo_sanpham'">
                     <i class="fa-solid fa-bag-shopping"></i> Đặt mua
                 </button>
             </div>

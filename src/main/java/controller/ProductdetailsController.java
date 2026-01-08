@@ -9,24 +9,40 @@ import java.io.IOException;
 
 @WebServlet(name = "ProductdetailsController", value = "/ProductDetail")
 public class ProductdetailsController extends HttpServlet {
-    // PHẢI CÓ DÒNG NÀY ĐỂ HẾT LỖI ĐỎ Ở DÒNG 22
+
     private ProductService service = new ProductService();
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String id = request.getParameter("id");
-        String category = request.getParameter("category"); // Lấy tên bảng từ URL
+        // 1. Lấy ID sản phẩm từ URL
+        String idParam = request.getParameter("id");
+        // 2. Lấy tên bảng (category) từ URL gửi lên (ví dụ: lavabo_sanpham, toilet_sanpham)
+        String category = request.getParameter("category");
 
-        // Nếu không có category, mặc định lấy từ bảng home_sanpham
-        if (category == null || category.isEmpty()) {
+        // 3. Kiểm tra logic lấy bảng
+        // Nếu trên URL không có tham số category, ta mới mặc định là home_sanpham
+        if (category == null || category.trim().isEmpty()) {
             category = "home_sanpham";
         }
 
-        if (id != null) {
-            Product p = service.getProductById(category, Integer.parseInt(id));
-            request.setAttribute("product", p);
+        if (idParam != null) {
+            try {
+                int productId = Integer.parseInt(idParam);
+
+                // Gọi service truyền cả tên bảng và ID vào để tìm đúng nơi
+                Product p = service.getProductById(category, productId);
+
+                if (p != null) {
+                    request.setAttribute("product", p);
+                } else {
+                    request.setAttribute("errorMessage", "Không tìm thấy sản phẩm trong danh mục " + category);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
 
-        // Forward đến đúng file JSP trong thư mục view
+        // 4. Chuyển hướng đến trang hiển thị chi tiết
         request.getRequestDispatcher("view/page_XemChiTietSanPham.jsp").forward(request, response);
     }
 }

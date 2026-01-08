@@ -1,22 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Product" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%
-        String path = request.getContextPath();
-        String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
-    %>
-    <base href="<%=basePath%>">
-    <meta charset="UTF-8">
-    <title>Sản phẩm Bồn Tắm - MVC</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta charset="UTF-8" />
+    <title>Sản phẩm Bồn Tắm - Thiết bị vệ sinh</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="homeStyle.css">
     <script src="js/main.js"></script>
 </head>
 <body>
-
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
@@ -28,12 +23,12 @@
 
             <ul id="suggestion-box" class="suggestion-box"></ul>
         </form>
-
         <ul class="user-menu">
+            <%-- Giữ nguyên link giỏ hàng của trang này --%>
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
             <%
-                // CODE MỚI THÊM VÀO: Kiểm tra session user
+                // CODE MỚI THÊM VÀO: Kiểm tra session user giống trang Home
                 String username = (String) session.getAttribute("user");
                 if (username != null && !username.isEmpty()) {
                     // NẾU ĐÃ ĐĂNG NHẬP -> Hiện tên và nút Đăng xuất
@@ -44,6 +39,7 @@
                 </a>
             </li>
             <li>
+                <%-- Lưu ý: Nếu nút Đăng xuất không chạy, có thể cần thêm ../ trước Logout tùy thư mục --%>
                 <a href="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
@@ -53,8 +49,9 @@
                 // NẾU CHƯA ĐĂNG NHẬP -> Hiện nút Đăng nhập
             %>
             <li>
+                <%-- Giữ nguyên link login_page.jsp vì trang này đang nằm trong thư mục view --%>
                 <a href="view/login_page.jsp">
-                    <i class="fa-solid fa-user"></i> Đăng nhập
+                    <i class="fas fa-user"></i> Đăng nhập
                 </a>
             </li>
             <%
@@ -68,6 +65,7 @@
     <div class="sidebar">
         <div class="menu-title"><i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM</div>
     </div>
+
     <div class="top-menu">
         <ul>
             <li><a href="Home" class="active">Trang chủ</a></li>
@@ -93,30 +91,34 @@
     %>
     <h2>Kết quả tìm kiếm cho: "<%= search %>"</h2>
     <% } else { %>
-    <h2>Sản phẩm Bồn Tắm Nổi Bật</h2>
+    <h2>Sản phẩm bồn tắm</h2>
     <% } %>
 
     <div class="product-grid">
         <%
+            // Nhận danh sách từ LavaboController
             List<Product> list = (List<Product>) request.getAttribute("productList");
             if (list != null && !list.isEmpty()) {
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <%-- Giữ nguyên phần lấy link ảnh trực tiếp --%>
-            <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
-
-            <h3><a href="TrangChiTiet.jsp?id=<%= p.getId() %>"><%= p.getTenSp() %></a></h3>
+            <img src="../image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
+            <h3>
+                <a href="ProductDetail?id=<%= p.getId() %>&category=bontam_sanpham">
+                    <%= p.getTenSp() %>
+                </a>
+            </h3>
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
             <div class="button-group">
-                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= p.getId() %>'">
+                <button class="add-to-cart" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=bontam_sanpham'">
                     <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
                 </button>
-
-                <button class="buy" type="button" onclick="muaNgay(<%= p.getId() %>)">
+                <button class="buy" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=bontam_sanpham'">
                     <i class="fa-solid fa-bag-shopping"></i> Đặt mua
                 </button>
             </div>

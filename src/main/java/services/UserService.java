@@ -1,20 +1,20 @@
 package services;
 
 import model.User;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class UserService {
-    // CẤU HÌNH DATABASE
-    private final String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
-    private final String user = "root";
-    private final String pass = "";
+    // Cấu hình Database chung
+    private String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
+    private String user = "root";
+    private String pass = "";
 
-    // 1. Kiểm tra Email đã tồn tại chưa
+    // 1. Kiểm tra Email tồn tại
     public boolean checkEmailExists(String email) {
         String sql = "SELECT email FROM login WHERE email = ?";
         try (Connection conn = DriverManager.getConnection(url, user, pass);
@@ -23,135 +23,95 @@ public class UserService {
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return false;
     }
 
-    // 2. Kiểm tra Username tồn tại
-    public boolean checkUserExists(String username) {
-        String sql = "SELECT username FROM login WHERE username = ?";
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+    // --- 2. HÀM CHECK LOGIN ĐÃ SỬA ---
+    // Hàm này sẽ trả về đối tượng User (chứa role) thay vì gọi userDAO
+    public User checkLogin(String username, String password) {
+        User userResult = null;
+        String sql = "SELECT * FROM login WHERE username = ? AND password = ?";
 
-    // 3. Kiểm tra Đăng nhập (Yêu cầu tài khoản đã kích hoạt is_verified = 1)
-    public boolean checkLogin(String username, String password) {
-        String sql = "SELECT username FROM login WHERE username = ? AND password = ? AND is_verified = 1";
+        // Nhớ mã hóa mật khẩu nhập vào sang MD5 để so sánh với DB
         String md5Pass = toMD5(password);
 
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
+        try (Connection conn = DriverManager.getConnection(url, this.user, this.pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, username);
             ps.setString(2, md5Pass);
+
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+                if (rs.next()) {
+                    // Nếu tìm thấy, tạo đối tượng User mới
+                    // LƯU Ý: Anh phải đảm bảo Constructor của class User khớp với thứ tự này
+                    // Hoặc dùng setter như bên dưới cho an toàn
+                    userResult = new User();
+                    userResult.setId(rs.getInt("id"));
+                    userResult.setUsername(rs.getString("username"));
+                    userResult.setFullname(rs.getString("fullname"));
+                    userResult.setEmail(rs.getString("email"));
+
+                    // QUAN TRỌNG: Lấy cột role từ database
+                    // Nếu trong DB cột role tên là "role" thì để nguyên, nếu tên khác thì sửa lại
+                    userResult.setRole(rs.getInt("role"));
+                }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return userResult; // Trả về User (nếu sai pass sẽ trả về null)
     }
 
-    // 4. Đăng ký tài khoản mới (Trả về Token nếu thành công, hoặc thông báo lỗi)
-    public String registerUser(String username, String password, String email) {
-        // Kiểm tra trùng lặp trước khi insert
-        if (checkEmailExists(email)) return "Email này đã được sử dụng!";
-        if (checkUserExists(username)) return "Tên đăng nhập đã tồn tại!";
+    // 3. Đăng ký tài khoản mới
+    public int registerUser(String email, String username, String password) {
+        int result = 0;
+        String sql = "INSERT INTO login (email, username, password, fullname, role) VALUES (?, ?, ?, ?, ?)";
 
-        String sql = "INSERT INTO login (email, username, password, fullname, verification_code, is_verified) VALUES (?, ?, ?, ?, ?, ?)";
         String md5Pass = toMD5(password);
-        String token = UUID.randomUUID().toString();
 
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, email);
             ps.setString(2, username);
             ps.setString(3, md5Pass);
-            ps.setString(4, "Khách hàng"); // Fullname mặc định
-            ps.setString(5, token);
-            ps.setInt(6, 0); // 0 = Chưa kích hoạt
-
-            int result = ps.executeUpdate();
-            return result > 0 ? token : "Đăng ký thất bại (Lỗi Database)";
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return "Đã xảy ra lỗi hệ thống: " + e.getMessage();
-        }
+            ps.setString(4, "Khách hàng");
+            ps.setInt(5, 0); // Mặc định đăng ký mới là role = 0 (User thường)
+            result = ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+        return result;
     }
 
-    // 5. Xác thực tài khoản qua Token
-    public boolean verifyAccount(String token) {
-        String sqlCheck = "SELECT id FROM login WHERE verification_code = ?";
-        String sqlUpdate = "UPDATE login SET is_verified = 1, verification_code = NULL WHERE verification_code = ?";
-
-        try (Connection conn = DriverManager.getConnection(url, user, pass)) {
-            // Bước 1: Kiểm tra token có khớp tài khoản nào không
-            try (PreparedStatement psCheck = conn.prepareStatement(sqlCheck)) {
-                psCheck.setString(1, token);
-                try (ResultSet rs = psCheck.executeQuery()) {
-                    if (rs.next()) {
-                        // Bước 2: Kích hoạt tài khoản
-                        try (PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
-                            psUpdate.setString(1, token);
-                            psUpdate.executeUpdate();
-                            return true;
-                        }
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // 6. Lấy danh sách thành viên (Dành cho Admin)
+    // 4. Lấy danh sách khách hàng (Dành cho Admin)
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT id, username, password, fullname, email FROM login";
-
+        String sql = "SELECT * FROM login";
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-
             while (rs.next()) {
-                list.add(new User(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("fullname"),
-                        rs.getString("email")
-                ));
+                // Cách tạo đối tượng User an toàn nhất là dùng Constructor rỗng rồi set từng cái
+                User u = new User();
+                u.setId(rs.getInt("id"));
+                u.setUsername(rs.getString("username"));
+                u.setFullname(rs.getString("fullname"));
+                u.setEmail(rs.getString("email"));
+                u.setRole(rs.getInt("role")); // Lấy thêm role
+                list.add(u);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
 
-    // 7. Xóa tài khoản
+    // 5. Xóa tài khoản
     public boolean deleteUser(int id) {
         String sql = "DELETE FROM login WHERE id = ?";
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
     // Hàm tiện ích: Mã hóa MD5

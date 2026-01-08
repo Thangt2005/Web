@@ -181,14 +181,16 @@
                 <% } %>
             </p>
 
-            <div class="button-group">
-                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= id %>'">
-                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                </button>
-                <button class="buy" type="button" onclick="muaNgay(<%= id %>)">
-                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                </button>
-            </div>
+                <div class="button-group">
+                    <button class="add-to-cart" type="button"
+                            onclick="window.location.href='Cart?id=<%= id %>&category=home_sanpham'">
+                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                    </button>
+                    <button class="buy" type="button"
+                            onclick="window.location.href='Cart?id=<%= id %>&category=home_sanpham'">
+                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                    </button>
+                </div>
         </div>
         <%
             }
@@ -248,6 +250,7 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
+
 </body>
 </html>
 

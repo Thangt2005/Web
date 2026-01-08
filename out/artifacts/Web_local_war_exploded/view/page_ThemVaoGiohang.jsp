@@ -15,7 +15,62 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="homeStyle.css" /> <%-- Dùng chung style header/footer --%>
-    <link rel="stylesheet" href="css_ThemVaoGioHang.css" />
+
+    <style>
+        /* CSS Riêng cho trang giỏ hàng để đẹp hơn */
+        .cart-container { max-width: 1200px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; }
+        .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+        .cart-table th { background: #f8f8f8; padding: 15px; text-align: left; border-bottom: 2px solid #ddd; }
+        .cart-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
+
+        .product-info { display: flex; align-items: center; }
+        .product-info img { width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; margin-right: 15px; border-radius: 4px; }
+        .product-name { font-weight: bold; color: #333; }
+
+        /* === Style cho bộ nút cộng trừ === */
+        .qty-control { display: flex; align-items: center; border: 1px solid #ddd; width: fit-content; border-radius: 4px; }
+        .qty-btn {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background: #f1f1f1;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .qty-btn:hover { background: #ddd; }
+        .qty-input {
+            width: 40px;
+            height: 30px;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            outline: none;
+        }
+        /* Ẩn nút tăng giảm mặc định của trình duyệt */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .price, .subtotal { font-weight: bold; color: #333; }
+        .remove-btn { color: #999; text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .remove-btn:hover { color: #d0011b; }
+
+        .cart-total { text-align: right; margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 4px; }
+        .total-row { font-size: 18px; margin-bottom: 20px; }
+        .total-amount { color: #d0011b; font-size: 24px; font-weight: bold; margin-left: 10px; }
+
+        .action-buttons button, .action-buttons a.continue-shopping {
+            padding: 12px 25px; border: none; cursor: pointer; font-size: 16px; border-radius: 4px; text-decoration: none; display: inline-block;
+        }
+        .continue-shopping { background: #fff; border: 1px solid #ddd; color: #333; margin-right: 10px; }
+        .continue-shopping:hover { background: #f1f1f1; }
+        .checkout-btn { background: #d0011b; color: #fff; }
+        .checkout-btn:hover { background: #a80015; }
+    </style>
 </head>
 <body>
 
@@ -30,7 +85,7 @@
 </header>
 
 <main class="cart-container">
-    <h2 style="text-align:center; margin: 30px 0; color: #333;">CHI TIẾT GIỎ HÀNG CỦA ANH</h2>
+    <h2 style="text-align:center; margin: 30px 0; color: #333;">CHI TIẾT GIỎ HÀNG</h2>
 
     <table class="cart-table">
         <thead>
@@ -57,18 +112,28 @@
         %>
         <tr>
             <td class="product-info">
-                <img src="image_all/<%= item.get("hinh_anh") %>" alt="Product" onerror="this.src='https://via.placeholder.com/80'"/>
+                <%-- Đảm bảo link ảnh đúng --%>
+                <img src="<%= item.get("hinh_anh") %>" alt="Product" onerror="this.src='https://via.placeholder.com/80'"/>
                 <span class="product-name"><%= item.get("ten_sp") %></span>
             </td>
             <td class="price"><%= formatter.format(gia) %>đ</td>
             <td class="qty">
+                <%-- NÚT CỘNG TRỪ SỐ LƯỢNG --%>
                 <div class="qty-control">
-                    <input type="number" value="<%= soLuong %>" min="1" readonly />
+                    <%-- Nút TRỪ: Gọi action=decrease --%>
+                    <a href="Cart?action=decrease&id=<%= item.get("id") %>" class="qty-btn">-</a>
+
+                    <%-- Hiển thị số lượng --%>
+                    <input type="number" class="qty-input" value="<%= soLuong %>" readonly />
+
+                    <%-- Nút CỘNG: Gọi action=add (mặc định tăng) --%>
+                    <a href="Cart?action=add&id=<%= item.get("id") %>" class="qty-btn">+</a>
                 </div>
             </td>
             <td class="subtotal"><%= formatter.format(tamTinh) %>đ</td>
             <td>
-                <a href="Cart?action=delete&id=<%= item.get("id") %>" class="remove-btn" onclick="return confirm('bạn chắc chắn muốn xóa sản phẩm này?')">
+                <%-- Link xóa sản phẩm gọi action=delete --%>
+                <a href="Cart?action=delete&id=<%= item.get("id") %>" class="remove-btn" onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?')">
                     <i class="fa-solid fa-trash"></i> Xóa
                 </a>
             </td>
@@ -80,7 +145,7 @@
         <tr>
             <td colspan="5" style="text-align:center; padding: 50px;">
                 <i class="fa-solid fa-cart-shopping" style="font-size: 50px; color: #ccc;"></i>
-                <p style="margin-top: 15px; color: #666;">Giỏ hàng của anh Thắng đang trống ạ!</p>
+                <p style="margin-top: 15px; color: #666;">Giỏ hàng đang trống !</p>
                 <a href="Home" class="checkout-btn" style="display:inline-block; width: auto; padding: 10px 30px; margin-top: 10px;">
                     Quay lại mua sắm ngay
                 </a>
@@ -98,7 +163,8 @@
         </div>
         <div class="action-buttons">
             <a href="Home" class="continue-shopping">Tiếp tục mua hàng</a>
-            <button class="checkout-btn" onclick="window.location.href='view/page_thanhToan.jsp'">Tiến hành thanh toán</button>
+
+            <button class="checkout-btn" onclick="window.location.href='ThanhToan'">Tiến hành thanh toán</button>
         </div>
     </div>
     <% } %>
