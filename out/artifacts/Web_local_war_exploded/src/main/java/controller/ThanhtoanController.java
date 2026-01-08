@@ -14,40 +14,38 @@ public class ThanhtoanController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Lấy Token từ Cookie thay vì Session
-        String cartToken = getCartToken(request);
-
-        if (cartToken == null) {
-            response.sendRedirect("Cart"); // Quay lại giỏ hàng nếu chưa có token
-            return;
-        }
-
-        // 2. Lấy dữ liệu từ Service bằng cartToken
-        List<Map<String, Object>> cartItems = cartService.getCartDetails(cartToken);
-
-        // --- RÀNG BUỘC: PHẢI CÓ SẢN PHẨM MỚI CHO THANH TOÁN ---
-        if (cartItems == null || cartItems.isEmpty()) {
-            response.sendRedirect("Cart?error=empty");
-            return;
-        }
-
-        double tongTien = 0;
-        for (Map<String, Object> item : cartItems) {
-            tongTien += (double) item.get("tam_tinh");
-        }
-
-        request.setAttribute("cartItems", cartItems);
-        request.setAttribute("tongTien", tongTien);
-        request.getRequestDispatcher("view/page_thanhToan.jsp").forward(request, response);
-    }
-
-    private String getCartToken(HttpServletRequest request) {
+        // 1. LẤY TOKEN TỪ COOKIE (Giống CartController)
+        String cartToken = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie c : cookies) {
-                if ("USER_CART_TOKEN".equals(c.getName())) return c.getValue();
+                if ("USER_CART_TOKEN".equals(c.getName())) {
+                    cartToken = c.getValue();
+                    break;
+                }
             }
         }
-        return null;
+
+        // 2. Nếu không có Token hoặc giỏ trống thì không cho thanh toán
+        if (cartToken == null) {
+            response.sendRedirect("Cart");
+            return;
+        }
+
+        List<Map<String, Object>> cartItems = cartService.getCartDetails(cartToken);
+
+        if (cartItems == null || cartItems.isEmpty()) {
+            request.setAttribute("cartItems", null);
+            request.setAttribute("tongTien", 0.0);
+        } else {
+            double tongTien = 0;
+            for (Map<String, Object> item : cartItems) {
+                tongTien += (double) item.get("tam_tinh");
+            }
+            request.setAttribute("cartItems", cartItems);
+            request.setAttribute("tongTien", tongTien);
+        }
+
+        request.getRequestDispatcher("view/page_thanhToan.jsp").forward(request, response);
     }
 }
