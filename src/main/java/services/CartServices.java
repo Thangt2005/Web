@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.*;
 
 public class CartServices {
+    // Cấu hình Database (Bạn sửa lại tên DB 'db' thành tên thật của bạn nếu cần)
     private final String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
     private final String user = "root";
     private final String pass = "";
@@ -16,6 +17,7 @@ public class CartServices {
         ResultSet rs = ps.executeQuery();
         if (rs.next()) return rs.getInt("id");
 
+        // Nếu chưa có thì tạo mới
         String sqlCreate = "INSERT INTO giohang(session_id, ngay_tao) VALUES(?, NOW())";
         PreparedStatement psC = conn.prepareStatement(sqlCreate, Statement.RETURN_GENERATED_KEYS);
         psC.setString(1, sessionId);
@@ -24,24 +26,25 @@ public class CartServices {
         return rsK.next() ? rsK.getInt(1) : -1;
     }
 
-    // 1. THÊM VÀO GIỎ (Phân biệt theo category)
+    // 1. THÊM VÀO GIỎ (Add to Cart)
     public void addToCart(String sessionId, int sanPhamId, String category) {
         String type = (category == null || category.isEmpty()) ? "home_sanpham" : category;
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
-            // Lấy thông tin sản phẩm từ bảng tương ứng
+            // Lấy thông tin sản phẩm từ bảng tương ứng (home_sanpham, v.v...)
             String sqlGetProduct = "SELECT ten_sp, hinh_anh, gia FROM " + type + " WHERE id = ?";
             PreparedStatement psProduct = conn.prepareStatement(sqlGetProduct);
             psProduct.setInt(1, sanPhamId);
             ResultSet rsProduct = psProduct.executeQuery();
 
-            if (!rsProduct.next()) return;
+            if (!rsProduct.next()) return; // Không tìm thấy sản phẩm thì dừng
+
             String tenSp = rsProduct.getString("ten_sp");
             String hinhAnh = rsProduct.getString("hinh_anh");
             double gia = rsProduct.getDouble("gia");
 
             int gioHangId = getOrCreateCartId(conn, sessionId);
 
-            // Kiểm tra: Phải trùng cả ID và Category mới cộng dồn số lượng
+            // Kiểm tra xem sản phẩm đã có trong giỏ chưa
             String sqlCheckItem = "SELECT id FROM giohang_chitiet WHERE giohang_id = ? AND sanpham_id = ? AND category = ?";
             PreparedStatement psItem = conn.prepareStatement(sqlCheckItem);
             psItem.setInt(1, gioHangId);
@@ -50,11 +53,13 @@ public class CartServices {
             ResultSet rsItem = psItem.executeQuery();
 
             if (rsItem.next()) {
+                // Đã có -> Cộng dồn số lượng
                 String sqlUpdate = "UPDATE giohang_chitiet SET so_luong = so_luong + 1 WHERE id = ?";
                 PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
                 psUpdate.setInt(1, rsItem.getInt("id"));
                 psUpdate.executeUpdate();
             } else {
+                // Chưa có -> Thêm mới dòng chi tiết
                 String sqlInsert = "INSERT INTO giohang_chitiet(giohang_id, sanpham_id, ten_sp, hinh_anh, gia, so_luong, category) VALUES(?,?,?,?,?,1,?)";
                 PreparedStatement psInsert = conn.prepareStatement(sqlInsert);
                 psInsert.setInt(1, gioHangId);
@@ -68,13 +73,32 @@ public class CartServices {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // 2. LẤY CHI TIẾT GIỎ HÀNG
+    // 2. LẤY CHI TIẾT GIỎ HÀNG (QUAN TRỌNG: Đã thêm Overloading)
+
+    // Cách 1: Chỉ dùng SessionId (Dùng cho khách vãng lai hoặc code cũ)
     public List<Map<String, Object>> getCartDetails(String sessionId) {
+        return getCartDetails(sessionId, null); // Gọi hàm bên dưới
+    }
+
+    // Cách 2: Dùng SessionId + UserId (Dùng cho CheckoutController mới của bạn)
+    public List<Map<String, Object>> getCartDetails(String sessionId, Object userId) {
         List<Map<String, Object>> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
-            String sql = "SELECT gc.* FROM giohang_chitiet gc JOIN giohang g ON gc.giohang_id = g.id WHERE g.session_id = ?";
+
+            // Logic truy vấn: Hiện tại vẫn lấy theo SessionID để đảm bảo code chạy được ngay.
+            // Nếu sau này bạn thêm cột 'user_id' vào bảng 'giohang', bạn có thể sửa đoạn này
+            // để ưu tiên lấy theo userId.
+
+            String sql = "SELECT gc.* FROM giohang_chitiet gc " +
+                    "JOIN giohang g ON gc.giohang_id = g.id " +
+                    "WHERE g.session_id = ?";
+
+            // Nếu bạn muốn mở rộng sau này cho User, SQL sẽ trông như thế này:
+            // "WHERE g.session_id = ? OR g.user_id = ?" (cần xử lý tham số)
+
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, sessionId);
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Map<String, Object> item = new HashMap<>();
@@ -83,7 +107,7 @@ public class CartServices {
                 item.put("hinh_anh", rs.getString("hinh_anh"));
                 item.put("gia", rs.getDouble("gia"));
                 item.put("so_luong", rs.getInt("so_luong"));
-                item.put("category", rs.getString("category")); // Trả về category để JSP xử lý nút xóa/giảm
+                item.put("category", rs.getString("category"));
                 item.put("tam_tinh", rs.getDouble("gia") * rs.getInt("so_luong"));
                 list.add(item);
             }
@@ -91,7 +115,7 @@ public class CartServices {
         return list;
     }
 
-    // 3. XÓA SẢN PHẨM (Phải kèm category)
+    // 3. XÓA SẢN PHẨM
     public void removeProduct(String sessionId, int sanPhamId, String category) {
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
             String sql = "DELETE gc FROM giohang_chitiet gc " +
@@ -105,9 +129,10 @@ public class CartServices {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // 4. GIẢM SỐ LƯỢNG (Phải kèm category)
+    // 4. GIẢM SỐ LƯỢNG
     public void decreaseQuantity(String sessionId, int id, String category) {
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+            // Chỉ giảm khi số lượng > 1
             String sql = "UPDATE giohang_chitiet gc " +
                     "JOIN giohang g ON gc.giohang_id = g.id " +
                     "SET gc.so_luong = gc.so_luong - 1 " +

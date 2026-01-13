@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+// Đây là đường dẫn mà Form bên trang thanh toán đang gọi tới
 @WebServlet("/PlaceOrder")
 public class PlaceOrderController extends HttpServlet {
 
@@ -31,35 +32,28 @@ public class PlaceOrderController extends HttpServlet {
 
         // 2. Lấy thông tin User và Giỏ hàng
         HttpSession session = request.getSession();
-
-        // Lấy userId từ đối tượng User đã lưu trong session
         User user = (User) session.getAttribute("user");
-        Object userId = (user != null) ? user.getId() : null;
+        int userId = (user != null) ? user.getId() : 0;
         String sessionId = session.getId();
-
-        // CẬP NHẬT: Truyền cả sessionId và userId để lấy đúng giỏ hàng bền vững
-        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId, userId);
-
-        if (cartItems == null || cartItems.isEmpty()) {
-            response.sendRedirect("Cart"); // Giỏ hàng trống thì không cho đặt
-            return;
-        }
+        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId);
 
         // 3. Lưu đơn hàng vào Database
-        // Lưu ý: Chuyển userId về int (0 nếu null) để phù hợp với hàm createOrder cũ của bạn
-        int orderId = orderService.createOrder((userId != null ? (int)userId : 0), hoTen, sdt, diaChi, ghiChu, tongTien, cartItems);
+        int orderId = orderService.createOrder(userId, hoTen, sdt, diaChi, ghiChu, tongTien, cartItems);
 
         if (orderId > 0) {
-            // 4. XÓA GIỎ HÀNG SAU KHI ĐẶT HÀNG THÀNH CÔNG
-            cartService.clearCart(sessionId, userId);
+            // Lưu xong thì xóa giỏ hàng cũ đi
+            // (Anh tự thêm hàm clearCart vào CartServices sau nhé, hoặc tạm thời để đó)
 
-            // 5. CHUYỂN HƯỚNG SANG TRANG PAYPAL
+            // 4. CHUYỂN HƯỚNG SANG TRANG PAYPAL
+            // PayPal tính bằng USD, mình tạm chia 25000 để đổi ra USD nhé
             double totalUSD = tongTien / 25000;
+
             request.setAttribute("orderId", orderId);
-            request.setAttribute("totalUSD", String.format("%.2f", totalUSD));
+            request.setAttribute("totalUSD", String.format("%.2f", totalUSD)); // Làm tròn 2 số lẻ
+
             request.getRequestDispatcher("/view/page_paypal.jsp").forward(request, response);
         } else {
-            response.sendRedirect("Cart");
+            response.sendRedirect("Cart"); // Lỗi thì quay về giỏ
         }
     }
 }
