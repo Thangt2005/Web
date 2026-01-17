@@ -17,36 +17,33 @@ public class CartController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Lấy Session và các định danh
-        HttpSession session = request.getSession();
-        String sessionId = session.getId();
-
-        // Lấy userId (Giả sử bạn lưu ID người dùng vào session khi đăng nhập thành công)
-        // Nếu là khách chưa đăng nhập, userId sẽ là null
-        Object userId = session.getAttribute("userId");
+        // 1. Lấy Session ID
+        String sessionId = request.getSession().getId();
 
         // 2. Lấy các tham số từ URL
         String spId = request.getParameter("id");
-        String category = request.getParameter("category");
+        String category = request.getParameter("category"); // Quan trọng: Phải lấy được category
         String action = request.getParameter("action");
 
         if (spId != null) {
             try {
                 int id = Integer.parseInt(spId);
 
-                // 3. Gọi Service với đầy đủ sessionId và userId để lưu trữ bền vững
+                // 3. Phân loại hành động và truyền thêm category
                 if ("delete".equals(action)) {
-                    cartService.removeProduct(sessionId, userId, id, category);
+                    // CẬP NHẬT: Truyền thêm category để xóa đúng sản phẩm của bảng đó
+                    cartService.removeProduct(sessionId, id, category);
                 }
                 else if ("decrease".equals(action)) {
-                    cartService.decreaseQuantity(sessionId, userId, id, category);
+                    // CẬP NHẬT: Truyền thêm category để giảm đúng sản phẩm của bảng đó
+                    cartService.decreaseQuantity(sessionId, id, category);
                 }
                 else {
-                    // Mặc định là Thêm/Tăng
-                    cartService.addToCart(sessionId, userId, id, category);
+                    // Thêm sản phẩm (Truyền 3 tham số như cũ)
+                    cartService.addToCart(sessionId, id, category);
                 }
 
-                // 4. Redirect để sạch URL
+                // 4. Redirect để làm sạch URL, tránh việc F5 lại trang sẽ bị thêm sản phẩm lần nữa
                 response.sendRedirect("Cart");
                 return;
             } catch (NumberFormatException e) {
@@ -54,8 +51,8 @@ public class CartController extends HttpServlet {
             }
         }
 
-        // 5. HIỂN THỊ GIỎ HÀNG (Truyền cả 2 định danh để lấy đúng dữ liệu)
-        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId, userId);
+        // 5. HIỂN THỊ GIỎ HÀNG
+        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId);
         request.setAttribute("cartItems", cartItems);
         request.getRequestDispatcher("/view/page_ThemVaoGiohang.jsp").forward(request, response);
     }

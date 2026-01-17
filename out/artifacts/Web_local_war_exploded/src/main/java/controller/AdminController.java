@@ -1,6 +1,7 @@
 package controller;
 
 import model.Product;
+import model.User;
 import services.ProductService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -17,49 +18,95 @@ public class AdminController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // --- 1. BẮT ĐẦU KIỂM TRA QUYỀN (SỬA LẠI CHO ĐÚNG KEY "USER") ---
+        HttpSession session = request.getSession();
+
+        // Lấy session ra dưới dạng Object (để tránh lỗi nếu lỡ là String Google)
+        Object sessionObj = session.getAttribute("user");
+        User auth = null;
+        boolean isAdmin = false;
+
+        // Chỉ cho phép vào nếu session là Object User VÀ có role = 1
+        if (sessionObj != null && sessionObj instanceof User) {
+            auth = (User) sessionObj;
+            if (auth.getRole() == 1) {
+                isAdmin = true;
+            }
+        }
+
+        // Nếu không phải Admin -> Đuổi về Home
+        if (!isAdmin) {
+            response.sendRedirect("Home");
+            return;
+        }
+        // --- KẾT THÚC KIỂM TRA QUYỀN ---
+
         String action = request.getParameter("action");
         String id = request.getParameter("id");
-        String category = request.getParameter("category"); // Tên bảng (source table)
-        String viewTable = request.getParameter("viewTable"); // Bảng muốn xem trên danh sách
+        String category = request.getParameter("category");
+        String viewTable = request.getParameter("viewTable");
 
-        // 1. XỬ LÝ XÓA SẢN PHẨM
+        // 2. XỬ LÝ XÓA SẢN PHẨM
         if ("delete".equals(action) && id != null && category != null) {
             services.deleteProduct(category, Integer.parseInt(id));
-            // Chuyển hướng về trang Admin để làm sạch URL và tránh lỗi 404
             response.sendRedirect("Admin" + (viewTable != null ? "?viewTable=" + viewTable : ""));
             return;
         }
 
-        // 2. XỬ LÝ LẤY DỮ LIỆU ĐỂ SỬA
+        // 3. XỬ LÝ LẤY DỮ LIỆU ĐỂ SỬA
         if ("edit".equals(action) && id != null && category != null) {
             Product p = services.getProductById(category, Integer.parseInt(id));
             request.setAttribute("productEdit", p);
             request.setAttribute("categoryEdit", category);
         }
 
-        // 3. LẤY DANH SÁCH HIỂN THỊ (LỌC THEO BẢNG HOẶC XEM TẤT CẢ)
-        List<Product> list = List.of();
-        if (viewTable != null && !viewTable.equals("all")) {
-            // Xem sản phẩm theo 1 bảng cụ thể (Lavabo, Bồn cầu...)
-            list = services.getProductsByTable(viewTable,null);
+        // 4. LẤY DANH SÁCH HIỂN THỊ
+        List<Product> list = List.of(); // Danh sách rỗng mặc định
+
+        // Logic cũ của anh: getProductsByTable(viewTable, null)
+        // Anh lưu ý: Nếu viewTable null (khi mới vào admin), anh có muốn load bảng nào mặc định không?
+        // Ví dụ: Load bảng 'home_sanpham' mặc định
+        if (viewTable == null) {
+            viewTable = "home_sanpham";
         }
 
-        // Gửi dữ liệu thống kê và danh sách sang JSP
+        if (!"all".equals(viewTable)) {
+            list = services.getProductsByTable(viewTable, null);
+        }
+
+        // Gửi dữ liệu sang JSP
         request.setAttribute("productList", list);
         request.setAttribute("currentViewTable", viewTable);
         request.setAttribute("totalProducts", services.getTotalProducts());
         request.setAttribute("totalRevenue", services.getTotalRevenue());
 
+        // Chuyển hướng đến file JSP Admin
         request.getRequestDispatcher("view/page_admin.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // --- KIỂM TRA QUYỀN (POST) ---
+        HttpSession session = request.getSession();
+        Object sessionObj = session.getAttribute("user"); // Sửa thành "user"
+
+        boolean isAdmin = false;
+        if (sessionObj != null && sessionObj instanceof User) {
+            User u = (User) sessionObj;
+            if (u.getRole() == 1) isAdmin = true;
+        }
+
+        if (!isAdmin) {
+            response.sendRedirect("Home");
+            return;
+        }
+        // ------------------------------
+
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
 
         if ("update".equals(action)) {
-            // LOGIC CẬP NHẬT SẢN PHẨM (SỬA)
+            // ... (Code update giữ nguyên) ...
             int id = Integer.parseInt(request.getParameter("id"));
             String category = request.getParameter("category");
             String tenSp = request.getParameter("ten_sp");
@@ -67,20 +114,21 @@ public class AdminController extends HttpServlet {
             int giamGia = Integer.parseInt(request.getParameter("giam_gia"));
             String oldImage = request.getParameter("old_image");
 
-            // Xử lý Upload ảnh mới
             Part filePart = request.getPart("hinh_anh");
             String fileName = filePart.getSubmittedFileName();
 
             if (fileName == null || fileName.isEmpty()) {
-                fileName = oldImage; // Không chọn ảnh mới -> Giữ ảnh cũ
+                fileName = oldImage;
             } else {
                 String uploadPath = getServletContext().getRealPath("") + File.separator + "image_all";
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) uploadDir.mkdir(); // Tạo thư mục nếu chưa có
+
                 filePart.write(uploadPath + File.separator + fileName);
             }
             services.updateProduct(category, id, tenSp, fileName, gia, giamGia);
 
         } else {
-            // LOGIC THÊM SẢN PHẨM MỚI
             String category = request.getParameter("category");
             String tenSp = request.getParameter("ten_sp");
             String gia = request.getParameter("gia");
@@ -88,13 +136,16 @@ public class AdminController extends HttpServlet {
 
             Part filePart = request.getPart("hinh_anh");
             String fileName = filePart.getSubmittedFileName();
+
             String uploadPath = getServletContext().getRealPath("") + File.separator + "image_all";
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdir();
+
             filePart.write(uploadPath + File.separator + fileName);
 
             services.addProduct(category, tenSp, fileName, gia, giamGia);
         }
 
-        // Sau khi thêm/sửa xong, chuyển hướng về Admin để tránh lặp dữ liệu khi Refresh trang
         response.sendRedirect("Admin");
     }
 }

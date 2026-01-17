@@ -1,6 +1,32 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Product" %>
+<%@ page import="model.User" %> <%-- 1. Bắt buộc import User --%>
+
+<%
+    // --- 2. XỬ LÝ LOGIC KIỂM TRA SESSION CHUẨN ---
+    Object sessionObj = session.getAttribute("user");
+
+    String displayName = "";
+    boolean isLoggedIn = false;
+    boolean isAdmin = false;
+
+    if (sessionObj != null) {
+        isLoggedIn = true;
+
+        if (sessionObj instanceof User) {
+            User u = (User) sessionObj;
+            displayName = u.getUsername();
+            if (u.getRole() == 1) {
+                isAdmin = true;
+            }
+        } else if (sessionObj instanceof String) {
+            displayName = (String) sessionObj;
+            isAdmin = false;
+        }
+    }
+%>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -10,7 +36,7 @@
     %>
     <base href="<%=basePath%>">
     <meta charset="UTF-8">
-    <title>Sản Phẩm Vòi Rửa - MVC</title>
+    <title>Sản Phẩm Vòi Rửa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
     <script src="js/main.js"></script>
@@ -32,14 +58,19 @@
         <ul class="user-menu">
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
-            <%
-                // CODE MỚI: Kiểm tra session user
-                String username = (String) session.getAttribute("user");
-                if (username != null && !username.isEmpty()) {
-            %>
+            <% if (isLoggedIn) { %>
+            <%-- 3. Hiện nút Admin nếu là Admin --%>
+            <% if (isAdmin) { %>
+            <li>
+                <a href="Admin" style="color: #ff4757; font-weight: bold;">
+                    <i class="fas fa-user-shield"></i> Quản Trị
+                </a>
+            </li>
+            <% } %>
+
             <li>
                 <a href="#" style="font-weight: bold; color: yellow;">
-                    <i class="fas fa-user"></i> Xin chào, <%= username %>
+                    <i class="fas fa-user"></i> Xin chào, <%= displayName %>
                 </a>
             </li>
             <li>
@@ -47,17 +78,13 @@
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
             </li>
-            <%
-            } else {
-            %>
+            <% } else { %>
             <li>
                 <a href="view/login_page.jsp">
-                    <i class="fa-solid fa-user"></i> Đăng nhập
+                    <i class="fas fa-user"></i> Đăng nhập
                 </a>
             </li>
-            <%
-                }
-            %>
+            <% } %>
         </ul>
     </nav>
 </header>
@@ -68,7 +95,7 @@
     </div>
     <div class="top-menu">
         <ul>
-            <li><a href="Home" class="active">Trang chủ</a></li>
+            <li><a href="Home">Trang chủ</a></li>
             <li><a href="Combo">Combo</a></li>
             <li><a href="Toilet">Bồn Cầu</a></li>
             <li><a href="Lavabo">Lavabo</a></li>
@@ -76,10 +103,16 @@
             <li><a href="VoiSenTam">Vòi Sen Tắm</a></li>
             <li><a href="ChauRuaChen">Chậu Rửa Chén</a></li>
             <li><a href="BonTam">Bồn Tắm</a></li>
-            <li><a href="VoiRua">Vòi Rửa</a></li>
+
+            <%-- 4. Active đúng tab Vòi Rửa --%>
+            <li><a href="VoiRua" class="active">Vòi Rửa</a></li>
+
             <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
             <li><a href="PhuKien">Phụ Kiện</a></li>
-            <li><a href="Admin">Admin</a></li>
+
+            <% if (isAdmin) { %>
+            <li><a href="Admin" style="color: yellow; font-weight: bold;">Admin</a></li>
+            <% } %>
         </ul>
     </div>
 </div>
@@ -91,7 +124,7 @@
     %>
     <h2>Kết quả tìm kiếm cho: "<%= search %>"</h2>
     <% } else { %>
-    <h2>Sản phẩm Vòi Rửa </h2>
+    <h2>Sản phẩm Vòi Rửa</h2>
     <% } %>
 
     <div class="product-grid">
@@ -101,8 +134,8 @@
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <%-- Đã cập nhật: Lấy link trực tiếp từ database --%>
-            <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
+            <%-- 5. Sửa đường dẫn ảnh --%>
+            <img src="../image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
 
             <h3><a href="ProductDetail?id=<%= p.getId() %>&category=voirua_sanpham">
                 <%= p.getTenSp() %>
@@ -112,22 +145,25 @@
                 <%= String.format("%,.0f", p.getGia()) %>đ
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
             </p>
-                <div class="button-group">
-                    <button class="add-to-cart" type="button"
-                            onclick="window.location.href='Cart?id=<%= p.getId() %>&category=voirua_sanpham'">
-                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                    </button>
-                    <button class="buy" type="button"
-                            onclick="window.location.href='Cart?id=<%= p.getId() %>&category=voirua_sanpham'">
-                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                    </button>
-                </div>
+            <div class="button-group">
+                <button class="add-to-cart" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=voirua_sanpham'">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                </button>
+                <button class="buy" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=voirua_sanpham'">
+                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                </button>
+            </div>
         </div>
         <%
             }
         } else {
         %>
-        <p style="text-align: center; width: 100%;">Không tìm thấy sản phẩm nào!</p>
+        <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
+            <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
+            <p>Không tìm thấy sản phẩm nào!</p>
+        </div>
         <% } %>
     </div>
 </main>
@@ -173,7 +209,8 @@
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
     // Hàm gọi tìm kiếm
     function searchProducts(input) {
         let keyword = input.value.trim();
@@ -187,7 +224,7 @@
         }
 
         $.ajax({
-            url: "SearchSuggest", // Gọi đến Servlet
+            url: "SearchSuggest",
             type: "GET",
             data: { keyword: keyword },
             success: function (response) {
@@ -202,12 +239,6 @@
                 console.log("Lỗi tìm kiếm gợi ý");
             }
         });
-    }
-
-    // Hàm khi click vào một gợi ý -> Chuyển hướng đến trang chi tiết
-    function selectProduct(id, tableName) {
-        // Chuyển hướng đến trang chi tiết sản phẩm (Cập nhật đường dẫn cho đúng logic của bạn)
-        window.location.href = "ProductDetail?id=" + id + "&table=" + tableName;
     }
 
     // Ẩn gợi ý khi click ra ngoài

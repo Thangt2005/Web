@@ -29,7 +29,7 @@ public class CheckoutController extends HttpServlet {
 
         // 2. CẬP NHẬT: Gọi hàm lấy giỏ hàng với 2 tham số (sessionId và userId)
         // Điều này giúp lấy đúng sản phẩm đã lưu bền vững trong DB
-        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId, userId);
+        List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId);
 
         // 3. Kiểm tra giỏ hàng trống
         if (cartItems == null || cartItems.isEmpty()) {
