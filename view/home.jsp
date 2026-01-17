@@ -1,22 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.text.DecimalFormat" %>
-<%@ page import="model.User" %>
-
 <%
-    // 1. CẤU HÌNH ĐƯỜNG DẪN CƠ BẢN
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
-
-    // 2. XỬ LÝ LOGIC NGƯỜI DÙNG (SESSION)
-    // Lấy thông tin user ngay từ đầu để dùng cho việc ẩn hiện menu
-    Object obj = session.getAttribute("user");
-    User authUser = null;
-    if (obj != null) {
-        authUser = (User) obj;
-    }
-
-    // 3. XỬ LÝ KẾT NỐI CSDL VÀ TÌM KIẾM SẢN PHẨM
+%>
+<%
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -28,7 +17,7 @@
         Class.forName("com.mysql.cj.jdbc.Driver");
         String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
         String user = "root";
-        String pass = ""; // Anh điền pass database của anh vào đây nếu có
+        String pass = "";
         conn = DriverManager.getConnection(url, user, pass);
 
         String searchTerm = request.getParameter("search");
@@ -55,7 +44,6 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <base href="<%=basePath%>">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ - Thiết bị vệ sinh</title>
@@ -65,6 +53,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/main.js"></script>
+    <base href="<%=basePath%>">
 </head>
 <body>
 
@@ -94,28 +83,16 @@
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
             <%
-                if (authUser != null) {
-                    // --- TRƯỜNG HỢP ĐÃ ĐĂNG NHẬP ---
+                // Kiểm tra xem trong Session có biến "user" không
+                String username = (String) session.getAttribute("user");
+                if (username != null && !username.isEmpty()) {
+                    // NẾU ĐÃ ĐĂNG NHẬP -> Hiện tên và nút Đăng xuất
             %>
             <li>
                 <a href="#" style="font-weight: bold; color: yellow;">
-                    <i class="fas fa-user"></i> Xin chào, <%= authUser.getUsername() %>
+                    <i class="fas fa-user"></i> Xin chào, <%= username %>
                 </a>
             </li>
-
-            <%
-                // Logic kiểm tra quyền Admin: Chỉ hiện nếu role == 1
-                if (authUser.getRole() == 1) {
-            %>
-            <li>
-                <a href="Admin" style="color: red; font-weight: bold;">
-                    <i class="fa-solid fa-user-shield"></i> Quản trị (Admin)
-                </a>
-            </li>
-            <%
-                }
-            %>
-
             <li>
                 <a href="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
@@ -123,7 +100,7 @@
             </li>
             <%
             } else {
-                // --- TRƯỜNG HỢP CHƯA ĐĂNG NHẬP ---
+                // NẾU CHƯA ĐĂNG NHẬP -> Hiện nút Đăng nhập cũ
             %>
             <li>
                 <a href="view/login_page.jsp">
@@ -157,13 +134,7 @@
             <li><a href="VoiRua">Vòi Rửa</a></li>
             <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
             <li><a href="PhuKien">Phụ Kiện</a></li>
-
-            <%
-                // --- CODE ẨN HIỆN MENU ADMIN Ở THANH NAV ĐEN ---
-                if (authUser != null && authUser.getRole() == 1) {
-            %>
             <li><a href="Admin">Admin</a></li>
-            <% } %>
         </ul>
     </div>
 </div>
@@ -194,7 +165,7 @@
                     int giamGia = rs.getInt("giam_gia");
         %>
         <div class="product-card">
-            <%-- Lấy link ảnh trực tiếp từ database --%>
+            <%-- Đã cập nhật: Bỏ tiền tố "image_all/" để lấy link trực tiếp từ database --%>
             <img src="<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
 
             <h3>
@@ -210,14 +181,16 @@
                 <% } %>
             </p>
 
-            <div class="button-group">
-                <button class="add-to-cart" type="button" onclick="window.location.href='Cart?id=<%= id %>'">
-                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                </button>
-                <button class="buy" type="button" onclick="muaNgay(<%= id %>)">
-                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                </button>
-            </div>
+                <div class="button-group">
+                    <button class="add-to-cart" type="button"
+                            onclick="window.location.href='Cart?id=<%= id %>&category=home_sanpham'">
+                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                    </button>
+                    <button class="buy" type="button"
+                            onclick="window.location.href='Cart?id=<%= id %>&category=home_sanpham'">
+                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                    </button>
+                </div>
         </div>
         <%
             }
@@ -277,11 +250,11 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
+
 </body>
 </html>
 
 <%
-    // Đóng kết nối an toàn ở cuối file
     try { if(rs != null) rs.close(); } catch(Exception e) {}
     try { if(ps != null) ps.close(); } catch(Exception e) {}
     try { if(conn != null) conn.close(); } catch(Exception e) {}

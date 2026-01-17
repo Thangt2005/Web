@@ -20,28 +20,20 @@
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <div class="search-container" style="position: relative;">
-            <form class="search-form" action="Combo" method="GET" id="searchForm">
-                <input
-                        type="text"
-                        id="search-input"
-                        name="search"
-                        placeholder="Tìm kiếm combo..."
-                        class="search-input"
-                        autocomplete="off"
-                        value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
-                        onkeyup="searchProducts(this)"
-                />
-                <button type="submit" class="search-icon">
-                    <i class="fa fa-search"></i>
-                </button>
-            </form>
-            <div id="suggestion-box" class="suggestion-box"></div>
-        </div>
+        <form class="search-form" method="get" action="Combo" autocomplete="off">
+            <input type="text" id="search-input" name="search" class="search-input"
+                   placeholder="Tìm kiếm tủ combo..."
+                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
+                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
+
+            <ul id="suggestion-box" class="suggestion-box"></ul>
+        </form>
 
         <ul class="user-menu">
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
+
             <%
+                // CODE MỚI: Kiểm tra session user
                 String username = (String) session.getAttribute("user");
                 if (username != null && !username.isEmpty()) {
             %>
@@ -50,10 +42,22 @@
                     <i class="fas fa-user"></i> Xin chào, <%= username %>
                 </a>
             </li>
-            <li><a href="Logout"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a></li>
-            <% } else { %>
-            <li><a href="view/login_page.jsp"><i class="fa-solid fa-user"></i> Đăng nhập</a></li>
-            <% } %>
+            <li>
+                <a href="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </li>
+            <%
+            } else {
+            %>
+            <li>
+                <a href="view/login_page.jsp">
+                    <i class="fa-solid fa-user"></i> Đăng nhập
+                </a>
+            </li>
+            <%
+                }
+            %>
         </ul>
     </nav>
 </header>

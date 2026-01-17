@@ -17,7 +17,10 @@ public class CartServices {
         ResultSet rs = ps.executeQuery();
         if (rs.next()) return rs.getInt("id");
 
+<<<<<<< HEAD
         // Nếu chưa có thì tạo mới
+=======
+>>>>>>> c1261a59003dd00faf6650fc20280451ade6646d
         String sqlCreate = "INSERT INTO giohang(session_id, ngay_tao) VALUES(?, NOW())";
         PreparedStatement psC = conn.prepareStatement(sqlCreate, Statement.RETURN_GENERATED_KEYS);
         psC.setString(1, sessionId);
@@ -26,11 +29,19 @@ public class CartServices {
         return rsK.next() ? rsK.getInt(1) : -1;
     }
 
+<<<<<<< HEAD
     // 1. THÊM VÀO GIỎ (Add to Cart)
     public void addToCart(String sessionId, int sanPhamId, String category) {
         String type = (category == null || category.isEmpty()) ? "home_sanpham" : category;
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
             // Lấy thông tin sản phẩm từ bảng tương ứng (home_sanpham, v.v...)
+=======
+    // 1. THÊM VÀO GIỎ (Phân biệt theo category)
+    public void addToCart(String sessionId, int sanPhamId, String category) {
+        String type = (category == null || category.isEmpty()) ? "home_sanpham" : category;
+        try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+            // Lấy thông tin sản phẩm từ bảng tương ứng
+>>>>>>> c1261a59003dd00faf6650fc20280451ade6646d
             String sqlGetProduct = "SELECT ten_sp, hinh_anh, gia FROM " + type + " WHERE id = ?";
             PreparedStatement psProduct = conn.prepareStatement(sqlGetProduct);
             psProduct.setInt(1, sanPhamId);
@@ -44,7 +55,11 @@ public class CartServices {
 
             int gioHangId = getOrCreateCartId(conn, sessionId);
 
+<<<<<<< HEAD
             // Kiểm tra xem sản phẩm đã có trong giỏ chưa
+=======
+            // Kiểm tra: Phải trùng cả ID và Category mới cộng dồn số lượng
+>>>>>>> c1261a59003dd00faf6650fc20280451ade6646d
             String sqlCheckItem = "SELECT id FROM giohang_chitiet WHERE giohang_id = ? AND sanpham_id = ? AND category = ?";
             PreparedStatement psItem = conn.prepareStatement(sqlCheckItem);
             psItem.setInt(1, gioHangId);
@@ -73,6 +88,7 @@ public class CartServices {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+<<<<<<< HEAD
     // 2. LẤY CHI TIẾT GIỎ HÀNG (QUAN TRỌNG: Đã thêm Overloading)
 
     // Cách 1: Chỉ dùng SessionId (Dùng cho khách vãng lai hoặc code cũ)
@@ -99,6 +115,15 @@ public class CartServices {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, sessionId);
 
+=======
+    // 2. LẤY CHI TIẾT GIỎ HÀNG
+    public List<Map<String, Object>> getCartDetails(String sessionId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+            String sql = "SELECT gc.* FROM giohang_chitiet gc JOIN giohang g ON gc.giohang_id = g.id WHERE g.session_id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, sessionId);
+>>>>>>> c1261a59003dd00faf6650fc20280451ade6646d
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Map<String, Object> item = new HashMap<>();
@@ -107,7 +132,7 @@ public class CartServices {
                 item.put("hinh_anh", rs.getString("hinh_anh"));
                 item.put("gia", rs.getDouble("gia"));
                 item.put("so_luong", rs.getInt("so_luong"));
-                item.put("category", rs.getString("category"));
+                item.put("category", rs.getString("category")); // Trả về category để JSP xử lý nút xóa/giảm
                 item.put("tam_tinh", rs.getDouble("gia") * rs.getInt("so_luong"));
                 list.add(item);
             }
@@ -115,7 +140,11 @@ public class CartServices {
         return list;
     }
 
+<<<<<<< HEAD
     // 3. XÓA SẢN PHẨM
+=======
+    // 3. XÓA SẢN PHẨM (Phải kèm category)
+>>>>>>> c1261a59003dd00faf6650fc20280451ade6646d
     public void removeProduct(String sessionId, int sanPhamId, String category) {
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
             String sql = "DELETE gc FROM giohang_chitiet gc " +
@@ -129,10 +158,16 @@ public class CartServices {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+<<<<<<< HEAD
     // 4. GIẢM SỐ LƯỢNG
     public void decreaseQuantity(String sessionId, int id, String category) {
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
             // Chỉ giảm khi số lượng > 1
+=======
+    // 4. GIẢM SỐ LƯỢNG (Phải kèm category)
+    public void decreaseQuantity(String sessionId, int id, String category) {
+        try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+>>>>>>> c1261a59003dd00faf6650fc20280451ade6646d
             String sql = "UPDATE giohang_chitiet gc " +
                     "JOIN giohang g ON gc.giohang_id = g.id " +
                     "SET gc.so_luong = gc.so_luong - 1 " +
