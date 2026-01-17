@@ -15,48 +15,40 @@
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="Lavabo" autocomplete="off">
-            <input type="text" id="search-input" name="search" class="search-input"
-                   placeholder="Tìm kiếm lavabo..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
-                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
+        <div class="search-container" style="position: relative;">
+            <form class="search-form" action="Lavabo" method="GET" id="searchForm">
+                <input
+                        type="text"
+                        id="search-input"
+                        name="search"
+                        placeholder="Tìm kiếm la va bo..."
+                        class="search-input"
+                        autocomplete="off"
+                        value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
+                        onkeyup="searchProducts(this)"
+                />
+                <button type="submit" class="search-icon">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
+            <div id="suggestion-box" class="suggestion-box"></div>
+        </div>
 
-            <ul id="suggestion-box" class="suggestion-box"></ul>
-        </form>
         <ul class="user-menu">
-            <%-- Giữ nguyên link giỏ hàng của trang này --%>
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
-
             <%
-                // CODE MỚI THÊM VÀO: Kiểm tra session user giống trang Home
                 String username = (String) session.getAttribute("user");
                 if (username != null && !username.isEmpty()) {
-                    // NẾU ĐÃ ĐĂNG NHẬP -> Hiện tên và nút Đăng xuất
             %>
             <li>
                 <a href="#" style="font-weight: bold; color: yellow;">
                     <i class="fas fa-user"></i> Xin chào, <%= username %>
                 </a>
             </li>
-            <li>
-                <%-- Lưu ý: Nếu nút Đăng xuất không chạy, có thể cần thêm ../ trước Logout tùy thư mục --%>
-                <a href="Logout">
-                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-                </a>
-            </li>
-            <%
-            } else {
-                // NẾU CHƯA ĐĂNG NHẬP -> Hiện nút Đăng nhập
-            %>
-            <li>
-                <%-- Giữ nguyên link login_page.jsp vì trang này đang nằm trong thư mục view --%>
-                <a href="view/login_page.jsp">
-                    <i class="fas fa-user"></i> Đăng nhập
-                </a>
-            </li>
-            <%
-                }
-            %>
+            <li><a href="Logout"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a></li>
+            <% } else { %>
+            <li><a href="view/login_page.jsp"><i class="fa-solid fa-user"></i> Đăng nhập</a></li>
+            <% } %>
         </ul>
     </nav>
 </header>
