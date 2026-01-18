@@ -356,6 +356,7 @@ header nav ul li a {
 .suggestion-item {
     padding: 10px; cursor: pointer; display: flex; align-items: center;
     border-bottom: 1px solid #f0f0f0;
+    color: black;
 }
 .suggestion-item:hover { background: #f8f9fa; }
 .suggestion-item img { width: 40px; height: 40px; margin-right: 12px; border-radius: 4px; }

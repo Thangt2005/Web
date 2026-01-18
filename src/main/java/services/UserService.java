@@ -27,13 +27,12 @@ public class UserService {
         return false;
     }
 
-    // --- 2. HÀM CHECK LOGIN ĐÃ SỬA ---
-    // Hàm này sẽ trả về đối tượng User (chứa role) thay vì gọi userDAO
+    // --- 2. HÀM CHECK LOGIN ---
+    // Vẫn giữ kiểm tra status = 1 (Tài khoản đang hoạt động)
     public User checkLogin(String username, String password) {
         User userResult = null;
-        String sql = "SELECT * FROM login WHERE username = ? AND password = ?";
+        String sql = "SELECT * FROM login WHERE username = ? AND password = ? AND status = 1";
 
-        // Nhớ mã hóa mật khẩu nhập vào sang MD5 để so sánh với DB
         String md5Pass = toMD5(password);
 
         try (Connection conn = DriverManager.getConnection(url, this.user, this.pass);
@@ -44,30 +43,31 @@ public class UserService {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Nếu tìm thấy, tạo đối tượng User mới
-                    // LƯU Ý: Anh phải đảm bảo Constructor của class User khớp với thứ tự này
-                    // Hoặc dùng setter như bên dưới cho an toàn
                     userResult = new User();
                     userResult.setId(rs.getInt("id"));
                     userResult.setUsername(rs.getString("username"));
                     userResult.setFullname(rs.getString("fullname"));
                     userResult.setEmail(rs.getString("email"));
-
-                    // QUAN TRỌNG: Lấy cột role từ database
-                    // Nếu trong DB cột role tên là "role" thì để nguyên, nếu tên khác thì sửa lại
                     userResult.setRole(rs.getInt("role"));
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return userResult; // Trả về User (nếu sai pass sẽ trả về null)
+        return userResult;
     }
 
-    // 3. Đăng ký tài khoản mới
+    // --- 3. ĐĂNG KÝ TÀI KHOẢN MỚI (Đã sửa: Active luôn) ---
     public int registerUser(String email, String username, String password) {
         int result = 0;
-        String sql = "INSERT INTO login (email, username, password, fullname, role) VALUES (?, ?, ?, ?, ?)";
+
+        // Kiểm tra trùng email
+        if (checkEmailExists(email)) {
+            return -1; // Báo lỗi đã tồn tại
+        }
+
+        // Câu lệnh SQL: Không lưu token, set status = 1 (Kích hoạt ngay lập tức)
+        String sql = "INSERT INTO login (email, username, password, fullname, role, status) VALUES (?, ?, ?, ?, ?, ?)";
 
         String md5Pass = toMD5(password);
 
@@ -76,10 +76,14 @@ public class UserService {
             ps.setString(1, email);
             ps.setString(2, username);
             ps.setString(3, md5Pass);
-            ps.setString(4, "Khách hàng");
-            ps.setInt(5, 0); // Mặc định đăng ký mới là role = 0 (User thường)
+            ps.setString(4, "Khách hàng"); // Tên mặc định
+            ps.setInt(5, 0); // Role: 0 (User thường)
+            ps.setInt(6, 1); // Status: 1 (Đã kích hoạt -> Đăng nhập được ngay)
+
             result = ps.executeUpdate();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -91,13 +95,14 @@ public class UserService {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                // Cách tạo đối tượng User an toàn nhất là dùng Constructor rỗng rồi set từng cái
                 User u = new User();
                 u.setId(rs.getInt("id"));
                 u.setUsername(rs.getString("username"));
                 u.setFullname(rs.getString("fullname"));
                 u.setEmail(rs.getString("email"));
-                u.setRole(rs.getInt("role")); // Lấy thêm role
+                u.setRole(rs.getInt("role"));
+                // Có thể lấy thêm status nếu cần hiển thị bên Admin
+                // u.setStatus(rs.getInt("status"));
                 list.add(u);
             }
         } catch (Exception e) { e.printStackTrace(); }

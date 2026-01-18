@@ -119,4 +119,21 @@ public class CartServices {
             ps.executeUpdate();
         } catch (Exception e) { e.printStackTrace(); }
     }
+    // 5. XÓA TOÀN BỘ GIỎ HÀNG (Dùng khi thanh toán xong)
+    public void removeCart(String sessionId) {
+        try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+            String sqlDetail = "DELETE gc FROM giohang_chitiet gc JOIN giohang g ON gc.giohang_id = g.id WHERE g.session_id = ?";
+            PreparedStatement psDetail = conn.prepareStatement(sqlDetail);
+            psDetail.setString(1, sessionId);
+            psDetail.executeUpdate();
+
+            String sqlCart = "DELETE FROM giohang WHERE session_id = ?";
+            PreparedStatement psCart = conn.prepareStatement(sqlCart);
+            psCart.setString(1, sessionId);
+            psCart.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

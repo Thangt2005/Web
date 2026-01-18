@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Product" %>
-<%@ page import="model.User" %> <%-- 1. Bắt buộc import User --%>
+<%@ page import="model.User" %>
 
 <%
-    // --- 2. XỬ LÝ LOGIC KIỂM TRA SESSION CHUẨN ---
+    // XỬ LÝ SESSION & PHÂN QUYỀN
     Object sessionObj = session.getAttribute("user");
 
     String displayName = "";
@@ -46,20 +46,21 @@
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="PhuKien" autocomplete="off">
-            <input type="text" id="search-input" name="search" class="search-input"
-                   placeholder="Tìm kiếm phụ kiện..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
-                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
-
-            <ul id="suggestion-box" class="suggestion-box"></ul>
-        </form>
+        <div style="position: relative; display: inline-block;">
+            <form class="search-form" method="get" action="PhuKien" autocomplete="off">
+                <input type="text" id="search-input" name="search" class="search-input"
+                       placeholder="Tìm kiếm phụ kiện..."
+                       value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
+                       onkeyup="searchProducts(this)">
+                <button class="search-icon"><i class="fa fa-search"></i></button>
+            </form>
+            <ul id="suggestion-box" class="suggestion-box" style="display: none;"></ul>
+        </div>
 
         <ul class="user-menu">
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
             <% if (isLoggedIn) { %>
-            <%-- 3. Hiện nút Admin nếu là Admin --%>
             <% if (isAdmin) { %>
             <li>
                 <a href="Admin" style="color: #ff4757; font-weight: bold;">
@@ -105,8 +106,6 @@
             <li><a href="BonTam">Bồn Tắm</a></li>
             <li><a href="VoiRua">Vòi Rửa</a></li>
             <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
-
-            <%-- 4. Active đúng tab Phụ Kiện --%>
             <li><a href="PhuKien" class="active">Phụ Kiện</a></li>
 
             <% if (isAdmin) { %>
@@ -133,18 +132,21 @@
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <%-- 5. Sửa đường dẫn ảnh --%>
-            <img src="../image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+            <img src="<%= p.getHinhAnh() %>"
+                 alt="<%= p.getTenSp() %>"
+                 onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
 
-            <h3><a href="ProductDetail?id=<%= p.getId() %>&category=phukien_sanpham">
-                <%= p.getTenSp() %>
-            </a></h3>
+            <h3>
+                <a href="ProductDetail?id=<%= p.getId() %>&category=phukien_sanpham">
+                    <%= p.getTenSp() %>
+                </a>
+            </h3>
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
+                <% if (p.getGiamGia() > 0) { %>
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
+                <% } %>
             </p>
-
-            <%-- 6. Đã sửa lỗi thừa dấu < ở đây --%>
             <div class="button-group">
                 <button class="add-to-cart" type="button"
                         onclick="window.location.href='Cart?id=<%= p.getId() %>&category=phukien_sanpham'">
@@ -163,6 +165,7 @@
         <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
             <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
             <p>Không tìm thấy sản phẩm nào!</p>
+            <a href="PhuKien" style="color: #007bff; text-decoration: underline;">Tải lại trang</a>
         </div>
         <% } %>
     </div>
@@ -212,12 +215,10 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Hàm gọi tìm kiếm
     function searchProducts(input) {
         let keyword = input.value.trim();
         let suggestionBox = document.getElementById("suggestion-box");
 
-        // Nếu từ khóa quá ngắn thì ẩn đi
         if (keyword.length < 2) {
             suggestionBox.style.display = "none";
             suggestionBox.innerHTML = "";
@@ -242,11 +243,10 @@
         });
     }
 
-    // Ẩn gợi ý khi click ra ngoài
     document.addEventListener('click', function(e) {
         let searchForm = document.querySelector('.search-form');
         let suggestionBox = document.getElementById("suggestion-box");
-        if (!searchForm.contains(e.target)) {
+        if (!searchForm.contains(e.target) && e.target !== suggestionBox) {
             suggestionBox.style.display = 'none';
         }
     });

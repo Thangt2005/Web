@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Product" %>
-<%@ page import="model.User" %> <%-- Bắt buộc import User --%>
+<%@ page import="model.User" %>
 
 <%
-    // --- XỬ LÝ LOGIC KIỂM TRA SESSION (CODE CHUẨN) ---
+    // XỬ LÝ SESSION & PHÂN QUYỀN
     Object sessionObj = session.getAttribute("user");
 
     String displayName = "";
@@ -14,16 +14,13 @@
     if (sessionObj != null) {
         isLoggedIn = true;
 
-        // Trường hợp 1: Login thường (User Object)
         if (sessionObj instanceof User) {
             User u = (User) sessionObj;
-            displayName = u.getUsername(); // Hoặc u.getFullName() tùy anh chọn
-            if (u.getRole() == 1) { // Kiểm tra quyền Admin
+            displayName = u.getUsername();
+            if (u.getRole() == 1) {
                 isAdmin = true;
             }
-        }
-        // Trường hợp 2: Login Google/Facebook (String)
-        else if (sessionObj instanceof String) {
+        } else if (sessionObj instanceof String) {
             displayName = (String) sessionObj;
             isAdmin = false;
         }
@@ -33,30 +30,37 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <title>Sản phẩm Lavabo - Thiết bị vệ sinh</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <%
+        String path = request.getContextPath();
+        String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+    %>
+    <base href="<%=basePath%>">
+    <meta charset="UTF-8">
+    <title>Sản Phẩm Lavabo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
     <script src="js/main.js"></script>
 </head>
 <body>
+
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="Lavabo" autocomplete="off">
-            <input type="text" id="search-input" name="search" class="search-input"
-                   placeholder="Tìm kiếm lavabo..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
-                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
-
-            <ul id="suggestion-box" class="suggestion-box"></ul>
-        </form>
+        <div style="position: relative; display: inline-block;">
+            <form class="search-form" method="get" action="Lavabo" autocomplete="off">
+                <input type="text" id="search-input" name="search" class="search-input"
+                       placeholder="Tìm kiếm lavabo..."
+                       value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
+                       onkeyup="searchProducts(this)">
+                <button class="search-icon"><i class="fa fa-search"></i></button>
+            </form>
+            <ul id="suggestion-box" class="suggestion-box" style="display: none;"></ul>
+        </div>
 
         <ul class="user-menu">
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
             <% if (isLoggedIn) { %>
-            <%-- 1. Hiện nút Admin nếu là Admin --%>
             <% if (isAdmin) { %>
             <li>
                 <a href="Admin" style="color: #ff4757; font-weight: bold;">
@@ -65,21 +69,17 @@
             </li>
             <% } %>
 
-            <%-- 2. Hiện tên User --%>
             <li>
                 <a href="#" style="font-weight: bold; color: yellow;">
                     <i class="fas fa-user"></i> Xin chào, <%= displayName %>
                 </a>
             </li>
-
-            <%-- 3. Nút Đăng xuất --%>
             <li>
                 <a href="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
             </li>
             <% } else { %>
-            <%-- Chưa đăng nhập --%>
             <li>
                 <a href="view/login_page.jsp">
                     <i class="fas fa-user"></i> Đăng nhập
@@ -94,7 +94,6 @@
     <div class="sidebar">
         <div class="menu-title"><i class="fa fa-bars"></i> DANH MỤC SẢN PHẨM</div>
     </div>
-
     <div class="top-menu">
         <ul>
             <li><a href="Home">Trang chủ</a></li>
@@ -109,7 +108,6 @@
             <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
             <li><a href="PhuKien">Phụ Kiện</a></li>
 
-            <%-- Chỉ hiện Admin ở menu sidebar nếu đúng quyền --%>
             <% if (isAdmin) { %>
             <li><a href="Admin" style="color: yellow; font-weight: bold;">Admin</a></li>
             <% } %>
@@ -129,14 +127,14 @@
 
     <div class="product-grid">
         <%
-            // Phần này giữ nguyên vì Controller Lavabo trả về List<Product>
             List<Product> list = (List<Product>) request.getAttribute("productList");
             if (list != null && !list.isEmpty()) {
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <%-- Lưu ý: Kiểm tra đường dẫn ảnh của anh. Nếu ảnh trong DB là full link thì bỏ ../image_all/ đi --%>
-            <img src="../image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+            <img src="<%= p.getHinhAnh() %>"
+                 alt="<%= p.getTenSp() %>"
+                 onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
 
             <h3>
                 <a href="ProductDetail?id=<%= p.getId() %>&category=lavabo_sanpham">
@@ -145,7 +143,9 @@
             </h3>
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
+                <% if (p.getGiamGia() > 0) { %>
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
+                <% } %>
             </p>
             <div class="button-group">
                 <button class="add-to-cart" type="button"
@@ -165,6 +165,7 @@
         <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
             <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
             <p>Không tìm thấy sản phẩm nào!</p>
+            <a href="Lavabo" style="color: #007bff; text-decoration: underline;">Tải lại trang</a>
         </div>
         <% } %>
     </div>
@@ -214,12 +215,10 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Hàm gọi tìm kiếm
     function searchProducts(input) {
         let keyword = input.value.trim();
         let suggestionBox = document.getElementById("suggestion-box");
 
-        // Nếu từ khóa quá ngắn thì ẩn đi
         if (keyword.length < 2) {
             suggestionBox.style.display = "none";
             suggestionBox.innerHTML = "";
@@ -244,11 +243,10 @@
         });
     }
 
-    // Ẩn gợi ý khi click ra ngoài
     document.addEventListener('click', function(e) {
         let searchForm = document.querySelector('.search-form');
         let suggestionBox = document.getElementById("suggestion-box");
-        if (!searchForm.contains(e.target)) {
+        if (!searchForm.contains(e.target) && e.target !== suggestionBox) {
             suggestionBox.style.display = 'none';
         }
     });
