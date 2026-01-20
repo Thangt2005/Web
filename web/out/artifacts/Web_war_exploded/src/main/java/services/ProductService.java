@@ -11,7 +11,7 @@ public class ProductService {
     private String user = "root";
     private String pass = "";
 
-    // 1. HÀM PHỤ: Chuyển dữ liệu từ Database thành đối tượng Java (Dùng chung để tránh dư thừa)
+    // 1. HÀM PHỤ: Chuyển dữ liệu từ Database thành đối tượng Java (ĐÃ CẬP NHẬT LẤY MÔ TẢ)
     private Product mapProduct(ResultSet rs, String tableName) throws SQLException {
         Product p = new Product(
                 rs.getInt("id"),
@@ -21,10 +21,22 @@ public class ProductService {
                 rs.getInt("giam_gia")
         );
         p.setCategory(tableName); // Lưu lại tên bảng để làm link chi tiết
+
+        try {
+            String moTaDB = rs.getString("mo_ta");
+            if (moTaDB != null && !moTaDB.isEmpty()) {
+                p.setMoTa(moTaDB);
+            } else {
+                p.setMoTa("Thông tin chi tiết về sản phẩm đang được cập nhật...");
+            }
+        } catch (SQLException e) {
+            p.setMoTa("Thông tin chi tiết về sản phẩm đang được cập nhật...");
+        }
+
         return p;
     }
 
-    // 2. HÀM LẤY SẢN PHẨM THEO BẢNG: Thay thế cho 12 hàm riêng lẻ trước đây
+    // 2. HÀM LẤY SẢN PHẨM THEO BẢNG
     public List<Product> getProductsByTable(String tableName, String search) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM " + tableName;
@@ -48,7 +60,7 @@ public class ProductService {
         return list;
     }
 
-    // 3. HÀM TÌM KIẾM TOÀN TRANG: Quét qua 12 bảng không dùng UNION ALL
+    // 3. HÀM TÌM KIẾM TOÀN TRANG
     public List<Product> searchEverywhere(String keyword) {
         List<Product> allResults = new ArrayList<>();
         String[] tables = {
@@ -75,7 +87,7 @@ public class ProductService {
         return allResults;
     }
 
-    // 4. CÁC HÀM THỐNG KÊ (Cho trang Admin Dashboard)
+    // 4. CÁC HÀM THỐNG KÊ (Admin Dashboard)
     public int getTotalProducts() {
         int total = 0;
         String sql = "SELECT (SELECT COUNT(*) FROM bontam_sanpham) + (SELECT COUNT(*) FROM bontieunam_sanpham) + " +
@@ -94,7 +106,8 @@ public class ProductService {
 
     public double getTotalRevenue() {
         double total = 0;
-        String sql = "SELECT SUM(tong_tien) as revenue FROM orders WHERE trang_thai = 'Completed'";
+        // Lưu ý: Đảm bảo bảng orders có cột 'tong_tien' và 'trang_thai'
+        String sql = "SELECT SUM(total_money) as revenue FROM orders WHERE status = 3"; // Status 3 = Thành công
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -105,6 +118,7 @@ public class ProductService {
 
     // 5. CÁC HÀM QUẢN LÝ (CRUD)
     public boolean addProduct(String tableName, String name, String img, String price, String discount) {
+        // Hiện tại hàm thêm chưa có cột mô tả, anh có thể cập nhật sau nếu muốn Admin nhập được mô tả
         String sql = "INSERT INTO " + tableName + " (ten_sp, hinh_anh, gia, giam_gia) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -149,7 +163,8 @@ public class ProductService {
         } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
-    //hàm lấy gợi ý cho thanh tìm kiếm
+
+    // 6. HÀM GỢI Ý TÌM KIẾM
     public List<Product> getSearchSuggestions(String keyword) {
         List<Product> suggestions = new ArrayList<>();
         String[] tables = {
@@ -161,7 +176,6 @@ public class ProductService {
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
             String p = "%" + (keyword == null ? "" : keyword.trim()) + "%";
             for (String tableName : tables) {
-                // Chỉ lấy 3 sản phẩm mỗi bảng để gợi ý cho nhanh, tránh lag
                 String sql = "SELECT * FROM " + tableName + " WHERE ten_sp LIKE ? LIMIT 3";
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
                     ps.setString(1, p);
@@ -171,7 +185,6 @@ public class ProductService {
                         }
                     }
                 }
-                // Nếu đã đủ 10 gợi ý thì dừng lại cho nhanh
                 if (suggestions.size() >= 10) break;
             }
         } catch (Exception e) { e.printStackTrace(); }

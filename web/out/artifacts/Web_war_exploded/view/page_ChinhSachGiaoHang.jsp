@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <title>Chính sách giao hàng</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="css_TrangChiTiet.css" />
+  <link rel="stylesheet" href="policyStyle.css" />
   <style>
     .policy-content h2 { color: #ee4d2d; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
     .policy-content h3 { margin-top: 20px; color: #333; }

@@ -10,7 +10,7 @@
     <meta charset="UTF-8" />
     <title>Hướng dẫn thanh toán</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="stylesheet" href="css_TrangChiTiet.css" />
+    <link rel="stylesheet" href="policyStyle.css" />
     <style>
         .policy-content h2 { color: #ee4d2d; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         .payment-method { display: flex; align-items: flex-start; margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 5px; }

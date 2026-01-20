@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <title>Chăm sóc khách hàng</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="css_TrangChiTiet.css" />
+  <link rel="stylesheet" href="policyStyle.css" />
   <style>
     .policy-content h2 { color: #ee4d2d; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
     .contact-box { background: #f9f9f9; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; border: 1px solid #eee; }
