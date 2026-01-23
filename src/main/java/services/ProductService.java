@@ -11,7 +11,6 @@ public class ProductService {
     private String user = "root";
     private String pass = "";
 
-    // 1. HÀM PHỤ: Chuyển dữ liệu từ Database thành đối tượng Java (ĐÃ CẬP NHẬT LẤY MÔ TẢ)
     private Product mapProduct(ResultSet rs, String tableName) throws SQLException {
         Product p = new Product(
                 rs.getInt("id"),
