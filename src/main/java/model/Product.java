@@ -7,7 +7,7 @@ public class Product {
     private double gia;
     private int giamGia;
     private String category; // Dùng để lưu tên bảng (source table) từ SQL UNION ALL
-
+    private String moTa;
     public Product() {
     }
 
@@ -77,4 +77,7 @@ public class Product {
     public void setCategory(String category) {
         this.category = category;
     }
-}
+    public String getMoTa() {
+        return moTa;}
+    public void setMoTa(String moTa) {
+        this.moTa = moTa; }}

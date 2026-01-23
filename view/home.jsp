@@ -1,11 +1,45 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.text.DecimalFormat" %>
+<%@ page import="model.User" %> <%-- Bắt buộc phải import model User --%>
+
 <%
+    // 1. CẤU HÌNH ĐƯỜNG DẪN
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+
+    // 2. XỬ LÝ LOGIC KIỂM TRA ĐĂNG NHẬP (THÔNG MINH)
+    // Đoạn này chấp nhận cả User Object lẫn String (Google/FB)
+    Object sessionObj = session.getAttribute("user");
+
+    String displayName = "";      // Tên hiển thị
+    boolean isLoggedIn = false;   // Cờ đánh dấu đã đăng nhập chưa
+    boolean isAdmin = false;      // Cờ đánh dấu có phải admin không
+
+    if (sessionObj != null) {
+        isLoggedIn = true; // Đã có dữ liệu user -> Đã đăng nhập
+
+        // TRƯỜNG HỢP 1: Đăng nhập thường (Lưu Object User)
+        if (sessionObj instanceof User) {
+            User u = (User) sessionObj;
+            // Anh kiểm tra file User.java xem hàm lấy tên là getUsername() hay getFullName() nhé
+            displayName = u.getUsername();
+
+            // Kiểm tra quyền Admin (Ví dụ role = 1 là admin)
+            if (u.getRole() == 1) {
+                isAdmin = true;
+            }
+        }
+        // TRƯỜNG HỢP 2: Đăng nhập Google/Facebook (Lưu String tên)
+        else if (sessionObj instanceof String) {
+            displayName = (String) sessionObj;
+            isAdmin = false; // Google/FB mặc định là khách hàng
+        }
+    }
 %>
+
 <%
+    // 3. KẾT NỐI DATABASE & LẤY SẢN PHẨM
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -16,11 +50,14 @@
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
-        String user = "root";
-        String pass = "";
-        conn = DriverManager.getConnection(url, user, pass);
+        String userDB = "root";
+        String passDB = "";
+        conn = DriverManager.getConnection(url, userDB, passDB);
 
         String searchTerm = request.getParameter("search");
+
+        // Mặc định lấy bảng home_sanpham.
+        // Nếu anh muốn chuyển tab (Combo, Toilet...) thì cần dùng Controller gửi tên bảng sang như em đã hướng dẫn trước đó.
         String sql = "SELECT * FROM home_sanpham";
 
         if (searchTerm != null && !searchTerm.trim().isEmpty()) {
@@ -47,13 +84,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ - Thiết bị vệ sinh</title>
+    <base href="<%=basePath%>">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="homeStyle.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/main.js"></script>
-    <base href="<%=basePath%>">
 </head>
 <body>
 
@@ -83,24 +120,36 @@
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
             <%
-                // Kiểm tra xem trong Session có biến "user" không
-                String username = (String) session.getAttribute("user");
-                if (username != null && !username.isEmpty()) {
-                    // NẾU ĐÃ ĐĂNG NHẬP -> Hiện tên và nút Đăng xuất
+                // SỬ DỤNG BIẾN ĐÃ XỬ LÝ Ở TRÊN (isLoggedIn, isAdmin, displayName)
+                if (isLoggedIn) {
             %>
+
+            <%-- 1. Nếu là Admin thì hiện nút Quản trị --%>
+            <% if (isAdmin) { %>
             <li>
-                <a href="#" style="font-weight: bold; color: yellow;">
-                    <i class="fas fa-user"></i> Xin chào, <%= username %>
+                <a href="Admin" style="color: #ff4757; font-weight: bold;">
+                    <i class="fas fa-user-shield"></i> Trang Quản Trị
                 </a>
             </li>
+            <% } %>
+
+            <%-- 2. Hiện tên User --%>
+            <li>
+                <a href="#" style="font-weight: bold; color: yellow;">
+                    <i class="fas fa-user"></i> Xin chào, <%= displayName %>
+                </a>
+            </li>
+
+            <%-- 3. Nút Đăng xuất --%>
             <li>
                 <a href="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
             </li>
+
             <%
             } else {
-                // NẾU CHƯA ĐĂNG NHẬP -> Hiện nút Đăng nhập cũ
+                // --- NẾU CHƯA ĐĂNG NHẬP ---
             %>
             <li>
                 <a href="view/login_page.jsp">
@@ -134,7 +183,12 @@
             <li><a href="VoiRua">Vòi Rửa</a></li>
             <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
             <li><a href="PhuKien">Phụ Kiện</a></li>
-            <li><a href="Admin">Admin</a></li>
+
+            <%-- Menu Admin ở thanh sidebar (chỉ hiện nếu là admin) --%>
+            <% if (isAdmin) { %>
+            <li><a href="Admin" style="color: yellow; font-weight: bold;">Admin</a></li>
+            <% } %>
+
         </ul>
     </div>
 </div>
@@ -165,7 +219,7 @@
                     int giamGia = rs.getInt("giam_gia");
         %>
         <div class="product-card">
-            <%-- Đã cập nhật: Bỏ tiền tố "image_all/" để lấy link trực tiếp từ database --%>
+            <%-- Link ảnh trực tiếp từ DB --%>
             <img src="<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
 
             <h3>
@@ -181,16 +235,16 @@
                 <% } %>
             </p>
 
-                <div class="button-group">
-                    <button class="add-to-cart" type="button"
-                            onclick="window.location.href='Cart?id=<%= id %>&category=home_sanpham'">
-                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                    </button>
-                    <button class="buy" type="button"
-                            onclick="window.location.href='Cart?id=<%= id %>&category=home_sanpham'">
-                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                    </button>
-                </div>
+            <div class="button-group">
+                <button class="add-to-cart" type="button"
+                        onclick="window.location.href='Cart?id=<%= id %>&category=home_sanpham'">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                </button>
+                <button class="buy" type="button"
+                        onclick="window.location.href='Cart?id=<%= id %>&category=home_sanpham'">
+                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                </button>
+            </div>
         </div>
         <%
             }
@@ -229,10 +283,10 @@
         <div class="footer-column">
             <h3>HỖ TRỢ KHÁCH HÀNG</h3>
             <ul>
-                <li><a href="#">Chính sách giao hàng</a></li>
-                <li><a href="#">Chính sách bảo hành</a></li>
-                <li><a href="#">Hướng dẫn thanh toán</a></li>
-                <li><a href="#">Chăm sóc khách hàng</a></li>
+                <li><a href="view/page_ChinhSachGiaoHang.jsp">Chính sách giao hàng</a></li>
+                <li><a href="view/page_ChinhSachBaoHanh.jsp">Chính sách bảo hàng</a></li>
+                <li><a href="view/HuongDanThanhToan.jsp">Hướng dẫn thanh toán</a></li>
+                <li><a href="view/ChamSocKhachHang.jsp">Chăm sóc khách hàng</a></li>
             </ul>
         </div>
 
@@ -255,6 +309,7 @@
 </html>
 
 <%
+    // Đóng kết nối an toàn
     try { if(rs != null) rs.close(); } catch(Exception e) {}
     try { if(ps != null) ps.close(); } catch(Exception e) {}
     try { if(conn != null) conn.close(); } catch(Exception e) {}
