@@ -258,15 +258,36 @@ h3 {
   box-shadow: 0 0 5px rgba(0, 120, 200, 0.3);
 }
 
+/* Container bọc lấy ô input mật khẩu */
 .password-wrapper {
   position: relative;
+  width: 75%;       /* Cùng chiều rộng với các input khác (75%) */
+  margin: 10px auto; /* Căn giữa giống các ô khác */
+}
+/* 1. Container bao quanh ô input và con mắt */
+.password-wrapper {
+  position: relative; /* Quan trọng: Để con mắt căn chỉnh theo ô này */
+  width: 75%;         /* Phải bằng chiều rộng của các input khác */
+  margin: 10px auto;  /* Căn giữa */
 }
 
+/* 2. Ô input bên trong wrapper */
+.password-wrapper input {
+  width: 100% !important; /* Chiếm hết chiều rộng wrapper */
+  margin: 0 !important;   /* Xóa margin để không bị lệch */
+  padding-right: 40px !important; /* Chừa chỗ bên phải cho con mắt */
+}
+
+/* 3. Vị trí con mắt */
 .toggle-password {
   position: absolute;
-  right: 620px;
-  top: 15px;
+  right: 15px;      /* Khoảng cách từ lề phải ô input vào */
+  top: 50%;         /* Căn giữa theo chiều dọc */
+  transform: translateY(-50%); /* Canh chỉnh tâm chính xác */
   cursor: pointer;
+  color: #666;      /* Màu xám cho con mắt */
+  z-index: 999;     /* Đảm bảo nằm trên cùng để nhấn được */
+  display: block;
 }
 .login-btn {
   width: 300px;

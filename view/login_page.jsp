@@ -45,11 +45,11 @@
     <% } %>
 
     <div class="social-login">
-            <a href="<%= facebookLoginUrl.trim() %>" style="text-decoration: none;">
-                <button class="facebook" type="button" style="pointer-events: none;">
-                    <i class="fa-brands fa-facebook-f"></i><span> Đăng nhập bằng Facebook</span>
-                </button>
-            </a>
+        <a href="<%= facebookLoginUrl.trim() %>" style="text-decoration: none;">
+            <button class="facebook" type="button" style="pointer-events: none;">
+                <i class="fa-brands fa-facebook-f"></i><span> Đăng nhập bằng Facebook</span>
+            </button>
+        </a>
 
         <%-- Nút bấm Google --%>
         <button class="google" onclick="window.location.href='<%= googleLoginUrl %>'">
@@ -94,10 +94,10 @@
         <div class="footer-column">
             <h3>HỖ TRỢ KHÁCH HÀNG</h3>
             <ul>
-                <li><a href="#">Chính sách giao hàng</a></li>
-                <li><a href="#">Chính sách bảo hành</a></li>
-                <li><a href="#">Hướng dẫn thanh toán</a></li>
-                <li><a href="#">Chăm sóc khách hàng</a></li>
+                <li><a href="view/page_ChinhSachGiaoHang.jsp">Chính sách giao hàng</a></li>
+                <li><a href="view/page_ChinhSachBaoHanh.jsp">Chính sách bảo hàng</a></li>
+                <li><a href="view/HuongDanThanhToan.jsp">Hướng dẫn thanh toán</a></li>
+                <li><a href="view/ChamSocKhachHang.jsp">Chăm sóc khách hàng</a></li>
             </ul>
         </div>
 

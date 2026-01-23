@@ -23,7 +23,10 @@ public class UserService {
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            System.out.println("LỖI CHECK EMAIL: " + e.getMessage()); // Thêm dòng này để kiểm tra
+            e.printStackTrace();
+        }
         return false;
     }
 
@@ -66,21 +69,33 @@ public class UserService {
 
     // 3. Đăng ký tài khoản mới
     public int registerUser(String email, String username, String password) {
-        int result = 0;
-        String sql = "INSERT INTO login (email, username, password, fullname, role) VALUES (?, ?, ?, ?, ?)";
-
-        String md5Pass = toMD5(password);
+        // Sắp xếp lại thứ tự cột cho rõ ràng và dễ kiểm soát
+        String sql = "INSERT INTO login (username, password, fullname, email, role) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, email);
-            ps.setString(2, username);
-            ps.setString(3, md5Pass);
-            ps.setString(4, "Khách hàng");
-            ps.setInt(5, 0); // Mặc định đăng ký mới là role = 0 (User thường)
-            result = ps.executeUpdate();
-        } catch (Exception e) { e.printStackTrace(); }
-        return result;
+
+            // 1. username -> ứng với cột username
+            ps.setString(1, username);
+
+            // 2. password -> ứng với cột password (đã mã hóa MD5)
+            ps.setString(2, toMD5(password));
+
+            // 3. fullname -> ứng với cột fullname
+            ps.setString(3, "Khách hàng");
+
+            // 4. email -> ứng với cột email
+            ps.setString(4, email);
+
+            // 5. role -> ứng với cột role (mặc định 0 là User)
+            ps.setInt(5, 0);
+
+            return ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("LỖI SQL TẠI REGISTER: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     // 4. Lấy danh sách khách hàng (Dành cho Admin)

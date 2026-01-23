@@ -1,34 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Product" %>
-<%@ page import="model.User" %> <%-- Bắt buộc import User --%>
-
-<%
-    // --- XỬ LÝ LOGIC KIỂM TRA SESSION (CODE CHUẨN) ---
-    Object sessionObj = session.getAttribute("user");
-
-    String displayName = "";
-    boolean isLoggedIn = false;
-    boolean isAdmin = false;
-
-    if (sessionObj != null) {
-        isLoggedIn = true;
-
-        // Trường hợp 1: Login thường (User Object)
-        if (sessionObj instanceof User) {
-            User u = (User) sessionObj;
-            displayName = u.getUsername(); // Hoặc u.getFullName() tùy anh chọn
-            if (u.getRole() == 1) { // Kiểm tra quyền Admin
-                isAdmin = true;
-            }
-        }
-        // Trường hợp 2: Login Google/Facebook (String)
-        else if (sessionObj instanceof String) {
-            displayName = (String) sessionObj;
-            isAdmin = false;
-        }
-    }
-%>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -51,41 +23,40 @@
 
             <ul id="suggestion-box" class="suggestion-box"></ul>
         </form>
-
         <ul class="user-menu">
+            <%-- Giữ nguyên link giỏ hàng của trang này --%>
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
-            <% if (isLoggedIn) { %>
-            <%-- 1. Hiện nút Admin nếu là Admin --%>
-            <% if (isAdmin) { %>
-            <li>
-                <a href="Admin" style="color: #ff4757; font-weight: bold;">
-                    <i class="fas fa-user-shield"></i> Quản Trị
-                </a>
-            </li>
-            <% } %>
-
-            <%-- 2. Hiện tên User --%>
+            <%
+                // CODE MỚI THÊM VÀO: Kiểm tra session user giống trang Home
+                String username = (String) session.getAttribute("user");
+                if (username != null && !username.isEmpty()) {
+                    // NẾU ĐÃ ĐĂNG NHẬP -> Hiện tên và nút Đăng xuất
+            %>
             <li>
                 <a href="#" style="font-weight: bold; color: yellow;">
-                    <i class="fas fa-user"></i> Xin chào, <%= displayName %>
+                    <i class="fas fa-user"></i> Xin chào, <%= username %>
                 </a>
             </li>
-
-            <%-- 3. Nút Đăng xuất --%>
             <li>
+                <%-- Lưu ý: Nếu nút Đăng xuất không chạy, có thể cần thêm ../ trước Logout tùy thư mục --%>
                 <a href="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
             </li>
-            <% } else { %>
-            <%-- Chưa đăng nhập --%>
+            <%
+            } else {
+                // NẾU CHƯA ĐĂNG NHẬP -> Hiện nút Đăng nhập
+            %>
             <li>
+                <%-- Giữ nguyên link login_page.jsp vì trang này đang nằm trong thư mục view --%>
                 <a href="view/login_page.jsp">
                     <i class="fas fa-user"></i> Đăng nhập
                 </a>
             </li>
-            <% } %>
+            <%
+                }
+            %>
         </ul>
     </nav>
 </header>
@@ -97,10 +68,10 @@
 
     <div class="top-menu">
         <ul>
-            <li><a href="Home">Trang chủ</a></li>
+            <li><a href="Home" class="active">Trang chủ</a></li>
             <li><a href="Combo">Combo</a></li>
             <li><a href="Toilet">Bồn Cầu</a></li>
-            <li><a href="Lavabo" class="active">Lavabo</a></li>
+            <li><a href="Lavabo">Lavabo</a></li>
             <li><a href="TuLavabo">Tủ Lavabo</a></li>
             <li><a href="VoiSenTam">Vòi Sen Tắm</a></li>
             <li><a href="ChauRuaChen">Chậu Rửa Chén</a></li>
@@ -108,11 +79,7 @@
             <li><a href="VoiRua">Vòi Rửa</a></li>
             <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
             <li><a href="PhuKien">Phụ Kiện</a></li>
-
-            <%-- Chỉ hiện Admin ở menu sidebar nếu đúng quyền --%>
-            <% if (isAdmin) { %>
-            <li><a href="Admin" style="color: yellow; font-weight: bold;">Admin</a></li>
-            <% } %>
+            <li><a href="Admin">Admin</a></li>
         </ul>
     </div>
 </div>
@@ -129,15 +96,13 @@
 
     <div class="product-grid">
         <%
-            // Phần này giữ nguyên vì Controller Lavabo trả về List<Product>
+            // Nhận danh sách từ LavaboController
             List<Product> list = (List<Product>) request.getAttribute("productList");
             if (list != null && !list.isEmpty()) {
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <%-- Lưu ý: Kiểm tra đường dẫn ảnh của anh. Nếu ảnh trong DB là full link thì bỏ ../image_all/ đi --%>
-            <img src="../image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
-
+            <img src="../image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
             <h3>
                 <a href="ProductDetail?id=<%= p.getId() %>&category=lavabo_sanpham">
                     <%= p.getTenSp() %>
@@ -162,10 +127,7 @@
             }
         } else {
         %>
-        <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
-            <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
-            <p>Không tìm thấy sản phẩm nào!</p>
-        </div>
+        <p style="text-align: center; width: 100%;">Không tìm thấy sản phẩm nào!</p>
         <% } %>
     </div>
 </main>
@@ -212,8 +174,7 @@
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script>
     // Hàm gọi tìm kiếm
     function searchProducts(input) {
         let keyword = input.value.trim();
@@ -227,7 +188,7 @@
         }
 
         $.ajax({
-            url: "SearchSuggest",
+            url: "SearchSuggest", // Gọi đến Servlet
             type: "GET",
             data: { keyword: keyword },
             success: function (response) {
@@ -242,6 +203,12 @@
                 console.log("Lỗi tìm kiếm gợi ý");
             }
         });
+    }
+
+    // Hàm khi click vào một gợi ý -> Chuyển hướng đến trang chi tiết
+    function selectProduct(id, tableName) {
+        // Chuyển hướng đến trang chi tiết sản phẩm (Cập nhật đường dẫn cho đúng logic của bạn)
+        window.location.href = "ProductDetail?id=" + id + "&table=" + tableName;
     }
 
     // Ẩn gợi ý khi click ra ngoài
