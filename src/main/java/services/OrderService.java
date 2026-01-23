@@ -2,23 +2,81 @@ package services;
 
 import model.Order;
 import model.OrderDetail;
+import dao.OrderDAO;  // Đảm bảo anh đã có file OrderDAO trong gói dao
+import context.DBContext;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class OrderService {
-    private String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
-    private String user = "root";
-    private String pass = "";
 
-    // 1. Lấy tất cả đơn hàng (Cho Admin) - Sắp xếp đơn mới nhất lên đầu
+    // Khởi tạo DAO để xử lý các lệnh SQL (Insert/Select)
+    private OrderDAO orderDAO = new OrderDAO();
+
+    // ============================================================
+    // PHẦN 1: XỬ LÝ ĐẶT HÀNG (CHO KHÁCH HÀNG)
+    // ============================================================
+
+    /**
+     * Hàm tạo đơn hàng mới
+     * @param paymentMethod: Phương thức thanh toán (COD, PAYPAL...)
+     * @return orderId: Mã đơn hàng vừa tạo (hoặc -1 nếu lỗi)
+     */
+    public int createOrder(int userId, String fullname, String phone, String address, List<Map<String, Object>> cartItems, String paymentMethod) {
+
+        // 1. Tính tổng tiền đơn hàng
+        double totalMoney = 0;
+        if (cartItems != null) {
+            for (Map<String, Object> item : cartItems) {
+                try {
+                    // Xử lý ép kiểu an toàn (tránh lỗi nếu Map trả về String hoặc Integer)
+                    double gia = Double.parseDouble(item.get("gia").toString());
+                    int soLuong = Integer.parseInt(item.get("so_luong").toString());
+                    totalMoney += (gia * soLuong);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // 2. Lưu thông tin chính của Đơn hàng vào bảng `orders`
+        // Gọi sang DAO để thực hiện lệnh SQL INSERT
+        int orderId = orderDAO.insertOrder(userId, fullname, phone, address, totalMoney, paymentMethod);
+
+        // 3. Nếu tạo đơn hàng thành công (có ID > 0), tiếp tục lưu chi tiết sản phẩm
+        if (orderId > 0 && cartItems != null) {
+            for (Map<String, Object> item : cartItems) {
+                try {
+                    int productId = Integer.parseInt(item.get("id").toString());
+                    String productName = item.get("ten_sp").toString();
+                    double price = Double.parseDouble(item.get("gia").toString());
+                    int quantity = Integer.parseInt(item.get("so_luong").toString());
+
+                    // Gọi DAO để lưu từng dòng vào bảng `order_details`
+                    orderDAO.insertOrderDetail(orderId, productId, productName, price, quantity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return orderId; // Trả về mã đơn hàng (để Controller chuyển hướng hoặc báo thành công)
+    }
+
+    // ============================================================
+    // PHẦN 2: CÁC HÀM QUẢN LÝ (CHO ADMIN)
+    // ============================================================
+
+    // 1. Lấy danh sách tất cả đơn hàng (Sắp xếp mới nhất lên đầu)
     public List<Order> getAllOrders() {
         List<Order> list = new ArrayList<>();
         String sql = "SELECT * FROM orders ORDER BY created_at DESC";
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
+
+        try (Connection conn = new DBContext().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 Order o = new Order();
                 o.setId(rs.getInt("id"));
@@ -27,20 +85,28 @@ public class OrderService {
                 o.setPhone(rs.getString("phone"));
                 o.setAddress(rs.getString("address"));
                 o.setTotalMoney(rs.getDouble("total_money"));
+
+                // Lấy thông tin thanh toán (COD/Online)
+                o.setPaymentMethod(rs.getString("payment_method"));
+
                 o.setStatus(rs.getInt("status"));
                 o.setCreatedAt(rs.getTimestamp("created_at"));
                 list.add(o);
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return list;
     }
 
-    // 2. Lấy chi tiết đơn hàng (Khi bấm nút "Xem chi tiết")
+    // 2. Lấy chi tiết các sản phẩm trong một đơn hàng cụ thể
     public List<OrderDetail> getOrderDetails(int orderId) {
         List<OrderDetail> list = new ArrayList<>();
         String sql = "SELECT * FROM order_details WHERE order_id = ?";
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
+
+        try (Connection conn = new DBContext().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, orderId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -54,90 +120,25 @@ public class OrderService {
                     list.add(d);
                 }
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return list;
     }
 
-    // 3. Cập nhật trạng thái đơn hàng (Admin bấm nút duyệt/hủy)
+    // 3. Cập nhật trạng thái đơn hàng (Duyệt đơn, Hủy đơn, Giao hàng)
     public void updateStatus(int orderId, int status) {
         String sql = "UPDATE orders SET status = ? WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
+
+        try (Connection conn = new DBContext().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, status);
             ps.setInt(2, orderId);
             ps.executeUpdate();
-        } catch (Exception e) { e.printStackTrace(); }
-    }
-    public int createOrder(int userId, String fullname, String phone, String address, List<Map<String, Object>> cartItems) {
-        int orderId = -1;
-        String sqlOrder = "INSERT INTO orders (user_id, fullname, phone, address, total_money, status, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())";
-        String sqlDetail = "INSERT INTO order_details (order_id, product_id, product_name, price, quantity) VALUES (?, ?, ?, ?, ?)";
-
-        // Tính tổng tiền
-        double totalMoney = 0;
-        for (Map<String, Object> item : cartItems) {
-            double price = (double) item.get("price"); // Hoặc logic giá của anh
-            int quantity = (int) item.get("quantity");
-            totalMoney += price * quantity;
-        }
-
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url, user, pass);
-            // Tắt tự động commit để xử lý Transaction (quan trọng)
-            conn.setAutoCommit(false);
-
-            // 1. INSERT ORDERS
-            // RETURN_GENERATED_KEYS để lấy ID đơn hàng vừa tạo (số 7, 8, 9...)
-            PreparedStatement psOrder = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
-            psOrder.setInt(1, userId);
-            psOrder.setString(2, fullname);
-            psOrder.setString(3, phone);
-            psOrder.setString(4, address);
-            psOrder.setDouble(5, totalMoney);
-            psOrder.setInt(6, 1); // Status = 1 (Chờ thanh toán/xác nhận)
-
-            int rowAffected = psOrder.executeUpdate();
-            if (rowAffected > 0) {
-                ResultSet rs = psOrder.getGeneratedKeys();
-                if (rs.next()) {
-                    orderId = rs.getInt(1); // LẤY ĐƯỢC ID ĐƠN HÀNG (Ví dụ: 7)
-                }
-            }
-
-            // 2. INSERT ORDER DETAILS (Lặp qua giỏ hàng để lưu từng món)
-            if (orderId != -1) {
-                PreparedStatement psDetail = conn.prepareStatement(sqlDetail);
-                for (Map<String, Object> item : cartItems) {
-                    psDetail.setInt(1, orderId);
-
-                    // --- SỬA DÒNG NÀY ---
-                    // Cũ (Sai): psDetail.setInt(2, (int) item.get("productId"));
-                    // Mới (Đúng): Phải dùng key là "id" giống bên CartServices
-                    psDetail.setInt(2, (int) item.get("id"));
-
-                    psDetail.setString(3, (String) item.get("ten_sp")); // Key bên Cart là "ten_sp"
-                    psDetail.setDouble(4, (double) item.get("gia"));    // Key bên Cart là "gia" (không phải "price")
-                    psDetail.setInt(5, (int) item.get("so_luong"));     // Key bên Cart là "so_luong" (không phải "quantity")
-
-                    psDetail.addBatch();
-                }
-                psDetail.executeBatch();
-            }
-
-            conn.commit(); // Lưu thành công
 
         } catch (Exception e) {
-            e.printStackTrace(); // Anh xem log sẽ thấy lỗi NullPointerException ở đây
-            try {
-                if (conn != null) conn.rollback(); // Xóa sạch dữ liệu nếu lỗi
-            } catch (SQLException ex) { ex.printStackTrace(); }
-
-            orderId = -1; // <--- THÊM DÒNG NÀY: Để báo cho Controller biết là thất bại
-        } finally {
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
+            e.printStackTrace();
         }
-
-        return orderId;
     }
 }

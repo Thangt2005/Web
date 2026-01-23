@@ -2,7 +2,7 @@ package controller;
 
 import model.User;
 import services.CartServices;
-import services.OrderService; // Nhớ import cái này
+import services.OrderService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -15,12 +15,11 @@ import java.util.Map;
 public class CheckoutController extends HttpServlet {
 
     private CartServices cartService = new CartServices();
-    private OrderService orderService = new OrderService(); // Gọi Service Đơn hàng
+    private OrderService orderService = new OrderService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // ... (Code doGet cũ của anh giữ nguyên để hiển thị form) ...
         HttpSession session = request.getSession();
         String sessionId = session.getId();
         List<Map<String, Object>> cartItems = cartService.getCartDetails(sessionId);
@@ -29,59 +28,64 @@ public class CheckoutController extends HttpServlet {
             response.sendRedirect("Cart");
             return;
         }
+
+        // Tính lại tổng tiền để hiển thị (nếu cần)
+        double totalMoney = 0;
+        for (Map<String, Object> item : cartItems) {
+            double gia = Double.parseDouble(item.get("gia").toString());
+            int soLuong = Integer.parseInt(item.get("so_luong").toString());
+            totalMoney += (gia * soLuong);
+        }
+
+        request.setAttribute("totalMoney", totalMoney);
         request.setAttribute("cartItems", cartItems);
         request.getRequestDispatcher("/view/page_thanhToan.jsp").forward(request, response);
     }
 
-    // --- ĐÂY LÀ PHẦN ANH ĐANG THIẾU ---
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        // 1. Lấy thông tin người nhận từ Form
+        // 1. Lấy dữ liệu từ Form
         String fullname = request.getParameter("fullname");
         String phone = request.getParameter("phone");
         String address = request.getParameter("address");
-        String paymentMethod = request.getParameter("paymentMethod"); // COD hoặc PayPal
 
-        // 2. Lấy thông tin giỏ hàng & User
+        // Lấy phương thức thanh toán (COD hoặc PAYPAL)
+        String paymentMethod = request.getParameter("paymentMethod");
+        if(paymentMethod == null) paymentMethod = "COD"; // Mặc định là COD cho chắc ăn
+
+        // 2. Lấy thông tin User và Giỏ hàng
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        int userId = (user != null) ? user.getId() : 0; // Nếu chưa login thì để 0 hoặc bắt login
+        int userId = (user != null) ? user.getId() : 0;
 
-        // Lấy lại giỏ hàng để lưu vào DB (tránh việc user hack HTML gửi giá sai)
         List<Map<String, Object>> cartItems = cartService.getCartDetails(session.getId());
-
         if (cartItems == null || cartItems.isEmpty()) {
             response.sendRedirect("Cart");
             return;
         }
 
-        // 3. GỌI SERVICE ĐỂ LƯU VÀO DATABASE
-        // Hàm này sẽ trả về ID đơn hàng (Ví dụ: 7)
-        int orderId = orderService.createOrder(userId, fullname, phone, address, cartItems);
+        // 3. GỌI SERVICE (QUAN TRỌNG: PHẢI TRUYỀN THÊM paymentMethod)
+        // --- SỬA DÒNG NÀY ---
+        int orderId = orderService.createOrder(userId, fullname, phone, address, cartItems, paymentMethod);
 
         if (orderId > 0) {
-            // --- Lưu thành công ---
-
-            // Xóa giỏ hàng sau khi đặt (Tùy logic anh, thường PayPal xong mới xóa)
-            // cartService.clearCart(session.getId());
+            // --- Đặt hàng thành công ---
 
             if ("PAYPAL".equals(paymentMethod)) {
-                // 4A. Nếu chọn PayPal -> Chuyển sang trang xử lý PayPal
-                // Gửi kèm orderId thật vừa tạo được
+                // Nếu chọn PayPal -> Chuyển sang trang thanh toán, chưa xóa giỏ hàng vội
                 response.sendRedirect("AuthorizePayment?orderId=" + orderId);
             } else {
-                // 4B. Nếu chọn COD (Thanh toán khi nhận hàng) -> Báo thành công luôn
-                // Xóa giỏ hàng ở đây
+                // Nếu là COD -> Xóa giỏ hàng ngay và báo thành công
                 cartService.removeCart(session.getId());
                 response.sendRedirect("OrderSuccess?id=" + orderId);
             }
 
         } else {
-            // Lưu thất bại
-            request.setAttribute("error", "Đặt hàng thất bại, vui lòng thử lại!");
+            // --- Thất bại ---
+            request.setAttribute("error", "Hệ thống đang bận, vui lòng thử lại sau!");
             request.getRequestDispatcher("/view/page_thanhToan.jsp").forward(request, response);
         }
     }
