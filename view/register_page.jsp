@@ -36,10 +36,20 @@
         <form class="email-register" method="POST" action="Register">
             <input type="email" name="email" placeholder="E-mail" required
                    value="<%= request.getAttribute("emailVal") != null ? request.getAttribute("emailVal") : "" %>" />
+
             <input type="text" name="username-register" placeholder="Username" required
                    value="<%= request.getAttribute("userVal") != null ? request.getAttribute("userVal") : "" %>" />
-            <input type="password" name="password-register" placeholder="Mật khẩu" required />
-            <input type="password" name="password-register1" placeholder="Nhập lại mật khẩu" required />
+
+            <div class="password-wrapper">
+                <input type="password" name="password-register" id="pass1" placeholder="Mật khẩu" required />
+                <i class="fa-solid fa-eye toggle-password" onclick="toggleView('pass1', this)"></i>
+            </div>
+
+            <div class="password-wrapper">
+                <input type="password" name="password-register1" id="pass2" placeholder="Nhập lại mật khẩu" required />
+                <i class="fa-solid fa-eye toggle-password" onclick="toggleView('pass2', this)"></i>
+            </div>
+
             <button type="submit" class="login-btn">ĐĂNG KÍ</button>
         </form>
 
@@ -90,5 +100,19 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
+<script>
+    function toggleView(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash"); // Đổi icon sang mắt gạch chéo
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye"); // Đổi icon về mắt thường
+        }
+    }
+</script>
 </body>
 </html>

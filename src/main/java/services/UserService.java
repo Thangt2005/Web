@@ -9,6 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
+    static {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("Không tìm thấy MySQL Driver! Hãy kiểm tra file .jar trong thư mục lib.");
+            e.printStackTrace();
+        }
+    }
     // Cấu hình Database chung
     private String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
     private String user = "root";

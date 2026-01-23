@@ -1,6 +1,33 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Product" %>
+<%@ page import="model.User" %>
+
+<%
+    // XỬ LÝ SESSION & PHÂN QUYỀN
+    Object sessionObj = session.getAttribute("user");
+
+    String displayName = "";
+    boolean isLoggedIn = false;
+    boolean isAdmin = false;
+
+    if (sessionObj != null) {
+        isLoggedIn = true;
+
+        if (sessionObj instanceof User) {
+            User u = (User) sessionObj;
+            displayName = u.getUsername();
+            if (u.getRole() == 1) {
+                isAdmin = true;
+            }
+        }
+        else if (sessionObj instanceof String) {
+            displayName = (String) sessionObj;
+            isAdmin = false;
+        }
+    }
+%>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -10,7 +37,7 @@
     %>
     <base href="<%=basePath%>">
     <meta charset="UTF-8">
-    <title>Sản Phẩm Tủ Bồn Tiểu Nam </title>
+    <title>Sản Phẩm Bồn Tiểu Nam</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="homeStyle.css">
     <script src="js/main.js"></script>
@@ -20,44 +47,47 @@
 <header>
     <h1>Thiết Bị Vệ Sinh Và Phòng Tắm</h1>
     <nav>
-        <form class="search-form" method="get" action="BonTieuNam" autocomplete="off">
-            <input type="text" id="search-input" name="search" class="search-input"
-                   placeholder="Tìm kiếm tủ bồn tiểu nam..."
-                   value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
-                   onkeyup="searchProducts(this)"> <button class="search-icon"><i class="fa fa-search"></i></button>
-
-            <ul id="suggestion-box" class="suggestion-box"></ul>
-        </form>
+        <div style="position: relative; display: inline-block;">
+            <form class="search-form" method="get" action="BonTieuNam" autocomplete="off">
+                <input type="text" id="search-input" name="search" class="search-input"
+                       placeholder="Tìm kiếm bồn tiểu nam..."
+                       value="<%= (request.getAttribute("txtSearch") != null) ? request.getAttribute("txtSearch") : "" %>"
+                       onkeyup="searchProducts(this)">
+                <button class="search-icon"><i class="fa fa-search"></i></button>
+            </form>
+            <ul id="suggestion-box" class="suggestion-box" style="display: none;"></ul>
+        </div>
 
         <ul class="user-menu">
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
-            <%
-                // CODE MỚI: Kiểm tra session user
-                String username = (String) session.getAttribute("user");
-                if (username != null && !username.isEmpty()) {
-            %>
+            <% if (isLoggedIn) { %>
+            <% if (isAdmin) { %>
             <li>
-                <a href="#" style="font-weight: bold; color: yellow;">
-                    <i class="fas fa-user"></i> Xin chào, <%= username %>
+                <a href="Admin" style="color: #ff4757; font-weight: bold;">
+                    <i class="fas fa-user-shield"></i> Quản Trị
                 </a>
             </li>
+            <% } %>
+
+            <li>
+                <a href="#" style="font-weight: bold; color: yellow;">
+                    <i class="fas fa-user"></i> Xin chào, <%= displayName %>
+                </a>
+            </li>
+
             <li>
                 <a href="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
             </li>
-            <%
-            } else {
-            %>
+            <% } else { %>
             <li>
                 <a href="view/login_page.jsp">
-                    <i class="fa-solid fa-user"></i> Đăng nhập
+                    <i class="fas fa-user"></i> Đăng nhập
                 </a>
             </li>
-            <%
-                }
-            %>
+            <% } %>
         </ul>
     </nav>
 </header>
@@ -68,7 +98,7 @@
     </div>
     <div class="top-menu">
         <ul>
-            <li><a href="Home" class="active">Trang chủ</a></li>
+            <li><a href="Home">Trang chủ</a></li>
             <li><a href="Combo">Combo</a></li>
             <li><a href="Toilet">Bồn Cầu</a></li>
             <li><a href="Lavabo">Lavabo</a></li>
@@ -77,9 +107,12 @@
             <li><a href="ChauRuaChen">Chậu Rửa Chén</a></li>
             <li><a href="BonTam">Bồn Tắm</a></li>
             <li><a href="VoiRua">Vòi Rửa</a></li>
-            <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
+            <li><a href="BonTieuNam" class="active">Bồn Tiểu Nam</a></li>
             <li><a href="PhuKien">Phụ Kiện</a></li>
-            <li><a href="Admin">Admin</a></li>
+
+            <% if (isAdmin) { %>
+            <li><a href="Admin" style="color: yellow; font-weight: bold;">Admin</a></li>
+            <% } %>
         </ul>
     </div>
 </div>
@@ -91,7 +124,7 @@
     %>
     <h2>Kết quả tìm kiếm cho: "<%= search %>"</h2>
     <% } else { %>
-    <h2>Sản phẩm  bồn tiểu nam</h2>
+    <h2>Sản phẩm bồn tiểu nam</h2>
     <% } %>
 
     <div class="product-grid">
@@ -101,33 +134,41 @@
                 for (Product p : list) {
         %>
         <div class="product-card">
-            <%-- Đã cập nhật: Lấy link trực tiếp từ database --%>
-            <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>">
+            <img src="<%= p.getHinhAnh() %>"
+                 alt="<%= p.getTenSp() %>"
+                 onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
 
-            <h3><a href="ProductDetail?id=<%= p.getId() %>&category=bontieunam_sanpham">
-                <%= p.getTenSp() %>
-            </a>
+            <h3>
+                <a href="ProductDetail?id=<%= p.getId() %>&category=bontieunam_sanpham">
+                    <%= p.getTenSp() %>
+                </a>
             </h3>
             <p class="price">
                 <%= String.format("%,.0f", p.getGia()) %>đ
+                <% if (p.getGiamGia() > 0) { %>
                 <span class="discount">-<%= p.getGiamGia() %>%</span>
+                <% } %>
             </p>
-                <div class="button-group">
-                    <button class="add-to-cart" type="button"
-                            onclick="window.location.href='Cart?id=<%= p.getId() %>&category=bontieunam_sanpham'">
-                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                    </button>
-                    <button class="buy" type="button"
-                            onclick="window.location.href='Cart?id=<%= p.getId() %>&category=ontieunam_sanpham'">
-                        <i class="fa-solid fa-bag-shopping"></i> Đặt mua
-                    </button>
-                </div>
+            <div class="button-group">
+                <button class="add-to-cart" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=bontieunam_sanpham'">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                </button>
+                <button class="buy" type="button"
+                        onclick="window.location.href='Cart?id=<%= p.getId() %>&category=bontieunam_sanpham'">
+                    <i class="fa-solid fa-bag-shopping"></i> Đặt mua
+                </button>
+            </div>
         </div>
         <%
             }
         } else {
         %>
-        <p style="text-align: center; width: 100%;">Không tìm thấy sản phẩm nào!</p>
+        <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
+            <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
+            <p>Không tìm thấy sản phẩm nào!</p>
+            <a href="BonTieuNam" style="color: #007bff; text-decoration: underline;">Tải lại trang</a>
+        </div>
         <% } %>
     </div>
 </main>
@@ -152,10 +193,10 @@
         <div class="footer-column">
             <h3>HỖ TRỢ KHÁCH HÀNG</h3>
             <ul>
-                <li><a href="#">Chính sách giao hàng</a></li>
-                <li><a href="#">Chính sách bảo hành</a></li>
-                <li><a href="#">Hướng dẫn thanh toán</a></li>
-                <li><a href="#">Chăm sóc khách hàng</a></li>
+                <li><a href="view/page_ChinhSachGiaoHang.jsp">Chính sách giao hàng</a></li>
+                <li><a href="view/page_ChinhSachBaoHanh.jsp">Chính sách bảo hàng</a></li>
+                <li><a href="view/HuongDanThanhToan.jsp">Hướng dẫn thanh toán</a></li>
+                <li><a href="view/ChamSocKhachHang.jsp">Chăm sóc khách hàng</a></li>
             </ul>
         </div>
 
@@ -174,13 +215,12 @@
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script>
-    // Hàm gọi tìm kiếm
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
     function searchProducts(input) {
         let keyword = input.value.trim();
         let suggestionBox = document.getElementById("suggestion-box");
 
-        // Nếu từ khóa quá ngắn thì ẩn đi
         if (keyword.length < 2) {
             suggestionBox.style.display = "none";
             suggestionBox.innerHTML = "";
@@ -188,7 +228,7 @@
         }
 
         $.ajax({
-            url: "SearchSuggest", // Gọi đến Servlet
+            url: "SearchSuggest",
             type: "GET",
             data: { keyword: keyword },
             success: function (response) {
@@ -205,17 +245,10 @@
         });
     }
 
-    // Hàm khi click vào một gợi ý -> Chuyển hướng đến trang chi tiết
-    function selectProduct(id, tableName) {
-        // Chuyển hướng đến trang chi tiết sản phẩm (Cập nhật đường dẫn cho đúng logic của bạn)
-        window.location.href = "ProductDetail?id=" + id + "&table=" + tableName;
-    }
-
-    // Ẩn gợi ý khi click ra ngoài
     document.addEventListener('click', function(e) {
         let searchForm = document.querySelector('.search-form');
         let suggestionBox = document.getElementById("suggestion-box");
-        if (!searchForm.contains(e.target)) {
+        if (!searchForm.contains(e.target) && e.target !== suggestionBox) {
             suggestionBox.style.display = 'none';
         }
     });
