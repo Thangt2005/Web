@@ -233,9 +233,9 @@
             <h3>HỖ TRỢ KHÁCH HÀNG</h3>
             <ul>
                 <li><a href="view/page_ChinhSachGiaoHang.jsp">Chính sách giao hàng</a></li>
-                <li><a href="view/page_ChinhSachBaoHanh.jsp">Chính sách bảo hàng</a></li>
-                <li><a href="view/HuongDanThanhToan.jsp">Hướng dẫn thanh toán</a></li>
-                <li><a href="view/ChamSocKhachHang.jsp">Chăm sóc khách hàng</a></li>
+                <li><a href="view/page_ChinhSachBaoHanh.jsp">Chính sách bảo hành</a></li>
+                <li><a href="view/page_HuongDanThanhToan.jsp">Hướng dẫn thanh toán</a></li>
+                <li><a href="view/page_ChamSocKhachHang.jsp">Chăm sóc khách hàng</a></li>
             </ul>
         </div>
         <div class="footer-column">
