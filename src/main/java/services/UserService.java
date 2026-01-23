@@ -9,6 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
+    static {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("Không tìm thấy MySQL Driver! Hãy kiểm tra file .jar trong thư mục lib.");
+            e.printStackTrace();
+        }
+    }
     // Cấu hình Database chung
     private String url = "jdbc:mysql://localhost:3306/db?useUnicode=true&characterEncoding=UTF-8";
     private String user = "root";
@@ -69,10 +77,8 @@ public class UserService {
         // Câu lệnh SQL: Không lưu token, set status = 1 (Kích hoạt ngay lập tức)
         String sql = "INSERT INTO login (email, username, password, fullname, role, status) VALUES (?, ?, ?, ?, ?, ?)";
 
-        String md5Pass = toMD5(password);
-
-        try (Connection conn = DriverManager.getConnection(url, user, pass);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String md5Pass = toMD5(password);try (Connection conn = DriverManager.getConnection(url, user, pass);
+                                              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, username);
             ps.setString(3, md5Pass);

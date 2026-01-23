@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -36,10 +36,24 @@
         <form class="email-register" method="POST" action="Register">
             <input type="email" name="email" placeholder="E-mail" required
                    value="<%= request.getAttribute("emailVal") != null ? request.getAttribute("emailVal") : "" %>" />
+
             <input type="text" name="username-register" placeholder="Username" required
                    value="<%= request.getAttribute("userVal") != null ? request.getAttribute("userVal") : "" %>" />
-            <input type="password" name="password-register" placeholder="Mật khẩu" required />
-            <input type="password" name="password-register1" placeholder="Nhập lại mật khẩu" required />
+
+            <div class="password-wrapper">
+                <input type="password" name="password-register" id="password"
+                       placeholder="Mật khẩu (8+ ký tự, Hoa, Thường, Số, @)" required
+                       pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\S+$).{8,}$"
+                       title="Mật khẩu phải từ 8 ký tự, có 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt">
+                <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('password', this)"></i>
+            </div>
+
+            <div class="password-wrapper">
+                <input type="password" name="password-register1" id="password-confirm"
+                       placeholder="Nhập lại mật khẩu" required>
+                <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('password-confirm', this)"></i>
+            </div>
+
             <button type="submit" class="login-btn">ĐĂNG KÍ</button>
         </form>
 
@@ -90,5 +104,19 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
+<script>
+    function toggleView(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash"); // Đổi icon sang mắt gạch chéo
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye"); // Đổi icon về mắt thường
+        }
+    }
+</script>
 </body>
 </html>
