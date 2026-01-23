@@ -12,9 +12,6 @@ public class FacebookUser {
     @SerializedName("email")
     private String email;
 
-    // Facebook trả về ảnh dạng lồng nhau phức tạp, nhưng ta có thể lấy ảnh bằng ID
-    // nên không cần khai báo field picture ở đây cho đỡ rối.
-
     public FacebookUser() {
     }
 
