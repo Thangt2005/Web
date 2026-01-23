@@ -13,36 +13,59 @@ import java.io.IOException;
 public class RegisterController extends HttpServlet {
     private UserService userService = new UserService();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Chuyển hướng đến trang đăng ký
         request.getRequestDispatcher("view/register_page.jsp").forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // 1. Cấu hình tiếng Việt
         request.setCharacterEncoding("UTF-8");
+
+        // 2. Lấy dữ liệu từ Form
         String email = request.getParameter("email");
-        String user = request.getParameter("username-register");
+        String username = request.getParameter("username-register");
         String pass = request.getParameter("password-register");
         String passRepeat = request.getParameter("password-register1");
 
-        // 1. Kiểm tra khớp mật khẩu
+        // Biểu thức Regex kiểm tra mật khẩu mạnh (8+ ký tự, Hoa, Thường, Số, Ký tự đặc biệt)
+        String strongPasswordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+
+        String errorMessage = null;
+
+        // 3. Các bước kiểm tra logic (Validation)
         if (pass == null || !pass.equals(passRepeat)) {
-            request.setAttribute("message", "Lỗi: Mật khẩu nhập lại không khớp!");
-        } else {
-            int result = userService.registerUser(email, user, pass);
+            errorMessage = "Lỗi: Mật khẩu nhập lại không khớp!";
+        }
+        else if (!pass.matches(strongPasswordRegex)) {
+            errorMessage = "Mật khẩu quá yếu! Cần ít nhất 8 ký tự, có chữ Hoa, Thường, Số và Ký tự đặc biệt.";
+        }
+        else if (userService.checkEmailExists(email)) {
+            errorMessage = "Lỗi: Email này đã được đăng ký sử dụng!";
+        }
+
+        // 4. Xử lý Đăng ký
+        if (errorMessage == null) {
+            // Gọi hàm registerUser từ UserService (Hàm này đã có sẵn MD5 và gán role=0)
+            int result = userService.registerUser(email, username, pass);
+
             if (result > 0) {
-                // Thành công -> Sang trang Login
+                // Đăng ký THÀNH CÔNG -> Về trang Đăng nhập
                 response.sendRedirect("Login");
                 return;
-            } else if (result == -1) {
-                request.setAttribute("message", "Lỗi: Tài khoản hoặc Email này đã tồn tại!");
             } else {
-                request.setAttribute("message", "Đăng ký thất bại. Vui lòng thử lại.");
+                errorMessage = "Đăng ký thất bại do lỗi hệ thống. Vui lòng thử lại sau!";
             }
         }
 
-        // Nếu thất bại thì giữ lại dữ liệu đã nhập
+        // 5. Nếu có lỗi: Quay lại trang đăng ký và giữ lại dữ liệu đã nhập (trừ mật khẩu)
+        request.setAttribute("message", errorMessage);
         request.setAttribute("emailVal", email);
-        request.setAttribute("userVal", user);
+        request.setAttribute("userVal", username);
         request.getRequestDispatcher("view/register_page.jsp").forward(request, response);
     }
 }

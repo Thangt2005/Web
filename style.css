@@ -258,16 +258,30 @@ h3 {
   box-shadow: 0 0 5px rgba(0, 120, 200, 0.3);
 }
 
-.password-wrapper {
-  position: relative;
+   /* Bọc ô input và icon */
+ .password-wrapper {
+   position: relative;
+   width: 100%;
+   margin-bottom: 15px;
+ }
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px; /* Chừa chỗ cho con mắt */
+  margin-bottom: 0 !important; /* Ghi đè margin cũ nếu có */
 }
 
+/* Định vị con mắt */
 .toggle-password {
   position: absolute;
-  right: 620px;
-  top: 15px;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
+  color: #666;
+  z-index: 10;
 }
+
 .login-btn {
   width: 300px;
   padding: 12px;
