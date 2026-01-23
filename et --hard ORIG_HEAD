@@ -1,0 +1,39 @@
+[33mcfa84dd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;32mThang2005[m[33m)[m HEAD@{0}: reset: moving to Thang2005
+[33m2d76f9c[m HEAD@{1}: checkout: moving from Thang2005 to master
+[33mcfa84dd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;32mThang2005[m[33m)[m HEAD@{2}: commit: 4 link footer chinh trang chi tiet danh gia
+[33mf097358[m[33m ([m[1;31morigin/Thang2005[m[33m)[m HEAD@{3}: commit: chuc nang danh gia san pham va 4 link footer
+[33m2d76f9c[m HEAD@{4}: checkout: moving from master to Thang2005
+[33m2d76f9c[m HEAD@{5}: checkout: moving from Thang2005 to master
+[33m2d76f9c[m HEAD@{6}: checkout: moving from master to Thang2005
+[33m2d76f9c[m HEAD@{7}: reset: moving to Thang2005
+[33mc1261a5[m HEAD@{8}: checkout: moving from Thang2005 to master
+[33m2d76f9c[m HEAD@{9}: checkout: moving from master to Thang2005
+[33mc1261a5[m HEAD@{10}: reset: moving to HEAD~1
+[33m2d76f9c[m HEAD@{11}: commit: xoa folder anh lay anh sp tu db và chuc nang quan ly sp trong admin
+[33mc1261a5[m HEAD@{12}: reset: moving to Thang2005
+[33ma510e50[m HEAD@{13}: checkout: moving from Thang2005 to master
+[33mc1261a5[m HEAD@{14}: reset: moving to HEAD
+[33mc1261a5[m HEAD@{15}: commit: hoan thien và sua loi cac chuc nang
+[33m9f1bf33[m HEAD@{16}: reset: moving to origin/master
+[33m46e80b5[m HEAD@{17}: commit: sua gio hang, them thanh toan paypal, sua xem chi tiet san pham
+[33m5863ab6[m HEAD@{18}: commit: phan quyen admin dua vao role trong db
+[33m1a171a1[m HEAD@{19}: commit: kiem tra session va lay anh san pham tu link
+[33mbdd2084[m HEAD@{20}: commit: cap nhat sau khi sua doi
+[33m33aff28[m HEAD@{21}: commit: Dọn dẹp bỏ theo dõi thư mục out và cấu hình IDE
+[33mb0ee1a3[m HEAD@{22}: commit (merge): Kết thúc gộp code và sửa conflict
+[33me2bcf59[m HEAD@{23}: commit: dọn dẹp lại file ignore
+[33md1ea947[m HEAD@{24}: pull https://github.com/Thangt2005/Web.git: Fast-forward
+[33mb618a51[m HEAD@{25}: commit: jsp xu li cac trang
+[33m3b260fe[m HEAD@{26}: commit: kết nối admin và toàn bộ tab với csdl
+[33m396f57c[m HEAD@{27}: commit: thay doi moi nhat
+[33m98e3c77[m HEAD@{28}: pull origin master: Fast-forward
+[33m2ba19a4[m HEAD@{29}: commit: xu li trang admin tinh -> dong
+[33ma510e50[m HEAD@{30}: merge master: Fast-forward
+[33m134e9dc[m HEAD@{31}: checkout: moving from master to Thang2005
+[33ma510e50[m HEAD@{32}: commit: chuyen 1 so tab sang php ket noi csdl san pham
+[33maeb06da[m HEAD@{33}: pull origin master: Fast-forward
+[33m8b0498f[m HEAD@{34}: checkout: moving from Thang2005 to master
+[33m134e9dc[m HEAD@{35}: commit: chuc nang dang ki php và ket noi mysql
+[33m3a7ad87[m HEAD@{36}: commit: php login and ketnoi mysql XAMPP
+[33m8b0498f[m HEAD@{37}: checkout: moving from master to Thang2005
+[33m8b0498f[m HEAD@{38}: initial pull

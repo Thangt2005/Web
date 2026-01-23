@@ -1,39 +1,39 @@
 package controller;
 
-import services.OrderServices;
-import services.CartServices;
+import services.OrderService; // Import đúng file mới (không có chữ s)
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/PaymentSuccess")
 public class PaymentSuccessController extends HttpServlet {
 
-    private OrderServices orderService = new OrderServices();
+    // Sửa: Dùng OrderService (số ít)
+    private OrderService orderService = new OrderService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            String orderIdStr = request.getParameter("orderId");
 
-        // 1. Lấy ID đơn hàng từ tham số truyền về
-        String orderIdStr = request.getParameter("orderId");
+            if (orderIdStr != null) {
+                int orderId = Integer.parseInt(orderIdStr);
 
-        if (orderIdStr != null) {
-            int orderId = Integer.parseInt(orderIdStr);
+                // Sửa: Hàm updateStatus bây giờ nhận số (int) chứ không nhận chuỗi
+                // Status = 1: Đã xác nhận (Vì đã thanh toán thành công)
+                orderService.updateStatus(orderId, 1);
 
-            // 2. Cập nhật trạng thái đơn hàng thành "Đã thanh toán"
-            orderService.updateOrderStatus(orderId, "Đã thanh toán (PayPal)");
-
-            // 3. Xóa giỏ hàng hiện tại (Vì đã mua xong rồi)
-            // Cách nhanh nhất là hủy session cũ hoặc xóa attribute giỏ hàng
-            // Ở đây em ví dụ là xóa session giỏ hàng trong Database (nếu anh có hàm đó),
-            // hoặc đơn giản là xóa Session Cart trên Java:
-            request.getSession().removeAttribute("cart");
-
-            // Nếu anh muốn xóa kỹ trong DB thì gọi hàm: cartService.removeCartBySession(sessionId);
+                // Chuyển hướng về trang báo thành công
+                response.sendRedirect("OrderSuccess?id=" + orderId);
+            } else {
+                response.sendRedirect("Home");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("Home");
         }
-
-        // 4. Chuyển hướng về trang chủ và báo thành công
-        response.sendRedirect("Home?status=success_payment");
     }
 }

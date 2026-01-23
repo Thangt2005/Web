@@ -8,6 +8,10 @@ public class Order {
     private String phone;
     private String address;
     private double totalMoney;
+
+    // THÊM BIẾN NÀY ĐỂ LƯU "COD" HOẶC "PAYPAL"
+    private String paymentMethod;
+
     private int status; // 1: Chờ xử lý, 2: Đang giao, 3: Hoàn thành, 4: Hủy
     private Timestamp createdAt;
 
@@ -61,6 +65,16 @@ public class Order {
     public void setTotalMoney(double totalMoney) {
         this.totalMoney = totalMoney;
     }
+
+    // --- MỚI THÊM: GETTER & SETTER CHO PAYMENT METHOD ---
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+    // ----------------------------------------------------
 
     public int getStatus() {
         return status;

@@ -8,13 +8,31 @@ public class User implements Serializable {
     private String password;
     private String fullname;
     private String email;
-    private int role; // Quan trọng: Biến này dùng để phân quyền (0: User, 1: Admin)
 
-    // 1. Constructor rỗng (Bắt buộc phải có để dùng trong UserService)
+    // --- BỔ SUNG 2 TRƯỜNG NÀY ĐỂ TRANG THANH TOÁN KHÔNG LỖI ---
+    private String phone;
+    private String address;
+    // -----------------------------------------------------------
+
+    private int role; // 0: User, 1: Admin
+
+    // 1. Constructor rỗng
     public User() {
     }
 
-    // 2. Constructor đầy đủ
+    // 2. Constructor đầy đủ (Cập nhật thêm phone, address)
+    public User(int id, String username, String password, String fullname, String email, String phone, String address, int role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.fullname = fullname;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.role = role;
+    }
+
+    // Constructor rút gọn (Giữ lại để tương thích code cũ nếu cần)
     public User(int id, String username, String password, String fullname, String email, int role) {
         this.id = id;
         this.username = username;
@@ -24,65 +42,33 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    // Constructor rút gọn (nếu code cũ của anh có dùng thì giữ lại cho đỡ lỗi)
-    public User(int id, String username, String password, String fullname, String email) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.fullname = fullname;
-        this.email = email;
-    }
+    // --- GETTER & SETTER ---
 
-    // --- CÁC HÀM GETTER VÀ SETTER ---
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public int getId() {
-        return id;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getFullname() { return fullname; }
+    public void setFullname(String fullname) { this.fullname = fullname; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getPassword() {
-        return password;
-    }
+    // --- MỚI THÊM: GETTER & SETTER CHO PHONE, ADDRESS ---
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+    // ----------------------------------------------------
 
-    public String getFullname() {
-        return fullname;
-    }
-
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    // --- QUAN TRỌNG NHẤT: Hàm getRole và setRole ---
-    public int getRole() {
-        return role;
-    }
-
-    public void setRole(int role) {
-        this.role = role;
-    }
+    public int getRole() { return role; }
+    public void setRole(int role) { this.role = role; }
 
     @Override
     public String toString() {
@@ -90,6 +76,7 @@ public class User implements Serializable {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", fullname='" + fullname + '\'' +
+                ", phone='" + phone + '\'' +
                 ", role=" + role +
                 '}';
     }
