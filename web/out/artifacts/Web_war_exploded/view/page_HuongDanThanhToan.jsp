@@ -69,33 +69,31 @@
         </div>
 
         <div class="payment-method">
-            <div class="payment-icon" style="color: #0056b3;"><i class="fa-solid fa-building-columns"></i></div>
-            <div class="payment-info">
-                <h4>2. Chuyển khoản ngân hàng</h4>
-                <p>Quý khách có thể chuyển khoản qua ngân hàng với nội dung: <strong>[Tên Khách Hàng] + [Số điện thoại]</strong></p>
-                <div class="bank-info">
-                    Ngân hàng: MB Bank (Quân Đội)<br>
-                    Số tài khoản: 0123 456 789<br>
-                    Chủ tài khoản: NGUYEN VAN A<br>
-                    Chi nhánh: TP. Hồ Chí Minh
-                </div>
-            </div>
-        </div>
-
-        <div class="payment-method">
             <div class="payment-icon" style="color: #003087;"><i class="fa-brands fa-paypal"></i></div>
             <div class="payment-info">
-                <h4>3. Thanh toán qua PayPal</h4>
+                <h4>2. Thanh toán qua PayPal</h4>
                 <p>Chúng tôi chấp nhận thanh toán quốc tế qua cổng PayPal. Quý khách vui lòng chọn phương thức này tại bước Thanh Toán trên website.</p>
             </div>
         </div>
     </div>
 </main>
-
 <footer class="footer">
     <div class="footer-container">
-        <div class="footer-column"><h3>VỀ CHÚNG TÔI</h3><p>Chuyên cung cấp thiết bị vệ sinh chính hãng.</p></div>
-        <div class="footer-column"><h3>LIÊN HỆ</h3><p><i class="fa-solid fa-phone"></i> 0909 123 456</p></div>
+        <div class="footer-column">
+            <h3>VỀ CHÚNG TÔI</h3>
+            <p>
+                Chuyên cung cấp thiết bị vệ sinh, phòng tắm chính hãng, giá tốt nhất
+                thị trường.
+            </p>
+        </div>
+
+        <div class="footer-column">
+            <h3>LIÊN HỆ</h3>
+            <p><i class="fa-solid fa-phone"></i> 0909 123 456</p>
+            <p><i class="fa-solid fa-envelope"></i> contact@thietbivesinh.vn</p>
+            <p><i class="fa-solid fa-location-dot"></i> TP. Hồ Chí Minh</p>
+        </div>
+
         <div class="footer-column">
             <h3>HỖ TRỢ KHÁCH HÀNG</h3>
             <ul>
@@ -105,9 +103,20 @@
                 <li><a href="view/page_ChamSocKhachHang.jsp">Chăm sóc khách hàng</a></li>
             </ul>
         </div>
-        <div class="footer-column"><h3>KẾT NỐI</h3><div class="social-icons"><a href="#"><i class="fa-brands fa-facebook"></i></a></div></div>
+
+        <div class="footer-column">
+            <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/huuthang11092005" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.youtube.com/@huuthangtran9024/posts" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://www.tiktok.com/@thangtt26" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+        </div>
     </div>
-    <div class="footer-bottom">© 2025 Thiết Bị Vệ Sinh & Phòng Tắm.</div>
+
+    <div class="footer-bottom">
+        © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
+    </div>
 </footer>
 </body>
 </html>

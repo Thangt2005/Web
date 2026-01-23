@@ -206,23 +206,25 @@ header nav ul li a {
 /* ==================== 4. MAIN ADMIN CONTENT ==================== */
 .main-admin-container {
   display: flex;
-  margin-top: 0;
-  min-height: calc(100vh - 120px);
   width: 100%;
   background: #f4f6f9;
+  margin-top: 80px;
+  min-height: calc(100vh - 80px);
 }
-
-/* --- A. Admin Sidebar (Menu dọc bên trái) --- */
 .admin-sidebar-panel {
   width: 250px;
   background: #2c3e50;
   color: #ecf0f1;
   flex-shrink: 0;
-  padding-top: 20px;
+  padding-top: 0;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 80px);
+
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+header {
+  height: 80px;
 }
 
 .admin-sidebar-panel .menu-title {

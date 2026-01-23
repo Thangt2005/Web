@@ -19,26 +19,19 @@ public class LoginFacebookServlet extends HttpServlet {
         String code = request.getParameter("code");
 
         if (code == null || code.isEmpty()) {
-            // Nếu chưa có code -> Chuyển hướng sang trang đăng nhập Facebook
             String loginUrl = "https://www.facebook.com/dialog/oauth?client_id="
                     + FacebookConstants.FACEBOOK_APP_ID
                     + "&redirect_uri=" + FacebookConstants.FACEBOOK_REDIRECT_URI
                     + "&scope=public_profile,email";
             response.sendRedirect(loginUrl);
         } else {
-            // Nếu đã có code -> Xử lý lấy Token và User
             String accessToken = FacebookUtils.getToken(code);
             FacebookUser fbUser = FacebookUtils.getUserInfo(accessToken);
 
             if (fbUser != null) {
                 HttpSession session = request.getSession();
-
-                // ĐỒNG BỘ VỚI CODE CŨ
                 session.setAttribute("user", fbUser.getName());
                 session.setAttribute("isLoggedIn", true);
-
-                // Lưu thêm ID để lấy ảnh đại diện (Mẹo: dùng link graph)
-                // Link ảnh: https://graph.facebook.com/{ID}/picture?type=large
                 session.setAttribute("fbID", fbUser.getId());
 
                 response.sendRedirect("Home");
