@@ -1,5 +1,4 @@
-%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><!DOCTYPE html>
 <html lang="vi">
 <head>
     <%
@@ -34,13 +33,17 @@
         <h3>Tạo tài khoản tại đây</h3>
 
         <form class="email-register" method="POST" action="Register">
-            <input type="email" name="email" placeholder="E-mail" required
-                   value="<%= request.getAttribute("emailVal") != null ? request.getAttribute("emailVal") : "" %>" />
+            <div class="input-group">
+                <input type="email" name="email" placeholder="E-mail" required
+                       value="<%= request.getAttribute("emailVal") != null ? request.getAttribute("emailVal") : "" %>" />
+            </div>
 
-            <input type="text" name="username-register" placeholder="Username" required
-                   value="<%= request.getAttribute("userVal") != null ? request.getAttribute("userVal") : "" %>" />
+            <div class="input-group">
+                <input type="text" name="username-register" placeholder="Username" required
+                       value="<%= request.getAttribute("userVal") != null ? request.getAttribute("userVal") : "" %>" />
+            </div>
 
-            <div class="password-wrapper">
+            <div class="input-group password-wrapper">
                 <input type="password" name="password-register" id="password"
                        placeholder="Mật khẩu (8+ ký tự, Hoa, Thường, Số, @)" required
                        pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\S+$).{8,}$"
@@ -48,7 +51,7 @@
                 <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('password', this)"></i>
             </div>
 
-            <div class="password-wrapper">
+            <div class="input-group password-wrapper">
                 <input type="password" name="password-register1" id="password-confirm"
                        placeholder="Nhập lại mật khẩu" required>
                 <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('password-confirm', this)"></i>
@@ -106,16 +109,16 @@
     </div>
 </footer>
 <script>
-    function toggleView(inputId, icon) {
+    function toggleVisibility(inputId, icon) {
         const input = document.getElementById(inputId);
         if (input.type === "password") {
             input.type = "text";
             icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash"); // Đổi icon sang mắt gạch chéo
+            icon.classList.add("fa-eye-slash");
         } else {
             input.type = "password";
             icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye"); // Đổi icon về mắt thường
+            icon.classList.add("fa-eye");
         }
     }
 </script>

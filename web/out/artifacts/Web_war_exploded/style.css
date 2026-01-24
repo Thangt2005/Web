@@ -260,14 +260,45 @@ h3 {
 
 .password-wrapper {
   position: relative;
+  width: 100%; /* Đảm bảo wrapper bao quanh input */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-group {
+  position: relative; /* Quan trọng: làm mốc để con mắt căn lề theo nó */
+  width: 100%;
+  max-width: 300px;
+  margin: 15px auto; /* Căn giữa và tạo khoảng cách giữa các ô */
+}
+
+.email-register input {
+  width: 100% !important; /* Ép lấy toàn bộ chiều rộng của input-group */
+  padding: 12px 40px 12px 15px !important; /* Padding phải rộng (40px) để không bị chữ đè lên icon */
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 15px;
+  background-color: #f9f9f9;
+  outline: none;
+  box-sizing: border-box; /* Giúp padding không làm tăng chiều rộng thực tế */
 }
 
 .toggle-password {
-  position: absolute;
-  right: 620px;
-  top: 15px;
+  position: absolute; /* Vị trí tuyệt đối so với .input-group */
+  right: 15px;      /* Cách lề phải ô input 15px */
+  top: 50%;         /* Đẩy xuống giữa */
+  transform: translateY(-50%); /* Căn giữa dọc chính xác */
   cursor: pointer;
+  color: #666;
+  z-index: 10;      /* Đảm bảo nằm trên cùng */
+  font-size: 16px;
 }
+
+.toggle-password:hover {
+  color: #222;
+}
+
 .login-btn {
   width: 300px;
   padding: 12px;
