@@ -338,3 +338,37 @@ h2 {
   margin-top: 15px;
   font-size: 14px;
 }
+
+/* --- Bổ sung cho trang Reset Password --- */
+
+/* Thông báo lỗi khi mật khẩu không khớp (Dùng cho thẻ <p id="error-js">) */
+#error-js {
+  background-color: #fff1f0;
+  border: 1px solid #ffa39e;
+  padding: 8px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-weight: 500;
+  /* Mặc định ẩn, sẽ hiện lên bằng JS */
+  display: none;
+}
+
+/* Tăng khoảng cách cho các ô nhập mật khẩu */
+.email-login {
+  margin-bottom: 5px;
+}
+
+/* Hiệu ứng focus cho input password để đồng bộ với input email */
+.email-login input[type="password"]:focus {
+  border-color: #c8a000; /* Màu vàng giống sidebar của bạn */
+  box-shadow: 0 0 5px rgba(200, 160, 0, 0.3);
+}
+
+/* Chỉnh lại nút xác nhận để nổi bật hơn */
+.login-btn {
+  transition: transform 0.2s ease;
+}
+
+.login-btn:active {
+  transform: scale(0.98); /* Hiệu ứng nhấn nút */
+}

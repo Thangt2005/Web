@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="fluent-hc-4.5.14 (2)">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../WEB-INF/lib/fluent-hc-4.5.14.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
