@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact name="local">
+  <artifact build-on-make="true" name="local">
     <output-path>$PROJECT_DIR$/out/artifacts/Web_war_exploded</output-path>
     <root id="root">
       <element id="module-output" name="Web" />
@@ -16,6 +16,7 @@
           <element id="library" level="project" name="httpcore-4.4.13" />
           <element id="library" level="project" name="angus-mail-2.0.3" />
         </element>
+        <element id="module-output" name="Web" />
       </element>
       <element id="library" level="project" name="lib" />
     </root>

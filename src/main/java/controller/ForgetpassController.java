@@ -1,7 +1,7 @@
 package controller;
 
 import services.UserService;
-import utils.EmailUtils; // Import file Utils vừa tạo
+import utils.EmailUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,48 +14,43 @@ import java.util.UUID;
 public class ForgetpassController extends HttpServlet {
     private UserService userService = new UserService();
 
+    // HÀM CẦN BỔ SUNG
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("view/forget_pass.jsp").forward(request, response);
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String email = request.getParameter("email");
+        int userId = userService.getUserIdByEmail(email);
 
-        // 1. Kiểm tra email có tồn tại không
-        if (userService.checkEmailExists(email)) {
-
-            // 2. Tạo mật khẩu ngẫu nhiên (hoặc link reset)
-            String newPassword = UUID.randomUUID().toString().substring(0, 8); // Lấy 8 ký tự ngẫu nhiên
+        if (userId != -1) {
+            String token = UUID.randomUUID().toString();
+            userService.saveToken(userId, token);
 
             try {
-                // 3. Gửi email trước (để đảm bảo gửi được mới đổi pass)
-                String subject = "Khôi phục mật khẩu - Thiết Bị Vệ Sinh";
-                String content = "<h3>Xin chào!</h3>"
-                        + "<p>Bạn vừa yêu cầu lấy lại mật khẩu.</p>"
-                        + "<p>Mật khẩu mới của bạn là: <b style='color:red; font-size:18px;'>" + newPassword + "</b></p>"
-                        + "<p>Vui lòng đăng nhập và đổi lại mật khẩu ngay lập tức.</p>";
+                // Đảm bảo "YourProject" khớp với Context Path của bạn trong Tomcat
+                String resetLink = "http://localhost:8080/ResetPassword?token=" + token;
+
+                String subject = "Đặt lại mật khẩu - Thiết Bị Vệ Sinh";
+                String content = "<h3>Yêu cầu đặt lại mật khẩu</h3>"
+                        + "<p>Vui lòng nhấn vào đường link dưới đây để đặt lại mật khẩu của bạn:</p>"
+                        + "<a href='" + resetLink + "'>Nhấn vào đây để đổi mật khẩu</a>";
 
                 EmailUtils.sendEmail(email, subject, content);
-
-                // 4. Nếu gửi mail thành công -> Lưu mật khẩu mới vào Database
-                userService.updatePassword(email, newPassword);
-
-                request.setAttribute("message", "Thành công! Mật khẩu mới đã được gửi vào email: " + email);
+                request.setAttribute("message", "Thành công! Vui lòng kiểm tra email.");
                 request.setAttribute("msgColor", "green");
-
             } catch (Exception e) {
                 e.printStackTrace();
                 request.setAttribute("message", "Lỗi gửi mail: " + e.getMessage());
                 request.setAttribute("msgColor", "red");
             }
-
         } else {
-            request.setAttribute("message", "Lỗi: Email này không tồn tại trong hệ thống!");
+            request.setAttribute("message", "Lỗi: Email này không tồn tại!");
             request.setAttribute("msgColor", "red");
         }
-
-        request.setAttribute("emailVal", email);
         request.getRequestDispatcher("view/forget_pass.jsp").forward(request, response);
     }
 }

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="fluent-hc-4.5.14">
+    <CLASSES>
+      <root url="jar://E:/Downloads All Browser/fluent-hc-4.5.14.jar!/" />
+      <root url="jar://E:/Downloads All Browser/gson-2.10.1.jar!/" />
+      <root url="jar://E:/Downloads All Browser/angus-mail-2.0.2.jar!/" />
+      <root url="jar://E:/Downloads All Browser/jakarta.mail-api-2.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

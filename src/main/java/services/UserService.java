@@ -27,15 +27,19 @@ public class UserService {
     }
 
     // 2. Cập nhật mật khẩu mới
-    public void updatePassword(String email, String newPassword) {
-        String sql = "UPDATE login SET password = ? WHERE email = ?";
+    public void updatePasswordById(int userId, String newPassword) {
+        String sql = "UPDATE login SET password = ? WHERE id = ?";
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, toMD5(newPassword)); // Mã hóa MD5 để đồng bộ với Login
-            ps.setString(2, email);
-            ps.executeUpdate();
-            System.out.println("Đã cập nhật mật khẩu mới (MD5) cho: " + email);
+            // Sử dụng lại hàm toMD5 có sẵn trong UserService của bạn
+            ps.setString(1, toMD5(newPassword));
+            ps.setInt(2, userId);
+
+            int rowsUpdated = ps.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("Cập nhật mật khẩu thành công cho UserId: " + userId);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -141,4 +145,77 @@ public class UserService {
             return password; // Trả về pass gốc nếu lỗi mã hóa
         }
     }
+    // Thêm vào class UserService
+    public void saveToken(int userId, String token) {
+        // Xóa các token cũ của user này trước khi tạo mới (tùy chọn)
+        String deleteSql = "DELETE FROM token_forget_password WHERE userId = ?";
+        // Chèn token mới, thời gian hết hạn là 30 phút sau
+        String sql = "INSERT INTO token_forget_password (userId, token, expiryTime, isUsed) VALUES (?, ?, NOW() + INTERVAL 30 MINUTE, 0)";
+
+        try (Connection conn = new DBContext().getConnection()) {
+            // Xóa token cũ
+            try (PreparedStatement psDel = conn.prepareStatement(deleteSql)) {
+                psDel.setInt(1, userId);
+                psDel.executeUpdate();
+            }
+            // Lưu token mới
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                ps.setString(2, token);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Thêm hàm này vào class UserService
+    public int getUserIdByEmail(String email) {
+        String sql = "SELECT id FROM login WHERE email = ?";
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id"); // Trả về ID nếu tìm thấy email
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1; // Trả về -1 nếu không tìm thấy hoặc có lỗi
+    }
+
+    // Kiểm tra Token còn hạn và chưa dùng (Giải thích chi tiết logic)
+    public int validateToken(String token) {
+        // NOW() sẽ lấy thời gian hiện tại của hệ thống để so sánh với expiryTime trong DB
+        String sql = "SELECT userId FROM token_forget_password " +
+                "WHERE token = ? AND isUsed = 0 AND expiryTime > NOW()";
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, token);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("userId");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1; // Trả về -1 nếu token sai, đã dùng hoặc hết hạn
+    }
+
+    public void markTokenAsUsed(String token) {
+        String sql = "UPDATE token_forget_password SET isUsed = 1 WHERE token = ?";
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, token);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
