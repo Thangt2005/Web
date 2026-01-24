@@ -34,17 +34,18 @@
         <% } %>
 
         <form action="ResetPassword" method="POST" onsubmit="return validatePassword()">
-            <%-- QUAN TRỌNG: Hidden input để gửi token về Controller --%>
             <input type="hidden" name="token" value="<%= request.getAttribute("token") %>"/>
 
-            <div class="email-login">
+            <div class="email-login password-wrapper">
                 <input type="password" name="newPassword" id="newPassword"
                        placeholder="Nhập mật khẩu mới" required />
+                <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('newPassword', this)"></i>
             </div>
 
-            <div class="email-login" style="margin-top: 15px;">
+            <div class="email-login password-wrapper" style="margin-top: 15px;">
                 <input type="password" id="confirmPassword"
                        placeholder="Xác nhận mật khẩu mới" required />
+                <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('confirmPassword', this)"></i>
             </div>
 
             <p id="error-js" style="color: red; font-size: 13px; margin-top: 5px; display: none;"></p>
@@ -83,6 +84,20 @@
             return false;
         }
         return true;
+    }
+    function toggleVisibility(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            // Đổi icon sang mắt gạch chéo
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            // Đổi icon về mắt mở
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
     }
 </script>
 </body>

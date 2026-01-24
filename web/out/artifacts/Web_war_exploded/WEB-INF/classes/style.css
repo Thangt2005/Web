@@ -414,3 +414,35 @@ h3 {
   margin-top: 15px;
   font-size: 14px;
 }
+/* --- CẤU HÌNH CHUNG CHO WRAPPER --- */
+.password-wrapper {
+  position: relative;
+  /* Không set width cứng ở đây để tránh lỗi trang Register */
+}
+
+/* --- CẤU HÌNH RIÊNG CHO TRANG LOGIN --- */
+/* Ép wrapper của trang Login rộng đúng 280px (bằng input) và căn giữa */
+.email-login .password-wrapper {
+  width: 280px;
+  margin: 8px auto; /* Căn giữa và tạo khoảng cách trên dưới */
+}
+
+/* Input trong trang login sẽ chiếm 100% wrapper */
+.email-login .password-wrapper input {
+  width: 100% !important; /* Dùng !important để đè width cũ nếu cần */
+  margin: 0; /* Bỏ margin thừa vì wrapper đã căn chỉnh rồi */
+  padding-right: 40px; /* Chừa khoảng trống bên phải để chữ không đè lên icon */
+  box-sizing: border-box;
+}
+
+/* --- CẤU HÌNH ICON CON MẮT --- */
+.toggle-password {
+  position: absolute;
+  right: 15px; /* Cách mép phải của ô input 15px -> Đẹp chuẩn */
+  top: 50%;
+  transform: translateY(-50%); /* Căn giữa theo chiều dọc */
+  cursor: pointer;
+  color: #666;
+  font-size: 16px;
+  z-index: 10; /* Đảm bảo icon nổi lên trên input */
+}

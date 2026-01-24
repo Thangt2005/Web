@@ -7,11 +7,11 @@ import java.util.Properties;
 
 public class EmailUtils {
     // 1. Điền Email Gmail của bạn (người gửi)
-    private static final String SENDER_EMAIL = "nguyenvanthanh1sao@gmail.com";
+    private static final String SENDER_EMAIL = "nguyenvanthanh2sao@gmail.com";
 
     // 2. Điền Mật khẩu ứng dụng (KHÔNG PHẢI mật khẩu đăng nhập Gmail)
     // Cách lấy: Vào Google Account > Bảo mật > Xác minh 2 bước > Mật khẩu ứng dụng
-    private static final String APP_PASSWORD = "lyhwyzlmogffpsbu";
+    private static final String APP_PASSWORD = "krlciogmbjgpybts";
 
     public static void sendEmail(String toEmail, String subject, String body) throws MessagingException {
         Properties props = new Properties();
