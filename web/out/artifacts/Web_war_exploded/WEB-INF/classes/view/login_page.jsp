@@ -68,7 +68,9 @@
         <input type="text" name="username" placeholder="Username hoặc E-mail" required />
 
         <div class="password-wrapper">
-            <input type="password" name="password" placeholder="Mật khẩu" required />
+            <input type="password" name="password" id="login-password" placeholder="Mật khẩu" required />
+
+            <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('login-password', this)"></i>
         </div>
 
         <button type="submit" class="login-btn">ĐĂNG NHẬP</button>
@@ -111,5 +113,22 @@
         © 2025 Thiết Bị Vệ Sinh & Phòng Tắm - All Rights Reserved.
     </div>
 </footer>
+
+<script>
+    function toggleVisibility(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+</script>
+</body>
+</html>
 </body>
 </html>
