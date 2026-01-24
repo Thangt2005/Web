@@ -1,5 +1,4 @@
-%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><!DOCTYPE html>
 <html lang="vi">
 <head>
     <%
@@ -106,18 +105,19 @@
     </div>
 </footer>
 <script>
-    function toggleView(inputId, icon) {
+    function toggleVisibility(inputId, icon) {
         const input = document.getElementById(inputId);
         if (input.type === "password") {
             input.type = "text";
             icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash"); // Đổi icon sang mắt gạch chéo
+            icon.classList.add("fa-eye-slash");
         } else {
             input.type = "password";
             icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye"); // Đổi icon về mắt thường
+            icon.classList.add("fa-eye");
         }
     }
+</script>
 </script>
 </body>
 </html>
