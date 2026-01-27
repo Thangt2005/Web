@@ -33,17 +33,13 @@
         <h3>Tạo tài khoản tại đây</h3>
 
         <form class="email-register" method="POST" action="Register">
-            <div class="input-group">
-                <input type="email" name="email" placeholder="E-mail" required
-                       value="<%= request.getAttribute("emailVal") != null ? request.getAttribute("emailVal") : "" %>" />
-            </div>
+            <input type="email" name="email" placeholder="E-mail" required
+                   value="<%= request.getAttribute("emailVal") != null ? request.getAttribute("emailVal") : "" %>" />
 
-            <div class="input-group">
-                <input type="text" name="username-register" placeholder="Username" required
-                       value="<%= request.getAttribute("userVal") != null ? request.getAttribute("userVal") : "" %>" />
-            </div>
+            <input type="text" name="username-register" placeholder="Username" required
+                   value="<%= request.getAttribute("userVal") != null ? request.getAttribute("userVal") : "" %>" />
 
-            <div class="input-group password-wrapper">
+            <div class="password-wrapper">
                 <input type="password" name="password-register" id="password"
                        placeholder="Mật khẩu (8+ ký tự, Hoa, Thường, Số, @)" required
                        pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\S+$).{8,}$"
@@ -51,7 +47,7 @@
                 <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('password', this)"></i>
             </div>
 
-            <div class="input-group password-wrapper">
+            <div class="password-wrapper">
                 <input type="password" name="password-register1" id="password-confirm"
                        placeholder="Nhập lại mật khẩu" required>
                 <i class="fa-solid fa-eye toggle-password" onclick="toggleVisibility('password-confirm', this)"></i>
@@ -121,6 +117,7 @@
             icon.classList.add("fa-eye");
         }
     }
+</script>
 </script>
 </body>
 </html>

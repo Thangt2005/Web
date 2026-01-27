@@ -42,32 +42,58 @@
 
 <header>
     <div class="header-content">
-        <h1><a href="Home">Thiết Bị Vệ Sinh Và Phòng Tắm</a></h1>
 
+        <!-- LOGO -->
+        <h1>
+            <a href="Home">
+                <i class="fa-solid fa-bath"></i>
+                Thiết Bị Vệ Sinh
+            </a>
+        </h1>
+
+        <!-- SEARCH -->
         <div class="search-box">
             <form class="search-form" action="Home" method="GET">
-                <input type="text" name="search" class="search-input" placeholder="Tìm kiếm sản phẩm ..." value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>" />
-                <button type="submit" class="search-btn"><i class="fa fa-search"></i></button>
+                <input
+                        type="text"
+                        name="search"
+                        class="search-input"
+                        placeholder="Tìm kiếm sản phẩm ..."
+                        value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>"
+                />
+                <button type="submit" class="search-btn">
+                    <i class="fa fa-search"></i>
+                </button>
             </form>
         </div>
 
+        <!-- USER ACTIONS -->
         <ul class="user-actions">
             <li>
-                <a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a>
+                <a href="Cart">
+                    <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
+                </a>
             </li>
 
             <% if (isLoggedIn) { %>
             <li>
-                <a href="Logout"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+                <a href="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
             </li>
             <% } else { %>
             <li>
-                <a href="view/login_page.jsp"><i class="fas fa-user"></i> Đăng nhập</a>
+                <a href="view/login_page.jsp">
+                    <i class="fa-solid fa-user"></i> Đăng nhập
+                </a>
             </li>
             <% } %>
         </ul>
+
     </div>
 </header>
+
+
 
 <div class="main-navigation">
     <div class="nav-container">
@@ -93,7 +119,8 @@
     <% if (p != null) { %>
     <div class="card-section product-briefing">
         <div class="product-gallery">
-            <img src="image_all/<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" />
+            <%-- SỬA TẠI ĐÂY: Vì hinh_anh trong DB là link URL nên không cần tiền tố image_all/ --%>
+            <img src="<%= p.getHinhAnh() %>" alt="<%= p.getTenSp() %>" />
         </div>
 
         <div class="product-main-info">
