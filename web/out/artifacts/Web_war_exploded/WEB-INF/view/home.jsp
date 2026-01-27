@@ -1,15 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.text.DecimalFormat" %>
-<%@ page import="model.User" %> <%-- Bắt buộc phải import model User --%>
+<%@ page import="java.util.*" %>
+<%@ page import="model.User" %>
 
 <%
     // 1. CẤU HÌNH ĐƯỜNG DẪN
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
 
-    // 2. XỬ LÝ LOGIC KIỂM TRA ĐĂNG NHẬP (THÔNG MINH)
-    // Đoạn này chấp nhận cả User Object lẫn String (Google/FB)
+    // 2. XỬ LÝ LOGIC KIỂM TRA ĐĂNG NHẬP
     Object sessionObj = session.getAttribute("user");
 
     String displayName = "";      // Tên hiển thị
@@ -17,35 +17,50 @@
     boolean isAdmin = false;      // Cờ đánh dấu có phải admin không
 
     if (sessionObj != null) {
-        isLoggedIn = true; // Đã có dữ liệu user -> Đã đăng nhập
-
-        // TRƯỜNG HỢP 1: Đăng nhập thường (Lưu Object User)
+        isLoggedIn = true;
         if (sessionObj instanceof User) {
             User u = (User) sessionObj;
-            // Anh kiểm tra file User.java xem hàm lấy tên là getUsername() hay getFullName() nhé
-            displayName = u.getUsername();
-
-            // Kiểm tra quyền Admin (Ví dụ role = 1 là admin)
+            displayName = u.getUsername(); // Hoặc u.getFullName() tùy model của anh
             if (u.getRole() == 1) {
                 isAdmin = true;
             }
-        }
-        // TRƯỜNG HỢP 2: Đăng nhập Google/Facebook (Lưu String tên)
-        else if (sessionObj instanceof String) {
+        } else if (sessionObj instanceof String) {
             displayName = (String) sessionObj;
-            isAdmin = false; // Google/FB mặc định là khách hàng
+            isAdmin = false;
         }
     }
 %>
 
 <%
-    // 3. KẾT NỐI DATABASE & LẤY SẢN PHẨM
+    // 3. KẾT NỐI DATABASE & XỬ LÝ PHÂN TRANG
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
 
     String errorMessage = "";
     DecimalFormat formatter = new DecimalFormat("###,###");
+
+    // --- Cấu hình phân trang ---
+    int productsPerPage = 20; // Số sản phẩm trên 1 trang
+    int currentPage = 1;      // Trang hiện tại mặc định là 1
+
+    String pageParam = request.getParameter("page");
+    if (pageParam != null && !pageParam.isEmpty()) {
+        try {
+            currentPage = Integer.parseInt(pageParam);
+        } catch (NumberFormatException e) {
+            currentPage = 1;
+        }
+    }
+
+    // Tính vị trí bắt đầu (OFFSET) trong SQL
+    int offset = (currentPage - 1) * productsPerPage;
+    int totalProducts = 0;
+    int totalPages = 0;
+
+    String searchTerm = request.getParameter("search");
+    if (searchTerm == null) searchTerm = "";
+    searchTerm = searchTerm.trim();
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -54,21 +69,44 @@
         String passDB = "";
         conn = DriverManager.getConnection(url, userDB, passDB);
 
-        String searchTerm = request.getParameter("search");
+        // BƯỚC A: Đếm tổng số bản ghi (để tính số trang)
+        String countSql = "SELECT COUNT(*) FROM home_sanpham";
+        if (!searchTerm.isEmpty()) {
+            countSql += " WHERE ten_sp LIKE ?";
+        }
 
-        // Mặc định lấy bảng home_sanpham.
-        // Nếu anh muốn chuyển tab (Combo, Toilet...) thì cần dùng Controller gửi tên bảng sang như em đã hướng dẫn trước đó.
+        PreparedStatement psCount = conn.prepareStatement(countSql);
+        if (!searchTerm.isEmpty()) {
+            psCount.setString(1, "%" + searchTerm + "%");
+        }
+        ResultSet rsCount = psCount.executeQuery();
+        if (rsCount.next()) {
+            totalProducts = rsCount.getInt(1);
+        }
+        rsCount.close();
+        psCount.close();
+
+        // Tính tổng số trang (làm tròn lên)
+        totalPages = (int) Math.ceil((double) totalProducts / productsPerPage);
+
+        // BƯỚC B: Lấy dữ liệu hiển thị (có LIMIT và OFFSET)
         String sql = "SELECT * FROM home_sanpham";
 
-        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+        if (!searchTerm.isEmpty()) {
             sql += " WHERE ten_sp LIKE ?";
         }
 
+        // Thêm giới hạn phân trang
+        sql += " LIMIT ? OFFSET ?";
+
         ps = conn.prepareStatement(sql);
 
-        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
-            ps.setString(1, "%" + searchTerm.trim() + "%");
+        int paramIndex = 1;
+        if (!searchTerm.isEmpty()) {
+            ps.setString(paramIndex++, "%" + searchTerm + "%");
         }
+        ps.setInt(paramIndex++, productsPerPage);
+        ps.setInt(paramIndex++, offset);
 
         rs = ps.executeQuery();
 
@@ -91,6 +129,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/main.js"></script>
+
+    <%-- CSS nội bộ cho nút phân trang (Anh có thể chuyển vào homeStyle.css nếu muốn) --%>
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 5px;
+        }
+        .page-link {
+            display: inline-block;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .page-link.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .page-link:hover:not(.active) {
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 <body>
 
@@ -106,7 +171,7 @@
                         placeholder="Tìm kiếm sản phẩm ..."
                         class="search-input"
                         autocomplete="off"
-                        value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>"
+                        value="<%= searchTerm %>"
                 />
                 <button type="submit" class="search-icon">
                     <i class="fa fa-search"></i>
@@ -120,7 +185,6 @@
             <li><a href="Cart"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
 
             <%
-                // SỬ DỤNG BIẾN ĐÃ XỬ LÝ Ở TRÊN (isLoggedIn, isAdmin, displayName)
                 if (isLoggedIn) {
             %>
 
@@ -149,7 +213,6 @@
 
             <%
             } else {
-                // --- NẾU CHƯA ĐĂNG NHẬP ---
             %>
             <li>
                 <a href="view/login_page.jsp">
@@ -184,7 +247,6 @@
             <li><a href="BonTieuNam">Bồn Tiểu Nam</a></li>
             <li><a href="PhuKien">Phụ Kiện</a></li>
 
-            <%-- Menu Admin ở thanh sidebar (chỉ hiện nếu là admin) --%>
             <% if (isAdmin) { %>
             <li><a href="Admin" style="color: yellow; font-weight: bold;">Admin</a></li>
             <% } %>
@@ -194,8 +256,8 @@
 </div>
 
 <main class="main-content">
-    <% if (request.getParameter("search") != null && !request.getParameter("search").isEmpty()) { %>
-    <h2>Kết quả tìm kiếm cho: "<%= request.getParameter("search") %>"</h2>
+    <% if (!searchTerm.isEmpty()) { %>
+    <h2>Kết quả tìm kiếm cho: "<%= searchTerm %>"</h2>
     <% } else { %>
     <h2>Sản phẩm nổi bật</h2>
     <% } %>
@@ -208,8 +270,8 @@
 
     <div class="product-grid">
         <%
+            boolean hasData = false;
             if (rs != null) {
-                boolean hasData = false;
                 while (rs.next()) {
                     hasData = true;
                     int id = rs.getInt("id");
@@ -219,7 +281,6 @@
                     int giamGia = rs.getInt("giam_gia");
         %>
         <div class="product-card">
-            <%-- Link ảnh trực tiếp từ DB --%>
             <img src="<%= hinhAnh %>" alt="<%= tenSp %>" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
 
             <h3>
@@ -247,20 +308,47 @@
             </div>
         </div>
         <%
+                }
             }
 
             if (!hasData) {
         %>
-        <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
+        <div style="text-align: center; width: 100%; padding: 40px; color: #666; grid-column: 1 / -1;">
             <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 10px;"></i>
             <p>Không tìm thấy sản phẩm nào phù hợp!</p>
             <a href="Home" style="color: #007bff; text-decoration: underline;">Quay lại trang chủ</a>
         </div>
         <%
-                }
             }
         %>
     </div>
+
+    <%-- KHU VỰC HIỂN THỊ NÚT PHÂN TRANG --%>
+    <% if (totalPages > 1) { %>
+    <div class="pagination">
+        <%-- Xử lý tham số tìm kiếm để nối vào link phân trang --%>
+        <% String searchParam = searchTerm.isEmpty() ? "" : "&search=" + searchTerm; %>
+
+        <%-- Nút Previous --%>
+        <% if (currentPage > 1) { %>
+        <a href="Home?page=<%= currentPage - 1 %><%= searchParam %>" class="page-link">&laquo; Trước</a>
+        <% } %>
+
+        <%-- Danh sách các trang --%>
+        <% for (int i = 1; i <= totalPages; i++) { %>
+        <a href="Home?page=<%= i %><%= searchParam %>"
+           class="page-link <%= (i == currentPage) ? "active" : "" %>">
+            <%= i %>
+        </a>
+        <% } %>
+
+        <%-- Nút Next --%>
+        <% if (currentPage < totalPages) { %>
+        <a href="Home?page=<%= currentPage + 1 %><%= searchParam %>" class="page-link">Sau &raquo;</a>
+        <% } %>
+    </div>
+    <% } %>
+
 </main>
 
 <footer class="footer">
