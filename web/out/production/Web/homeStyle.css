@@ -71,23 +71,25 @@ header nav {
 .search-form {
     display: flex;
     align-items: center;
-    background: #fff;
+    background: #ffffff !important;
     border-radius: 99px;
     padding: 2px;
     width: 100%;
     max-width: 500px; /* Giới hạn chiều rộng tối đa */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     position: relative;
+    z-index: 1001;
 }
 
 .search-input {
     width: 100%;
     border: none;
     outline: none;
-    background: transparent;
+    background: transparent !important;
     padding: 8px 15px;
     font-size: 14px;
-    color: #333;
+    color: #000000 !important; /* Chữ màu đen tuyệt đối cho dễ đọc */
+    font-weight: 500;
 }
 
 .search-icon {
@@ -110,19 +112,53 @@ header nav {
 }
 
 /* Gợi ý tìm kiếm */
-.search-result-box,
+.suggestion-box,
 .search-form ul {
-    position: absolute;
-    top: 110%;
+    position: absolute; /* Quan trọng: Giúp nó bay lên trên, không đẩy vỡ header */
+    top: 100%; /* Đẩy xuống ngay mép dưới ô tìm kiếm */
     left: 0;
     width: 100%;
-    background: #fff;
-    border-radius: 8px;
+    background: #ffffff !important; /* Nền trắng tuyệt đối */
+    border-radius: 0 0 8px 8px; /* Bo góc dưới cho đẹp */
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    z-index: 9999;
+    z-index: 9999; /* Đảm bảo nó nổi lên trên cùng */
     list-style: none;
-    padding: 5px 0;
+    padding: 0;
+    margin-top: 5px; /* Cách ô tìm kiếm ra 1 chút */
     overflow: hidden;
+    max-height: 400px; /* Giới hạn chiều cao, nếu dài quá thì cuộn */
+    overflow-y: auto;  /* Cho phép cuộn dọc */
+}
+/* Style cho từng dòng kết quả bên trong */
+.suggestion-box div,
+.suggestion-box a,
+.search-form ul li {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    color: #333 !important; /* Chữ màu đen xám */
+    display: block; /* Để thẻ a chiếm hết dòng */
+    text-align: left;
+    font-size: 14px;
+    background: #fff !important; /* Nền từng dòng cũng trắng */
+    cursor: pointer;
+    text-decoration: none;
+}
+/* Hiệu ứng khi di chuột vào từng dòng */
+.suggestion-box div:hover,
+.suggestion-box a:hover,
+.search-form ul li:hover {
+    background-color: #fcebeb !important; /* Màu nền hồng nhạt khi hover */
+    color: #d70018 !important; /* Chữ đỏ khi hover */
+}
+/* Chỉnh ảnh thumbnail nhỏ trong kết quả tìm kiếm (nếu có) */
+.suggestion-box img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+    vertical-align: middle;
+    border-radius: 4px;
+    border: 1px solid #ddd;
 }
 
 .search-result-box div,
